@@ -1,0 +1,607 @@
+{% extends "base.html" %}
+
+{% block title %}Metadata - Multi-Platform Video Downloader{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title mb-0">
+                    <i class="fas fa-tags me-2"></i>Multi-Platform Metadata Extractor
+                </h2>
+            </div>
+            <div class="card-body">
+                <form id="metadataForm">
+                    <div class="mb-4">
+                        <label for="metadataUrl" class="form-label">Video URL from Any Platform</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="metadataPlatformIcon">
+                                <i class="fas fa-globe"></i>
+                            </span>
+                            <input type="url" class="form-control" id="metadataUrl" 
+                                   placeholder="Paste URL from YouTube, Instagram, TikTok, Facebook, etc..." required>
+                            <button class="btn btn-primary" type="button" id="extractMetadataBtn">
+                                <i class="fas fa-search me-1"></i>Extract
+                            </button>
+                        </div>
+                        <small class="form-text text-muted">
+                            <strong>Supported platforms:</strong> 
+                            <i class="fab fa-youtube text-danger" title="YouTube"></i>
+                            <i class="fab fa-instagram text-warning" title="Instagram"></i>
+                            <i class="fab fa-facebook text-primary" title="Facebook"></i>
+                            <i class="fab fa-twitter text-info" title="Twitter/X"></i>
+                            <i class="fab fa-tiktok" title="TikTok"></i>
+                            <i class="fab fa-vimeo text-info" title="Vimeo"></i>
+                            <i class="fab fa-reddit text-warning" title="Reddit"></i>
+                            <i class="fab fa-twitch text-purple" title="Twitch"></i>
+                            <i class="fas fa-video text-success" title="Rumble"></i>
+                            and more...
+                        </small>
+                    </div>
+
+                    <!-- Platform Detection -->  
+                    <div id="metadataPlatformDetection" class="d-none mb-3">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Platform detected: <strong id="metadataDetectedPlatform"></strong>
+                            <span id="metadataSupportStatus"></span>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Extracted Metadata -->
+                <div id="extractedMetadata" class="d-none">
+                        <div class="alert alert-success">
+                            <h5><i class="fas fa-check-circle me-2"></i>Metadata Extracted Successfully!</h5>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <img id="metadataThumbnail" src="" alt="Video Thumbnail" class="img-fluid rounded" style="max-height: 200px;">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="metadata-info">
+                                    <h6><strong>📝 Title:</strong></h6>
+                                    <p id="metadataTitle" class="text-muted">-</p>
+
+                                    <h6><strong>👤 Creator:</strong></h6>
+                                    <p id="metadataUploader" class="text-muted">-</p>
+
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <h6><strong>⏱️ Duration:</strong></h6>
+                                            <p id="metadataDuration" class="text-muted">-</p>
+                                        </div>
+                                        <div class="col-6">
+                                            <h6><strong>👁️ Views:</strong></h6>
+                                            <p id="metadataViews" class="text-muted">-</p>
+                                        </div>
+                                    </div>
+
+                                    <h6><strong>🌐 Platform:</strong></h6>
+                                    <p id="metadataPlatform" class="text-muted">-</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Advanced Technical Information with Tabs -->
+                        <div id="technicalInfo" class="mt-4 d-none">
+                            <h5><i class="fas fa-cogs me-2"></i>Technical Specifications</h5>
+                            <ul class="nav nav-tabs" id="technicalTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="video-tab" data-bs-toggle="tab" data-bs-target="#video" type="button" role="tab">Video Info</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="audio-tab" data-bs-toggle="tab" data-bs-target="#audio" type="button" role="tab">Audio Info</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="file-tab" data-bs-toggle="tab" data-bs-target="#file" type="button" role="tab">File Info</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="quality-tab" data-bs-toggle="tab" data-bs-target="#quality" type="button" role="tab">Quality Info</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="technicalTabsContent">
+                                <div class="tab-pane fade show active" id="video" role="tabpanel">
+                                    <div class="card border-top-0">
+                                        <div class="card-body">
+                                            <small>
+                                                <p><strong>📏 Resolution:</strong> <span id="videoResolution">-</span></p>
+                                                <p><strong>🎥 Video Codec:</strong> <span id="videoCodec">-</span></p>
+                                                <p><strong>📊 Video Bitrate:</strong> <span id="videoBitrate">-</span></p>
+                                                <p><strong>🔄 Frame Rate:</strong> <span id="videoFps">-</span></p>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="audio" role="tabpanel">
+                                    <div class="card border-top-0">
+                                        <div class="card-body">
+                                            <small>
+                                                <p><strong>🎵 Audio Codec:</strong> <span id="audioCodec">-</span></p>
+                                                <p><strong>📊 Audio Bitrate:</strong> <span id="audioBitrate">-</span></p>
+                                                <p><strong>🔊 Sample Rate:</strong> <span id="sampleRate">-</span></p>
+                                                <p><strong>📢 Channels:</strong> <span id="audioChannels">-</span></p>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="file" role="tabpanel">
+                                    <div class="card border-top-0">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <small><strong>📦 File Size:</strong> <span id="fileSize">-</span></small>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <small><strong>🎯 Total Bitrate:</strong> <span id="totalBitrate">-</span></small>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <small><strong>📋 Format:</strong> <span id="fileFormat">-</span></small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="quality" role="tabpanel">
+                                    <div class="card border-top-0">
+                                        <div class="card-body">
+                                            <div id="qualityInfoContent">
+                                                <div class="text-center text-muted">
+                                                    <i class="fas fa-spinner fa-spin me-2"></i>Loading quality information...
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <h6><strong>📄 Description:</strong></h6>
+                            <div id="metadataDescription" class="form-control" style="max-height: 200px; overflow-y: auto; white-space: pre-wrap;">-</div>
+                        </div>
+
+                        <div class="mt-3">
+                            <h6><strong>🏷️ Tags:</strong></h6>
+                            <div id="metadataTags" class="d-flex flex-wrap gap-1">
+                                <!-- Tags will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+
+        <!-- Usage Tips -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>Usage Tips
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="fas fa-copy text-primary me-1"></i>
+                        Click the copy buttons to copy individual fields to your clipboard
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-edit text-info me-1"></i>
+                        Title and description fields are editable after extraction
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-tags text-warning me-1"></i>
+                        Each tag has its own copy button for easy copying
+                    </li>
+                    <li class="mb-0">
+                        <i class="fas fa-upload text-success me-1"></i>
+                        Use the Home page to upload videos with this metadata
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="copyToast" class="toast" role="alert">
+        <div class="toast-header">
+            <i class="fas fa-check-circle text-success me-2"></i>
+            <strong class="me-auto">Copied!</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">
+            Content copied to clipboard
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const metadataForm = document.getElementById('metadataForm');
+    const metadataUrl = document.getElementById('metadataUrl');
+    const extractBtn = document.getElementById('extractMetadataBtn');
+    const extractedSection = document.getElementById('extractedMetadata');
+    const copyToast = new bootstrap.Toast(document.getElementById('copyToast'));
+    const metadataPlatformDetection = document.getElementById('metadataPlatformDetection');
+    const metadataPlatformIcon = document.getElementById('metadataPlatformIcon');
+
+    let currentMetadataPlatform = null;
+
+    // Platform detection on URL input
+    metadataUrl.addEventListener('input', function() {
+        const url = metadataUrl.value.trim();
+        if (url) {
+            detectMetadataPlatform(url);
+        } else {
+            metadataPlatformDetection.classList.add('d-none');
+            metadataPlatformIcon.innerHTML = '<i class="fas fa-globe"></i>';
+        }
+    });
+
+    // Extract metadata
+    extractBtn.addEventListener('click', function() {
+        const url = metadataUrl.value.trim();
+        if (!url) {
+            showToast('Please enter a video URL', 'error');
+            return;
+        }
+
+        extractBtn.disabled = true;
+        extractBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Extracting...';
+
+        const formData = new FormData();
+        formData.append('url', url);
+
+        fetch('/extract_metadata', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            displayMetadata(data);
+            extractedSection.classList.remove('d-none');
+
+        })
+        .catch(error => {
+            showToast('Error extracting metadata: ' + error.message, 'error');
+        })
+        .finally(() => {
+            extractBtn.disabled = false;
+            extractBtn.innerHTML = '<i class="fas fa-search me-1"></i>Extract';
+        });
+    });
+
+    // Copy functionality
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.copy-btn')) {
+            e.preventDefault();
+            const button = e.target.closest('.copy-btn');
+            const targetId = button.getAttribute('data-copy-target');
+            const targetElement = document.getElementById(targetId);
+
+            if (targetElement) {
+                copyToClipboard(targetElement.value || targetElement.textContent);
+                showCopyFeedback(button);
+            }
+        }
+
+        if (e.target.closest('.tag-copy-btn')) {
+            e.preventDefault();
+            const button = e.target.closest('.tag-copy-btn');
+            const tagText = button.getAttribute('data-tag');
+            copyToClipboard(tagText);
+            showCopyFeedback(button);
+        }
+    });
+
+    function displayMetadata(data) {
+        document.getElementById('metadataTitle').textContent = data.title || 'Unknown';
+        document.getElementById('metadataUploader').textContent = data.uploader || 'Unknown';
+        document.getElementById('metadataDuration').textContent = data.duration || 'Unknown';
+        document.getElementById('metadataViews').textContent = data.view_count || 'Unknown';
+        document.getElementById('metadataPlatform').textContent = data.platform || 'Unknown';
+        document.getElementById('metadataDescription').innerHTML = (data.description || 'No description').replace(/\n/g, '<br>');
+
+        // Display thumbnail
+        const thumbnail = document.getElementById('metadataThumbnail');
+        if (data.thumbnail) {
+            thumbnail.src = data.thumbnail;
+            thumbnail.style.display = 'block';
+        } else {
+            thumbnail.style.display = 'none';
+        }
+
+        // Show technical info for direct URLs or when advanced data is available
+        const technicalInfo = document.getElementById('technicalInfo');
+        if (data.platform === 'direct_url' || data.video_codec || data.audio_codec) {
+            technicalInfo.classList.remove('d-none');
+
+            // Video information
+            document.getElementById('videoResolution').textContent = data.quality || 'Unknown';
+            document.getElementById('videoCodec').textContent = data.video_codec || 'Unknown';
+            document.getElementById('videoBitrate').textContent = data.video_bitrate || 'Unknown';
+            document.getElementById('videoFps').textContent = data.fps || 'Unknown';
+
+            // Audio information  
+            document.getElementById('audioCodec').textContent = data.audio_codec || 'Unknown';
+            document.getElementById('audioBitrate').textContent = data.audio_bitrate || 'Unknown';
+            document.getElementById('sampleRate').textContent = data.sample_rate || 'Unknown';
+            document.getElementById('audioChannels').textContent = data.channels || 'Unknown';
+
+            // File information
+            document.getElementById('fileSize').textContent = data.file_size || 'Unknown';
+            document.getElementById('totalBitrate').textContent = data.bitrate || 'Unknown';
+            document.getElementById('fileFormat').textContent = data.format || 'Unknown';
+        } else {
+            technicalInfo.classList.add('d-none');
+        }
+
+        // Display tags
+        const tagsContainer = document.getElementById('metadataTags');
+        tagsContainer.innerHTML = '';
+
+        if (data.tags && data.tags.length > 0) {
+            data.tags.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'badge bg-secondary me-1 mb-1 cursor-pointer';
+                tagElement.textContent = tag;
+                tagElement.title = 'Click to copy';
+                tagElement.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    copyToClipboard(tag);
+                    showTagCopyFeedback(tagElement);
+                });
+                tagsContainer.appendChild(tagElement);
+            });
+        } else {
+            tagsContainer.innerHTML = '<span class="text-muted">No tags available</span>';
+        }
+
+        // Load quality information if available
+        if (data.platform && metadataUrl.value.trim()) {
+            loadQualityInfo(metadataUrl.value.trim());
+        }
+    }
+
+    function copyToClipboard(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(() => {
+                copyToast.show();
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                fallbackCopy(text);
+            });
+        } else {
+            fallbackCopy(text);
+        }
+    }
+
+    function fallbackCopy(text) {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+            document.execCommand('copy');
+            copyToast.show();
+        } catch (err) {
+            console.error('Fallback copy failed: ', err);
+        }
+
+        document.body.removeChild(textArea);
+    }
+
+    function showCopyFeedback(button) {
+        const originalIcon = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-check text-success"></i>';
+        button.disabled = true;
+
+        setTimeout(() => {
+            button.innerHTML = originalIcon;
+            button.disabled = false;
+        }, 1000);
+    }
+
+    function detectMetadataPlatform(url) {
+        const formData = new FormData();
+        formData.append('url', url);
+
+        fetch('/detect_platform', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            currentMetadataPlatform = data.platform;
+            updateMetadataPlatformDisplay(data);
+        })
+        .catch(error => {
+            console.log('Platform detection failed:', error);
+        });
+    }
+
+    function updateMetadataPlatformDisplay(data) {
+        const detectedPlatform = document.getElementById('metadataDetectedPlatform');
+        const supportStatus = document.getElementById('metadataSupportStatus');
+
+        detectedPlatform.textContent = data.display_name;
+
+        if (data.supported) {
+            supportStatus.innerHTML = '<span class="badge bg-success ms-2">Supported ✓</span>';
+            metadataPlatformDetection.querySelector('.alert').className = 'alert alert-success';
+        } else {
+            supportStatus.innerHTML = '<span class="badge bg-warning ms-2">Coming Soon</span>';
+            metadataPlatformDetection.querySelector('.alert').className = 'alert alert-warning';
+        }
+
+        metadataPlatformDetection.classList.remove('d-none');
+
+        // Update platform icon
+        const iconClass = getPlatformIconClass(data.platform);
+        metadataPlatformIcon.innerHTML = `<i class="${iconClass}"></i>`;
+    }
+
+    function getPlatformIconClass(platform) {
+        const icons = {
+            'youtube': 'fab fa-youtube text-danger',
+            'instagram': 'fab fa-instagram text-warning',
+            'facebook': 'fab fa-facebook text-primary',
+            'twitter': 'fab fa-twitter text-info',
+            'tiktok': 'fab fa-tiktok',
+            'vimeo': 'fab fa-vimeo text-info',
+            'reddit': 'fab fa-reddit text-warning',
+            'twitch': 'fab fa-twitch text-purple',
+            'dailymotion': 'fas fa-video text-blue',
+            'pinterest': 'fab fa-pinterest text-danger',
+            'snapchat': 'fab fa-snapchat text-yellow',
+            'rumble': 'fas fa-video text-success'
+        };
+        return icons[platform] || 'fas fa-globe';
+    }
+
+    function getPlatformBadgeClass(platform) {
+        const badges = {
+            'youtube': 'bg-danger',
+            'instagram': 'bg-warning',
+            'facebook': 'bg-primary',
+            'twitter': 'bg-info',
+            'tiktok': 'bg-dark',
+            'vimeo': 'bg-info',
+            'reddit': 'bg-warning',
+            'twitch': 'bg-purple',
+            'dailymotion': 'bg-primary',
+            'pinterest': 'bg-danger',
+            'snapchat': 'bg-warning',
+            'rumble': 'bg-success'
+        };
+        return badges[platform] || 'bg-secondary';
+    }
+
+    function getPlatformDisplayName(platform) {
+        const names = {
+            'youtube': 'YouTube',
+            'instagram': 'Instagram',
+            'facebook': 'Facebook',
+            'twitter': 'Twitter/X',
+            'tiktok': 'TikTok',
+            'vimeo': 'Vimeo',
+            'reddit': 'Reddit',
+            'twitch': 'Twitch',
+            'dailymotion': 'Dailymotion',
+            'pinterest': 'Pinterest',
+            'snapchat': 'Snapchat',
+            'rumble': 'Rumble'
+        };
+        return names[platform] || platform;
+    }
+
+    function loadQualityInfo(url) {
+        const qualityContent = document.getElementById('qualityInfoContent');
+        qualityContent.innerHTML = '<div class="text-center text-muted"><i class="fas fa-spinner fa-spin me-2"></i>Loading quality information...</div>';
+
+        const formData = new FormData();
+        formData.append('url', url);
+
+        fetch('/get_video_qualities', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                qualityContent.innerHTML = '<div class="text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Unable to load quality information</div>';
+                return;
+            }
+
+            displayQualityTable(data.qualities);
+        })
+        .catch(error => {
+            qualityContent.innerHTML = '<div class="text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Error loading quality information</div>';
+        });
+    }
+
+    function displayQualityTable(qualities) {
+        const qualityContent = document.getElementById('qualityInfoContent');
+        
+        if (!qualities || qualities.length === 0) {
+            qualityContent.innerHTML = '<div class="text-muted">No quality information available</div>';
+            return;
+        }
+
+        let tableHTML = `
+            <table class="table table-sm table-hover">
+                <thead>
+                    <tr>
+                        <th>RESOLUTION</th>
+                        <th>FILESIZE</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        qualities.forEach(quality => {
+            const resolution = quality.height ? `${quality.width || '?'}x${quality.height}` : 'Best Available';
+            const filesize = quality.filesize || '~Auto';
+            
+            tableHTML += `
+                <tr>
+                    <td><code>${resolution}</code></td>
+                    <td><code>${filesize}</code></td>
+                </tr>
+            `;
+        });
+
+        tableHTML += '</tbody></table>';
+        qualityContent.innerHTML = tableHTML;
+    }
+
+    function showTagCopyFeedback(tagElement) {
+        const originalBg = tagElement.className;
+        tagElement.className = 'badge bg-success me-1 mb-1 cursor-pointer';
+        tagElement.innerHTML = '<i class="fas fa-check"></i> ' + tagElement.textContent;
+        
+        setTimeout(() => {
+            tagElement.className = originalBg;
+            tagElement.innerHTML = tagElement.textContent.replace('✓ ', '');
+        }, 1000);
+    }
+
+    function showToast(message, type = 'info') {
+        const toastContainer = document.querySelector('.toast-container');
+        const toastId = 'toast-' + Date.now();
+        const toastElement = document.createElement('div');
+        toastElement.className = `toast align-items-center text-white bg-${type} border-0`;
+        toastElement.id = toastId;
+        toastElement.setAttribute('role', 'alert');
+        toastElement.setAttribute('aria-live', 'assertive');
+        toastElement.setAttribute('data-bs-autohide', 'true');
+        toastElement.setAttribute('data-bs-delay', '3000');
+        toastElement.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        `;
+        toastContainer.appendChild(toastElement);
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+    }
+});
+</script>
+{% endblock %}

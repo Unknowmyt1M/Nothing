@@ -1,0 +1,2 @@
+# Netscape HTTP Cookie File
+# This is a placeholder - implement cookie extraction

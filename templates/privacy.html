@@ -1,0 +1,225 @@
+
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy - Multi-Platform Video Downloader{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title mb-0">
+                    <i class="fas fa-shield-alt me-2"></i>Privacy Policy
+                </h1>
+                <small class="text-muted">Last updated: January 16, 2025</small>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Your Privacy Matters:</strong> We are committed to protecting your privacy and being transparent about how we handle your data.
+                </div>
+
+                <h3><i class="fas fa-info me-2"></i>Information We Collect</h3>
+                <h5>Google Account Information</h5>
+                <ul>
+                    <li><strong>Basic Profile Data:</strong> Name, email address, and Google profile ID when you authenticate with Google OAuth</li>
+                    <li><strong>YouTube API Access:</strong> Permission to upload videos to your YouTube channel</li>
+                    <li><strong>Authentication Tokens:</strong> Temporary access tokens to interact with YouTube API on your behalf</li>
+                </ul>
+
+                <h5>Video and Platform Data</h5>
+                <ul>
+                    <li><strong>Video URLs:</strong> Links to videos you want to download from supported platforms</li>
+                    <li><strong>Video Metadata:</strong> Title, description, thumbnails, and other public information from source videos</li>
+                    <li><strong>Upload Settings:</strong> Privacy settings, titles, and descriptions you provide for YouTube uploads</li>
+                </ul>
+
+                <h5>Technical Information</h5>
+                <ul>
+                    <li><strong>Session Data:</strong> Temporary data stored during your browsing session</li>
+                    <li><strong>Progress Information:</strong> Download and upload progress data (automatically deleted after completion)</li>
+                    <li><strong>Error Logs:</strong> Technical error information to improve service reliability</li>
+                </ul>
+
+                <hr>
+
+                <h3><i class="fas fa-cogs me-2"></i>How We Use Your Information</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Core Functionality</h5>
+                        <ul>
+                            <li>Download videos from supported platforms</li>
+                            <li>Extract and process video metadata</li>
+                            <li>Upload videos to your YouTube channel</li>
+                            <li>Track upload progress and status</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Service Improvement</h5>
+                        <ul>
+                            <li>Troubleshoot technical issues</li>
+                            <li>Improve platform compatibility</li>
+                            <li>Enhance user experience</li>
+                            <li>Monitor service performance</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h3><i class="fas fa-share-alt me-2"></i>Information Sharing</h3>
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>We do not sell, rent, or share your personal information with third parties for marketing purposes.</strong>
+                </div>
+
+                <h5>Limited Sharing Scenarios</h5>
+                <ul>
+                    <li><strong>Google/YouTube:</strong> We share only necessary data with YouTube API to upload videos on your behalf</li>
+                    <li><strong>Platform APIs:</strong> We access public video metadata from supported platforms (YouTube, Instagram, etc.)</li>
+                    <li><strong>Legal Requirements:</strong> We may disclose information if required by law or to protect our rights</li>
+                </ul>
+
+                <hr>
+
+                <h3><i class="fas fa-database me-2"></i>Data Storage and Security</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Storage Practices</h5>
+                        <ul>
+                            <li><strong>Temporary Files:</strong> Downloaded videos are automatically deleted after upload</li>
+                            <li><strong>Session Data:</strong> Stored temporarily in encrypted sessions</li>
+                            <li><strong>User Preferences:</strong> Minimal data stored in user directories</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Security Measures</h5>
+                        <ul>
+                            <li><strong>OAuth 2.0:</strong> Secure Google authentication</li>
+                            <li><strong>HTTPS:</strong> All data transmission encrypted</li>
+                            <li><strong>Token Management:</strong> Automatic token refresh and expiration</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h3><i class="fas fa-cookie-bite me-2"></i>Cookies and Tracking</h3>
+                <h5>Platform Cookies</h5>
+                <ul>
+                    <li><strong>Authentication Cookies:</strong> Used to access restricted content on some platforms</li>
+                    <li><strong>Session Cookies:</strong> Essential for maintaining your login state</li>
+                    <li><strong>No Tracking:</strong> We do not use cookies for advertising or user tracking</li>
+                </ul>
+
+                <h5>Third-Party Services</h5>
+                <ul>
+                    <li><strong>Google OAuth:</strong> Handles authentication securely</li>
+                    <li><strong>Platform APIs:</strong> Direct communication with video platforms</li>
+                    <li><strong>No Analytics:</strong> We do not use Google Analytics or similar tracking services</li>
+                </ul>
+
+                <hr>
+
+                <h3><i class="fas fa-user-shield me-2"></i>Your Rights and Controls</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Account Control</h5>
+                        <ul>
+                            <li><strong>Disconnect:</strong> Revoke Google account access anytime</li>
+                            <li><strong>Data Deletion:</strong> Request removal of your data</li>
+                            <li><strong>Access Control:</strong> Control what data you share</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Privacy Settings</h5>
+                        <ul>
+                            <li><strong>Upload Privacy:</strong> Choose public, unlisted, or private for uploads</li>
+                            <li><strong>Metadata Control:</strong> Edit titles and descriptions before upload</li>
+                            <li><strong>Consent Management:</strong> Clear consent for all data processing</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h3><i class="fas fa-clock me-2"></i>Data Retention</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Data Type</th>
+                            <th>Retention Period</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Video Files</td>
+                            <td>Deleted immediately after upload</td>
+                            <td>Temporary processing only</td>
+                        </tr>
+                        <tr>
+                            <td>Session Data</td>
+                            <td>Until logout or expiration</td>
+                            <td>Maintain user session</td>
+                        </tr>
+                        <tr>
+                            <td>Access Tokens</td>
+                            <td>Until revoked or expired</td>
+                            <td>YouTube API access</td>
+                        </tr>
+                        <tr>
+                            <td>Error Logs</td>
+                            <td>30 days maximum</td>
+                            <td>Troubleshooting and improvement</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <hr>
+
+                <h3><i class="fas fa-globe me-2"></i>International Users</h3>
+                <p>This service is hosted on Replit's infrastructure. By using our service, you acknowledge that your data may be processed in countries where Replit operates, including the United States.</p>
+
+                <hr>
+
+                <h3><i class="fas fa-child me-2"></i>Children's Privacy</h3>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Age Restriction:</strong> This service is not intended for children under 13. We do not knowingly collect personal information from children under 13.
+                </div>
+
+                <hr>
+
+                <h3><i class="fas fa-edit me-2"></i>Changes to This Policy</h3>
+                <p>We may update this privacy policy from time to time. When we do, we will:</p>
+                <ul>
+                    <li>Update the "Last updated" date at the top of this page</li>
+                    <li>Notify users of significant changes through the application</li>
+                    <li>Continue to protect your data according to the updated policy</li>
+                </ul>
+
+                <hr>
+
+                <h3><i class="fas fa-envelope me-2"></i>Contact Us</h3>
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <p class="mb-2">If you have questions about this privacy policy or your data:</p>
+                        <ul class="mb-0">
+                            <li><strong>For general inquiries:</strong> Use the feedback option in your Replit account</li>
+                            <li><strong>For data requests:</strong> Contact through the accounts page</li>
+                            <li><strong>For technical issues:</strong> Report through the application interface</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('home') }}" class="btn btn-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Application
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

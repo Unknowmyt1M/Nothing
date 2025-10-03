@@ -1,0 +1,430 @@
+{
+  "platform_detection": {
+    "youtube": [
+      {
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "expected": "youtube",
+        "detected": "youtube",
+        "correct": true,
+        "supported": true
+      },
+      {
+        "url": "https://youtu.be/dQw4w9WgXcQ",
+        "expected": "youtube",
+        "detected": "youtube",
+        "correct": true,
+        "supported": true
+      }
+    ],
+    "instagram": [
+      {
+        "url": "https://www.instagram.com/p/DNcjuqQo-OYvClSgyCuCrhrqN9QwYDcycD0Jbk0/",
+        "expected": "instagram",
+        "detected": "instagram",
+        "correct": true,
+        "supported": true
+      },
+      {
+        "url": "https://www.instagram.com/reel/DOQzHA0DcrL",
+        "expected": "instagram",
+        "detected": "instagram",
+        "correct": true,
+        "supported": true
+      }
+    ],
+    "facebook": [
+      {
+        "url": "https://www.facebook.com/watch/?v=755703039304226",
+        "expected": "facebook",
+        "detected": "facebook",
+        "correct": true,
+        "supported": true
+      },
+      {
+        "url": "https://www.facebook.com/100001575291151/videos/1652817099353630/?_so__=disco",
+        "expected": "facebook",
+        "detected": "facebook",
+        "correct": true,
+        "supported": true
+      }
+    ],
+    "twitter": [
+      {
+        "url": "https://x.com/ShriRamTeerth/status/1963904565633286339",
+        "expected": "twitter",
+        "detected": "twitter",
+        "correct": true,
+        "supported": true
+      },
+      {
+        "url": "https://x.com/ShriRamTeerth/status/1957672012417212612",
+        "expected": "twitter",
+        "detected": "twitter",
+        "correct": true,
+        "supported": true
+      }
+    ],
+    "tiktok": [
+      {
+        "url": "https://www.tiktok.com/@user/video/1234567890",
+        "expected": "tiktok",
+        "detected": "tiktok",
+        "correct": true,
+        "supported": true
+      },
+      {
+        "url": "https://vm.tiktok.com/sample123/",
+        "expected": "tiktok",
+        "detected": "tiktok",
+        "correct": true,
+        "supported": true
+      }
+    ],
+    "vimeo": [
+      {
+        "url": "https://vimeo.com/groups/114/videos/1017406920",
+        "expected": "vimeo",
+        "detected": "vimeo",
+        "correct": true,
+        "supported": true
+      },
+      {
+        "url": "https://vimeo.com/1093837607?fl=wc",
+        "expected": "vimeo",
+        "detected": "vimeo",
+        "correct": true,
+        "supported": true
+      }
+    ],
+    "dailymotion": [
+      {
+        "url": "https://www.dailymotion.com/video/x7vnx7w",
+        "expected": "dailymotion",
+        "detected": "dailymotion",
+        "correct": true,
+        "supported": true
+      },
+      {
+        "url": "https://www.dailymotion.com/video/x6wz9mk",
+        "expected": "dailymotion",
+        "detected": "dailymotion",
+        "correct": true,
+        "supported": true
+      }
+    ],
+    "reddit": [
+      {
+        "url": "https://www.reddit.com/r/videos/comments/abv123/sample_video_post/",
+        "expected": "reddit",
+        "detected": "reddit",
+        "correct": true,
+        "supported": true
+      },
+      {
+        "url": "https://old.reddit.com/r/videos/comments/abv123/sample_video_post/",
+        "expected": "reddit",
+        "detected": "reddit",
+        "correct": true,
+        "supported": true
+      }
+    ],
+    "twitch": [
+      {
+        "url": "https://www.twitch.tv/videos/987654321",
+        "expected": "twitch",
+        "detected": "twitch",
+        "correct": true,
+        "supported": true
+      },
+      {
+        "url": "https://clips.twitch.tv/AwesomeClip123",
+        "expected": "twitch",
+        "detected": "twitch",
+        "correct": true,
+        "supported": true
+      }
+    ],
+    "rumble": [
+      {
+        "url": "https://rumble.com/v6xapxy-tofags3ep01-eng-sub-4k",
+        "expected": "rumble",
+        "detected": "rumble",
+        "correct": true,
+        "supported": true
+      },
+      {
+        "url": "https://rumble.com/embed/v6wbuhu/?pub=3sg0xe",
+        "expected": "rumble",
+        "detected": "rumble",
+        "correct": true,
+        "supported": true
+      }
+    ],
+    "pinterest": [
+      {
+        "url": "https://www.pinterest.com/pin/987654321/",
+        "expected": "pinterest",
+        "detected": "pinterest",
+        "correct": true,
+        "supported": true
+      },
+      {
+        "url": "https://pin.it/sample123",
+        "expected": "pinterest",
+        "detected": "pinterest",
+        "correct": true,
+        "supported": true
+      }
+    ],
+    "snapchat": [
+      {
+        "url": "https://www.snapchat.com/spotlight/W7_sample",
+        "expected": "snapchat",
+        "detected": "snapchat",
+        "correct": true,
+        "supported": true
+      },
+      {
+        "url": "https://story.snapchat.com/s/sample",
+        "expected": "snapchat",
+        "detected": "snapchat",
+        "correct": true,
+        "supported": true
+      }
+    ]
+  },
+  "metadata_extraction": {
+    "youtube": [
+      {
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "status": "success",
+        "extraction_time": "5.89s",
+        "title": "Rick Astley - Never Gonna Give You Up (Official Vi...",
+        "uploader": "Rick Astley",
+        "duration": "3:33",
+        "view_count": "1.7B",
+        "tags_count": 27,
+        "has_thumbnail": true
+      },
+      {
+        "url": "https://youtu.be/dQw4w9WgXcQ",
+        "status": "success",
+        "extraction_time": "5.10s",
+        "title": "Rick Astley - Never Gonna Give You Up (Official Vi...",
+        "uploader": "Rick Astley",
+        "duration": "3:33",
+        "view_count": "1.7B",
+        "tags_count": 27,
+        "has_thumbnail": true
+      }
+    ],
+    "instagram": [
+      {
+        "url": "https://www.instagram.com/p/DNcjuqQo-OYvClSgyCuCrhrqN9QwYDcycD0Jbk0/",
+        "status": "failed",
+        "error": "Failed to extract metadata from instagram: Failed to extract video information",
+        "error_type": "Exception"
+      },
+      {
+        "url": "https://www.instagram.com/reel/DOQzHA0DcrL",
+        "status": "success",
+        "extraction_time": "1.22s",
+        "title": "Video by sneha__semwal",
+        "uploader": "sɴᴇʜᴀ sᴇᴍᴡᴀʟ ♡",
+        "duration": "0:50",
+        "view_count": "0",
+        "tags_count": 8,
+        "has_thumbnail": true
+      }
+    ],
+    "facebook": [
+      {
+        "url": "https://www.facebook.com/watch/?v=755703039304226",
+        "status": "success",
+        "extraction_time": "2.57s",
+        "title": "1.1M views · 3.8K reactions | Facebook is one of t...",
+        "uploader": "1.1M views &#xb7; 3.8K reactions | Facebook is one of the best ways to maintain connections with the community. I find inspiration on FB by seeing all the great work that people are doing and showcasing. It&#039;s incredible to witness the impact others are making. One of the biggest takeaways I&#039;ve gotten from Facebook over the years is about sleep. I grew up thinking that sleep was a waste of time, but my favorite follows made a point to emphasize that sleep is actually one of the most important and productive things to prioritize.&#x2014; Nadya Okamoto &#x1f44b; | Facebook",
+        "duration": "0:33",
+        "view_count": "0",
+        "tags_count": 0,
+        "has_thumbnail": true
+      },
+      {
+        "url": "https://www.facebook.com/100001575291151/videos/1652817099353630/?_so__=disco",
+        "status": "success",
+        "extraction_time": "2.22s",
+        "title": "14M views · 1.1M reactions | Aaj Dekhte Hai Hamari...",
+        "uploader": "14M views &#xb7; 1.1M reactions | Aaj Dekhte Hai Hamari Jodi Kisko Achhi Lagti Hai #reels #viral #love | Vinod Thakur",
+        "duration": "0:10",
+        "view_count": "0",
+        "tags_count": 6,
+        "has_thumbnail": true
+      }
+    ],
+    "twitter": [
+      {
+        "url": "https://x.com/ShriRamTeerth/status/1963904565633286339",
+        "status": "failed",
+        "error": "Failed to extract metadata from twitter: Failed to extract video information",
+        "error_type": "Exception"
+      },
+      {
+        "url": "https://x.com/ShriRamTeerth/status/1957672012417212612",
+        "status": "failed",
+        "error": "Failed to extract metadata from twitter: Failed to extract video information",
+        "error_type": "Exception"
+      }
+    ],
+    "tiktok": [
+      {
+        "url": "https://www.tiktok.com/@user/video/1234567890",
+        "status": "failed",
+        "error": "Failed to extract metadata from tiktok: Failed to extract video information",
+        "error_type": "Exception"
+      },
+      {
+        "url": "https://vm.tiktok.com/sample123/",
+        "status": "failed",
+        "error": "Failed to extract metadata from tiktok: Failed to extract video information",
+        "error_type": "Exception"
+      }
+    ],
+    "vimeo": [
+      {
+        "url": "https://vimeo.com/groups/114/videos/1017406920",
+        "status": "failed",
+        "error": "Failed to extract metadata from vimeo: Failed to extract video information",
+        "error_type": "Exception"
+      },
+      {
+        "url": "https://vimeo.com/1093837607?fl=wc",
+        "status": "failed",
+        "error": "Failed to extract metadata from vimeo: Failed to extract video information",
+        "error_type": "Exception"
+      }
+    ],
+    "dailymotion": [
+      {
+        "url": "https://www.dailymotion.com/video/x7vnx7w",
+        "status": "failed",
+        "error": "Failed to extract metadata from dailymotion: Failed to extract video information",
+        "error_type": "Exception"
+      },
+      {
+        "url": "https://www.dailymotion.com/video/x6wz9mk",
+        "status": "success",
+        "extraction_time": "3.15s",
+        "title": "Cyril Dion à Grenoble: \"On a une bataille à gagner...",
+        "uploader": "Le Dauphiné Libéré",
+        "duration": "4:08",
+        "view_count": "1",
+        "tags_count": 6,
+        "has_thumbnail": true
+      }
+    ],
+    "reddit": [
+      {
+        "url": "https://www.reddit.com/r/videos/comments/abv123/sample_video_post/",
+        "status": "failed",
+        "error": "Failed to extract metadata from reddit: Failed to extract video information",
+        "error_type": "Exception"
+      },
+      {
+        "url": "https://old.reddit.com/r/videos/comments/abv123/sample_video_post/",
+        "status": "failed",
+        "error": "Failed to extract metadata from reddit: Failed to extract video information",
+        "error_type": "Exception"
+      }
+    ],
+    "twitch": [
+      {
+        "url": "https://www.twitch.tv/videos/987654321",
+        "status": "success",
+        "extraction_time": "1.90s",
+        "title": "SO CLUTCHY",
+        "uploader": "iBlameMyADHD",
+        "duration": "1:28",
+        "view_count": "949",
+        "tags_count": 2,
+        "has_thumbnail": true
+      },
+      {
+        "url": "https://clips.twitch.tv/AwesomeClip123",
+        "status": "failed",
+        "error": "Failed to extract metadata from twitch: Failed to extract video information",
+        "error_type": "Exception"
+      }
+    ],
+    "rumble": [
+      {
+        "url": "https://rumble.com/v6xapxy-tofags3ep01-eng-sub-4k",
+        "status": "success",
+        "extraction_time": "6.55s",
+        "title": "TOFAGs3ep01 eng sub [4K]",
+        "uploader": "luciferdonghuaz",
+        "duration": "24:26",
+        "view_count": "0",
+        "tags_count": 3,
+        "has_thumbnail": true
+      },
+      {
+        "url": "https://rumble.com/embed/v6wbuhu/?pub=3sg0xe",
+        "status": "success",
+        "extraction_time": "2.05s",
+        "title": "TOFG ep6 engsub[4k]",
+        "uploader": "luciferdonghuaz",
+        "duration": "17:28",
+        "view_count": "0",
+        "tags_count": 3,
+        "has_thumbnail": true
+      }
+    ],
+    "pinterest": [
+      {
+        "url": "https://www.pinterest.com/pin/987654321/",
+        "status": "failed",
+        "error": "Failed to extract metadata from pinterest: Failed to extract video information",
+        "error_type": "Exception"
+      },
+      {
+        "url": "https://pin.it/sample123",
+        "status": "failed",
+        "error": "Failed to extract metadata from pinterest: Failed to extract video information",
+        "error_type": "Exception"
+      }
+    ],
+    "snapchat": [
+      {
+        "url": "https://www.snapchat.com/spotlight/W7_sample",
+        "status": "failed",
+        "error": "Failed to extract metadata from snapchat: Failed to extract video information",
+        "error_type": "Exception"
+      },
+      {
+        "url": "https://story.snapchat.com/s/sample",
+        "status": "failed",
+        "error": "Failed to extract metadata from snapchat: Failed to extract video information",
+        "error_type": "Exception"
+      }
+    ]
+  },
+  "successful_platforms": [
+    "youtube",
+    "facebook",
+    "rumble"
+  ],
+  "failed_platforms": [
+    "instagram",
+    "twitter",
+    "tiktok",
+    "vimeo",
+    "dailymotion",
+    "reddit",
+    "twitch",
+    "pinterest",
+    "snapchat"
+  ],
+  "total_tests": 24,
+  "successful_tests": 9,
+  "failed_tests": 15
+}

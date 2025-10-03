@@ -1,0 +1,803 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Multi-Platform Video Downloader{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title mb-0">
+                    <i class="fas fa-cloud-upload-alt me-2"></i>Multi-Platform Video Downloader
+                </h2>
+            </div>
+            <div class="card-body">
+                {% if not session.access_token %}
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Multi-Platform Support:</strong> Extract metadata from YouTube, Instagram, Facebook, Twitter/X, TikTok, Vimeo, and more!
+                        <br><small>To upload videos to YouTube, please <a href="{{ url_for('accounts') }}" class="alert-link">connect your Google account</a>.</small>
+                    </div>
+                {% endif %}
+
+                <form id="videoForm">
+                    <div class="mb-3">
+                        <label for="videoUrl" class="form-label">Video URL from Any Platform</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="platformIcon">
+                                <i class="fas fa-globe"></i>
+                            </span>
+                            <input type="url" class="form-control" id="videoUrl"
+                                   placeholder="Paste URL from YouTube, Instagram, TikTok, Facebook, etc..."
+                                   required>
+                            <button class="btn btn-primary" type="button" id="extractBtn">
+                                <i class="fas fa-search me-1"></i>Extract
+                            </button>
+                        </div>
+                        <small class="form-text text-muted">
+                            <strong>Supported platforms:</strong>
+                            <i class="fab fa-youtube text-danger" title="YouTube"></i>
+                            <i class="fab fa-instagram text-warning" title="Instagram"></i>
+                            <i class="fab fa-facebook text-primary" title="Facebook"></i>
+                            <i class="fab fa-twitter text-info" title="Twitter/X"></i>
+                            <i class="fab fa-tiktok" title="TikTok"></i>
+                            <i class="fab fa-vimeo text-info" title="Vimeo"></i>
+                            <i class="fab fa-reddit text-warning" title="Reddit"></i>
+                            <i class="fab fa-twitch text-purple" title="Twitch"></i>
+                            <i class="fas fa-video text-success" title="Rumble"></i>
+                            <i class="fas fa-link text-primary" title="Direct URLs"></i>
+                            <a href="/platforms">and more!</a>
+                        </small>
+                    </div>
+
+                    <!-- Platform Detection -->
+                    <div id="platformDetection" class="d-none mb-3">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Platform detected: <strong id="detectedPlatform"></strong>
+                            <span id="supportStatus"></span>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Metadata Preview -->
+                <div id="metadataPreview" class="d-none">
+                    <hr>
+                    <h5><i class="fas fa-info-circle me-2"></i>Video Details</h5>
+                    <div class="mb-3">
+                        <span class="badge bg-primary" id="videoPlatform"></span>
+                        <span class="badge bg-success ms-2" id="videoQuality"></span>
+                    </div>
+
+                    <div class="row">
+                        <!-- Thumbnail and Statistics -->
+                        <div class="col-md-4">
+                            <img id="videoThumbnail" class="img-fluid rounded mb-3" alt="Video thumbnail">
+                            
+                            <!-- Video Stats -->
+                            <div class="card">
+                                <div class="card-header py-2">
+                                    <h6 class="mb-0"><i class="fas fa-chart-line me-2"></i>Statistics</h6>
+                                </div>
+                                <div class="card-body py-2">
+                                    <div class="row text-center">
+                                        <div class="col-4">
+                                            <small class="text-muted d-block">Views</small>
+                                            <strong id="videoViews">0</strong>
+                                        </div>
+                                        <div class="col-4">
+                                            <small class="text-muted d-block">Likes</small>
+                                            <strong id="videoLikes">N/A</strong>
+                                        </div>
+                                        <div class="col-4">
+                                            <small class="text-muted d-block">Comments</small>
+                                            <strong id="videoComments">N/A</strong>
+                                        </div>
+                                    </div>
+                                    <hr class="my-2">
+                                    <div class="text-center">
+                                        <small class="text-muted d-block">Duration</small>
+                                        <strong id="videoDuration">00:00</strong>
+                                    </div>
+                                    <div class="text-center mt-2">
+                                        <small class="text-muted d-block">Upload Date</small>
+                                        <strong id="videoUploadDate">N/A</strong>
+                                    </div>
+                                    <div class="text-center mt-2">
+                                        <small class="text-muted d-block">Creator</small>
+                                        <strong id="videoUploader">Unknown</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Video Content -->
+                        <div class="col-md-8">
+                            <!-- Title Box -->
+                            <div class="mb-3">
+                                <label for="videoTitle" class="form-label"><i class="fas fa-heading me-1"></i>Title</label>
+                                <input type="text" class="form-control" id="videoTitle">
+                            </div>
+
+                            <!-- Description Box -->
+                            <div class="mb-3">
+                                <label for="videoDescription" class="form-label"><i class="fas fa-align-left me-1"></i>Description</label>
+                                <textarea class="form-control" id="videoDescription" rows="4"></textarea>
+                            </div>
+
+                            <!-- Tags Box -->
+                            <div class="mb-3">
+                                <label class="form-label"><i class="fas fa-tags me-1"></i>Tags</label>
+                                <div class="form-control" id="videoTagsContainer" style="min-height: 60px; max-height: 120px; overflow-y: auto;">
+                                    <small class="text-muted">No tags available</small>
+                                </div>
+                                <small class="form-text text-muted">Click on any tag to copy it</small>
+                            </div>
+
+                            <!-- Download Section -->
+                            <div class="card">
+                                <div class="card-header py-2">
+                                    <h6 class="mb-0"><i class="fas fa-download me-2"></i>Download Video</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label for="qualitySelect" class="form-label">Quality</label>
+                                            <select class="form-select" id="qualitySelect">
+                                                <option value="">Loading qualities...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 d-flex align-items-end">
+                                            <button class="btn btn-primary w-100" id="downloadBtn">
+                                                <i class="fas fa-download me-2"></i>Download
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Download Progress -->
+                                    <div id="downloadProgress" class="d-none mt-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span id="downloadStatus">Downloading...</span>
+                                            <small>
+                                                <span id="downloadSpeed">0 Mbps</span> | 
+                                                <span id="downloadETA">--:--</span>
+                                            </small>
+                                        </div>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                                 id="downloadProgressBar" role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                        <small class="text-muted mt-1" id="downloadDetails"></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upload Settings (Only show after download) -->
+                    <div id="uploadSettings" class="d-none mt-4">
+                        <div class="card">
+                            <div class="card-header py-2">
+                                <h6 class="mb-0"><i class="fas fa-cloud-upload-alt me-2"></i>Upload to YouTube</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="privacySelect" class="form-label">Privacy Setting</label>
+                                        <select class="form-select" id="privacySelect">
+                                            <option value="public">Public - Anyone can find and watch</option>
+                                            <option value="unlisted">Unlisted - Only people with link can watch</option>
+                                            <option value="private">Private - Only you can watch</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 d-flex align-items-end">
+                                        <button class="btn btn-success w-100" id="uploadBtn">
+                                            <i class="fas fa-cloud-upload-alt me-2"></i>Upload to YouTube
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Upload Progress -->
+                                <div id="uploadProgress" class="d-none mt-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span id="uploadStatus">Uploading...</span>
+                                        <small>
+                                            <span id="uploadSpeed">0 Mbps</span> | 
+                                            <span id="uploadETA">--:--</span>
+                                        </small>
+                                    </div>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+                                             id="uploadProgressBar" role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                    <small class="text-muted mt-1" id="uploadDetails"></small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Section -->
+                <div id="progressSection" class="d-none">
+                    <hr>
+                    <h5><i class="fas fa-tasks me-2"></i>Upload Progress</h5>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span id="progressStatus">Preparing...</span>
+                            <span id="progressSpeed"></span>
+                        </div>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                 id="progressBar" role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <small class="text-muted mt-1" id="progressDetails"></small>
+                    </div>
+                </div>
+
+                <!-- Success Section -->
+                <div id="successSection" class="d-none">
+                    <hr>
+                    <div class="alert alert-success text-center">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Video uploaded successfully!
+                        <div class="mt-3">
+                            <a id="watchBtn" href="#" target="_blank" class="btn btn-danger btn-lg">
+                                <i class="fab fa-youtube me-2"></i>WATCH ON YOUTUBE
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const videoForm = document.getElementById('videoForm');
+    const videoUrl = document.getElementById('videoUrl');
+    const extractBtn = document.getElementById('extractBtn');
+    const metadataPreview = document.getElementById('metadataPreview');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const progressSection = document.getElementById('progressSection');
+    const successSection = document.getElementById('successSection');
+    const platformDetection = document.getElementById('platformDetection');
+    const platformIcon = document.getElementById('platformIcon');
+
+    let currentMetadata = null;
+    let uploadId = null;
+    let downloadId = null;
+    let currentPlatform = null;
+
+    // Platform detection on URL input
+    videoUrl.addEventListener('input', function() {
+        const url = videoUrl.value.trim();
+        if (url) {
+            detectPlatform(url);
+        } else {
+            platformDetection.classList.add('d-none');
+            platformIcon.innerHTML = '<i class="fas fa-globe"></i>';
+        }
+    });
+
+    // Extract metadata
+    extractBtn.addEventListener('click', function() {
+        const url = videoUrl.value.trim();
+        if (!url) {
+            showToast('Please enter a video URL', 'error');
+            return;
+        }
+
+        extractBtn.disabled = true;
+        extractBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Extracting...';
+
+        const formData = new FormData();
+        formData.append('url', url);
+
+        fetch('/extract_metadata', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            currentMetadata = data;
+            displayMetadata(data);
+            metadataPreview.classList.remove('d-none');
+
+        })
+        .catch(error => {
+            showToast('Error extracting metadata: ' + error.message, 'error');
+        })
+        .finally(() => {
+            extractBtn.disabled = false;
+            extractBtn.innerHTML = '<i class="fas fa-search me-1"></i>Extract';
+        });
+    });
+
+    // Upload video
+    uploadBtn.addEventListener('click', function() {
+        if (!currentMetadata) {
+            showToast('Please extract metadata first', 'error');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('url', videoUrl.value);
+        formData.append('title', document.getElementById('videoTitle').value);
+        formData.append('description', document.getElementById('videoDescription').value);
+        formData.append('tags', currentMetadata.tags.join(','));
+        formData.append('privacy', document.getElementById('privacySelect').value);
+
+        uploadBtn.disabled = true;
+        metadataPreview.classList.add('d-none');
+        progressSection.classList.remove('d-none');
+
+        fetch('/upload_video', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            uploadId = data.upload_id;
+            trackProgress(uploadId);
+        })
+        .catch(error => {
+            showToast('Error starting upload: ' + error.message, 'error');
+            resetForm();
+        });
+    });
+
+    // Download video
+    downloadBtn.addEventListener('click', function() {
+        const qualitySelect = document.getElementById('qualitySelect');
+        const selectedQuality = qualitySelect.value;
+        
+        if (!selectedQuality) {
+            showToast('Please select a quality first', 'error');
+            return;
+        }
+
+        downloadBtn.disabled = true;
+        downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Starting Download...';
+        
+        const downloadProgress = document.getElementById('downloadProgress');
+        downloadProgress.classList.remove('d-none');
+
+        const formData = new FormData();
+        formData.append('url', videoUrl.value);
+        formData.append('quality', selectedQuality);
+
+        fetch('/download_video', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            
+            downloadId = data.download_id;
+            trackDownloadProgress(downloadId);
+        })
+        .catch(error => {
+            showToast('Error starting download: ' + error.message, 'error');
+            resetDownloadState();
+        });
+    });
+
+    function trackDownloadProgress(downloadId) {
+        const interval = setInterval(() => {
+            fetch(`/download_progress/${downloadId}`)
+            .then(response => response.json())
+            .then(data => {
+                updateDownloadProgress(data);
+
+                if (data.status === 'completed') {
+                    clearInterval(interval);
+                    showDownloadComplete();
+                } else if (data.status === 'error' || data.status === 'cancelled') {
+                    clearInterval(interval);
+                    showToast('Download failed: ' + (data.error || 'Unknown error'), 'error');
+                    resetDownloadState();
+                }
+            })
+            .catch(error => {
+                clearInterval(interval);
+                showToast('Error tracking download progress: ' + error.message, 'error');
+                resetDownloadState();
+            });
+        }, 500); // 500ms refresh rate as requested
+    }
+
+    function updateDownloadProgress(data) {
+        const progressBar = document.getElementById('downloadProgressBar');
+        const progressStatus = document.getElementById('downloadStatus');
+        const downloadSpeed = document.getElementById('downloadSpeed');
+        const downloadETA = document.getElementById('downloadETA');
+        const downloadDetails = document.getElementById('downloadDetails');
+
+        progressBar.style.width = data.progress + '%';
+        progressBar.textContent = Math.round(data.progress) + '%';
+
+        progressStatus.textContent = data.status === 'downloading' ? 'Downloading...' : 'Processing...';
+        downloadSpeed.textContent = data.speed || '0 Mbps';
+        downloadETA.textContent = data.eta || '--:--';
+        downloadDetails.textContent = `${data.downloaded || '0 B'} of ${data.total || '0 B'}`;
+    }
+
+    function showDownloadComplete() {
+        const downloadProgress = document.getElementById('downloadProgress');
+        const uploadSettings = document.getElementById('uploadSettings');
+        
+        downloadProgress.classList.add('d-none');
+        uploadSettings.classList.remove('d-none');
+        
+        // Keep download button disabled after completion to prevent re-download
+        downloadBtn.disabled = true;
+        downloadBtn.innerHTML = '<i class="fas fa-check me-2"></i>Downloaded';
+        downloadBtn.classList.remove('btn-primary');
+        downloadBtn.classList.add('btn-success');
+        
+        showToast('Video downloaded successfully!', 'success');
+    }
+
+    function resetDownloadState() {
+        const downloadProgress = document.getElementById('downloadProgress');
+        const uploadSettings = document.getElementById('uploadSettings');
+        
+        downloadProgress.classList.add('d-none');
+        uploadSettings.classList.add('d-none');  // Hide upload settings until actual download
+        
+        downloadBtn.disabled = false;
+        downloadBtn.innerHTML = '<i class="fas fa-download me-2"></i>Download';
+        downloadBtn.classList.remove('btn-success');
+        downloadBtn.classList.add('btn-primary');
+        
+        // Clear download ID to ensure fresh state
+        downloadId = null;
+    }
+
+    function displayMetadata(metadata) {
+        document.getElementById('videoThumbnail').src = metadata.thumbnail;
+        document.getElementById('videoTitle').value = metadata.title;
+        document.getElementById('videoDescription').value = metadata.description;
+        document.getElementById('videoUploader').textContent = metadata.uploader || 'Unknown';
+        document.getElementById('videoDuration').textContent = metadata.duration || '00:00';
+        document.getElementById('videoViews').textContent = metadata.view_count || '0';
+        document.getElementById('videoLikes').textContent = metadata.like_count || 'N/A';
+        document.getElementById('videoComments').textContent = metadata.comment_count || 'N/A';
+        document.getElementById('videoUploadDate').textContent = metadata.upload_date || 'N/A';
+
+        // Show platform badge
+        if (metadata.platform) {
+            const platformBadge = document.getElementById('videoPlatform');
+            platformBadge.textContent = getPlatformDisplayName(metadata.platform);
+            platformBadge.className = `badge ${getPlatformBadgeClass(metadata.platform)}`;
+        }
+
+        // Display quality info
+        if (metadata.quality) {
+            document.getElementById('videoQuality').textContent = metadata.quality;
+        }
+
+        // Display clickable tags
+        displayTags(metadata.tags || []);
+        
+        // Load available qualities
+        loadVideoQualities(metadata.url);
+    }
+
+    function displayTags(tags) {
+        const container = document.getElementById('videoTagsContainer');
+        if (tags.length === 0) {
+            container.innerHTML = '<small class="text-muted">No tags available</small>';
+            return;
+        }
+
+        container.innerHTML = tags.map(tag => 
+            `<span class="badge bg-secondary me-1 mb-1 clickable-tag" style="cursor: pointer;" 
+                   onclick="copyTag('${tag.replace(/'/g, "\\'")}')" title="Click to copy">
+                ${tag}
+             </span>`
+        ).join('');
+    }
+
+    function copyTag(tag) {
+        // Check if clipboard API is available
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(tag).then(() => {
+                showToast(`Tag "${tag}" copied to clipboard!`, 'success');
+            }).catch(err => {
+                console.error('Failed to copy tag:', err);
+                // Fallback to older method
+                fallbackCopyTag(tag);
+            });
+        } else {
+            // Use fallback method for non-secure contexts
+            fallbackCopyTag(tag);
+        }
+    }
+
+    function fallbackCopyTag(tag) {
+        try {
+            // Create a temporary textarea element
+            const textArea = document.createElement('textarea');
+            textArea.value = tag;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            const successful = document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            if (successful) {
+                showToast(`Tag "${tag}" copied to clipboard!`, 'success');
+            } else {
+                showToast('Failed to copy tag - try selecting and copying manually', 'warning');
+            }
+        } catch (err) {
+            console.error('Fallback copy failed:', err);
+            showToast('Copy to clipboard not supported in this browser', 'warning');
+        }
+    }
+
+    function loadVideoQualities(url) {
+        const qualitySelect = document.getElementById('qualitySelect');
+        qualitySelect.innerHTML = '<option value="">Loading qualities...</option>';
+
+        const formData = new FormData();
+        formData.append('url', url);
+
+        fetch('/get_video_qualities', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                qualitySelect.innerHTML = '<option value="">No qualities available</option>';
+                return;
+            }
+
+            qualitySelect.innerHTML = data.qualities.map(quality => 
+                `<option value="${quality.format_id}">${quality.height}p (${quality.filesize})</option>`
+            ).join('');
+        })
+        .catch(error => {
+            console.error('Error loading qualities:', error);
+            qualitySelect.innerHTML = '<option value="">Error loading qualities</option>';
+        });
+    }
+
+    function trackProgress(uploadId) {
+        const interval = setInterval(() => {
+            fetch(`/upload_progress/${uploadId}`)
+            .then(response => response.json())
+            .then(data => {
+                updateProgress(data);
+
+                if (data.status === 'completed') {
+                    clearInterval(interval);
+                    showSuccess(data.youtube_url);
+                } else if (data.status === 'error') {
+                    clearInterval(interval);
+                    showToast('Upload failed: ' + data.error, 'error');
+                    resetForm();
+                }
+            })
+            .catch(error => {
+                clearInterval(interval);
+                showToast('Error tracking progress: ' + error.message, 'error');
+                resetForm();
+            });
+        }, 1000);
+    }
+
+    function updateProgress(data) {
+        const progressBar = document.getElementById('progressBar');
+        const progressStatus = document.getElementById('progressStatus');
+        const progressSpeed = document.getElementById('progressSpeed');
+        const progressDetails = document.getElementById('progressDetails');
+
+        progressBar.style.width = data.progress + '%';
+        progressBar.textContent = Math.round(data.progress) + '%';
+
+        if (data.status === 'downloading') {
+            progressStatus.textContent = 'Downloading video...';
+            progressSpeed.textContent = data.speed || '';
+            progressDetails.textContent = `${data.downloaded || '0 B'} of ${data.total || '0 B'}`;
+        } else if (data.status === 'uploading') {
+            progressStatus.textContent = 'Uploading to YouTube...';
+            progressSpeed.textContent = '';
+            progressDetails.textContent = 'Processing upload...';
+        }
+    }
+
+    function showSuccess(youtubeUrl) {
+        progressSection.classList.add('d-none');
+        successSection.classList.remove('d-none');
+        document.getElementById('watchBtn').href = youtubeUrl;
+
+        // Reset form for next upload
+        setTimeout(() => {
+            resetForm();
+        }, 5000);
+    }
+
+    function resetForm() {
+        videoUrl.value = '';
+        currentMetadata = null;
+        uploadId = null;
+        downloadId = null;  // Reset download ID
+        uploadBtn.disabled = false;
+        metadataPreview.classList.add('d-none');
+        progressSection.classList.add('d-none');
+        successSection.classList.add('d-none');
+        platformDetection.classList.add('d-none');
+        platformIcon.innerHTML = '<i class="fas fa-globe"></i>';
+        
+        // Reset download button to initial state
+        resetDownloadState();
+    }
+
+    function detectPlatform(url) {
+        const formData = new FormData();
+        formData.append('url', url);
+
+        fetch('/detect_platform', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            currentPlatform = data.platform;
+            updatePlatformDisplay(data);
+        })
+        .catch(error => {
+            console.log('Platform detection failed:', error);
+        });
+    }
+
+    function updatePlatformDisplay(data) {
+        const detectedPlatform = document.getElementById('detectedPlatform');
+        const supportStatus = document.getElementById('supportStatus');
+
+        detectedPlatform.textContent = data.display_name;
+
+        if (data.supported) {
+            supportStatus.innerHTML = '<span class="badge bg-success ms-2">Supported ✓</span>';
+            platformDetection.className = 'alert alert-success mb-3';
+        } else {
+            supportStatus.innerHTML = '<span class="badge bg-warning ms-2">Coming Soon</span>';
+            platformDetection.className = 'alert alert-warning mb-3';
+        }
+
+        platformDetection.classList.remove('d-none');
+
+        // Update platform icon
+        const iconClass = getPlatformIconClass(data.platform);
+        platformIcon.innerHTML = `<i class="${iconClass}"></i>`;
+    }
+
+    function getPlatformIconClass(platform) {
+        const icons = {
+            'youtube': 'fab fa-youtube text-danger',
+            'instagram': 'fab fa-instagram text-warning',
+            'facebook': 'fab fa-facebook text-primary',
+            'twitter': 'fab fa-twitter text-info',
+            'tiktok': 'fab fa-tiktok',
+            'vimeo': 'fab fa-vimeo text-info',
+            'reddit': 'fab fa-reddit text-warning',
+            'twitch': 'fab fa-twitch text-purple',
+            'dailymotion': 'fas fa-video text-blue',
+            'pinterest': 'fab fa-pinterest text-danger',
+            'snapchat': 'fab fa-snapchat text-yellow',
+            'rumble': 'fas fa-video text-success',
+            'direct_link': 'fas fa-link text-primary'
+        };
+        return icons[platform] || 'fas fa-globe';
+    }
+
+    function getPlatformBadgeClass(platform) {
+        const badges = {
+            'youtube': 'bg-danger',
+            'instagram': 'bg-warning',
+            'facebook': 'bg-primary',
+            'twitter': 'bg-info',
+            'tiktok': 'bg-dark',
+            'vimeo': 'bg-info',
+            'reddit': 'bg-warning',
+            'twitch': 'bg-purple',
+            'dailymotion': 'bg-primary',
+            'pinterest': 'bg-danger',
+            'snapchat': 'bg-warning',
+            'rumble': 'bg-success',
+            'direct_link': 'bg-primary'
+        };
+        return badges[platform] || 'bg-secondary';
+    }
+
+    function getPlatformDisplayName(platform) {
+        const names = {
+            'youtube': 'YouTube',
+            'instagram': 'Instagram',
+            'facebook': 'Facebook',
+            'twitter': 'Twitter/X',
+            'tiktok': 'TikTok',
+            'vimeo': 'Vimeo',
+            'reddit': 'Reddit',
+            'twitch': 'Twitch',
+            'dailymotion': 'Dailymotion',
+            'pinterest': 'Pinterest',
+            'snapchat': 'Snapchat',
+            'rumble': 'Rumble',
+            'direct_link': 'Direct URL'
+        };
+        return names[platform] || platform;
+    }
+
+    // Toast notification system
+    function showToast(message, type = 'info') {
+        // Create toast container if it doesn't exist
+        let toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'toast-container';
+            toastContainer.className = 'position-fixed top-0 end-0 p-3';
+            toastContainer.style.zIndex = '1055';
+            document.body.appendChild(toastContainer);
+        }
+
+        // Create toast element
+        const toastId = 'toast-' + Date.now();
+        const bgClass = type === 'success' ? 'bg-success' : type === 'error' ? 'bg-danger' : 'bg-info';
+        const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+
+        const toastHTML = `
+            <div id="${toastId}" class="toast ${bgClass} text-white" role="alert">
+                <div class="toast-header ${bgClass} text-white border-0">
+                    <i class="fas ${icon} me-2"></i>
+                    <strong class="me-auto">${type.charAt(0).toUpperCase() + type.slice(1)}</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            </div>
+        `;
+
+        toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+
+        // Initialize and show toast
+        const toastElement = document.getElementById(toastId);
+        const toast = new bootstrap.Toast(toastElement, {
+            autohide: true,
+            delay: type === 'error' ? 5000 : 3000
+        });
+        
+        toast.show();
+
+        // Remove toast from DOM after it's hidden
+        toastElement.addEventListener('hidden.bs.toast', function() {
+            toastElement.remove();
+        });
+    }
+});
+</script>
+{% endblock %}

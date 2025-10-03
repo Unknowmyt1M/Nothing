@@ -1,0 +1,47 @@
+modules = ["python-3.11"]
+
+[nix]
+channel = "stable-25_05"
+packages = ["ffmpeg", "ffmpeg-full", "openssl", "postgresql"]
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["gunicorn", "--bind", "0.0.0.0:5000", "main:app"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start application"
+
+[[workflows.workflow]]
+name = "Start application"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "TESTING"
+mode = "sequential"
+author = 46222572
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python test_new_platforms.py"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[agent]
+integrations = ["web_scraper==1.0.0", "flask_google_oauth==1.0.0"]
+expertMode = true

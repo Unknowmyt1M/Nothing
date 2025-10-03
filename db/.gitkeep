@@ -1,0 +1,2 @@
+# This file ensures the db directory is created in version control
+# User-specific directories will be created at runtime

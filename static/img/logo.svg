@@ -1,0 +1,21 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#1a1a1a" stroke="#4a9eff" stroke-width="3"/>
+  
+  <!-- Down arrow (download) -->
+  <path d="M70 50 L70 90 L50 90 L85 125 L120 90 L100 90 L100 50 Z" 
+        fill="#4a9eff" opacity="0.8"/>
+  
+  <!-- Up arrow (upload) -->
+  <path d="M130 150 L130 110 L150 110 L115 75 L80 110 L100 110 L100 150 Z" 
+        fill="#00d084" opacity="0.8"/>
+  
+  <!-- Play icon overlay -->
+  <circle cx="100" cy="100" r="30" fill="none" stroke="#fff" stroke-width="2" opacity="0.6"/>
+  <path d="M90 85 L90 115 L115 100 Z" fill="#fff" opacity="0.6"/>
+  
+  <!-- Text -->
+  <text x="100" y="185" font-family="Arial, sans-serif" font-size="18" 
+        font-weight="bold" fill="#4a9eff" text-anchor="middle">UpDownVid</text>
+</svg>

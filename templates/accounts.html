@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Accounts - YouTube Auto Uploader{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title mb-0">
+                    <i class="fab fa-youtube me-2"></i>YouTube Account
+                </h2>
+            </div>
+            <div class="card-body text-center">
+                {% if user_info %}
+                    <!-- Connected Account -->
+                    <div class="mb-4">
+                        {% if youtube_channel %}
+                            <img src="{{ youtube_channel.snippet.thumbnails.high.url }}" alt="Channel Logo" 
+                                 class="rounded-circle mb-3" width="80" height="80">
+                            <h4>{{ youtube_channel.snippet.title }}</h4>
+                            <p class="text-muted">
+                                <i class="fab fa-youtube text-danger me-1"></i>
+                                {{ youtube_channel.statistics.subscriberCount | default('N/A') }} subscribers
+                            </p>
+                        {% else %}
+                            <img src="{{ user_info.picture }}" alt="Profile Picture" 
+                                 class="rounded-circle mb-3" width="80" height="80">
+                            <h4>{{ user_info.name }}</h4>
+                            <p class="text-muted">{{ user_info.email }}</p>
+                        {% endif %}
+                        
+                        <div class="alert alert-success" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            Your YouTube Channel is connected and ready to upload videos to YouTube!
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">
+                            <i class="fas fa-sign-out-alt me-2"></i>Disconnect Account
+                        </a>
+                    </div>
+                {% else %}
+                    <!-- Not Connected -->
+                    <div class="mb-4">
+                        <i class="fab fa-youtube display-1 text-muted mb-3"></i>
+                        <h4>Connect Your YouTube Channel</h4>
+                        <p class="text-muted">
+                            Connect your Google account to upload videos to your YouTube channel.
+                            You'll need to authorize access to your YouTube account.
+                        </p>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <a href="{{ url_for('google_login') }}" class="btn btn-primary btn-lg">
+                            <i class="fab fa-youtube me-2"></i>Connect Your Account
+                        </a>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <small class="text-muted">
+                            <i class="fas fa-shield-alt me-1"></i>
+                            Your account information is secure and only used for YouTube uploads.
+                        </small>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if user_info %}
+        <!-- YouTube Channel Info -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fab fa-youtube me-2 text-danger"></i>YouTube Channel
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <i class="fab fa-youtube display-6 text-danger"></i>
+                    </div>
+                    <div class="col">
+                        <h6 class="mb-1">Ready for uploads</h6>
+                        <small class="text-muted">
+                            Videos will be uploaded to your connected YouTube channel
+                        </small>
+                    </div>
+                    <div class="col-auto">
+                        <span class="badge bg-success">
+                            <i class="fas fa-check me-1"></i>Connected
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Upload History -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-history me-2"></i>Recent Uploads
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="uploadHistory">
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-clock display-6 mb-3"></i>
+                        <p>No uploads yet. Go to the <a href="{{ url_for('home') }}">Home page</a> to start uploading!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if user_info %}
+<script>
+// Load upload history
+document.addEventListener('DOMContentLoaded', function() {
+    // This would load the user's upload history from the backend
+    // For now, we'll show a placeholder
+    
+    // Example of how history could be displayed:
+    /*
+    const historyContainer = document.getElementById('uploadHistory');
+    const history = [
+        {
+            title: "Sample Video Title",
+            upload_date: "2025-01-15 14:30:00",
+            youtube_url: "https://youtube.com/watch?v=example"
+        }
+    ];
+    
+    if (history.length > 0) {
+        historyContainer.innerHTML = history.map(item => `
+            <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                <div>
+                    <h6 class="mb-1">${item.title}</h6>
+                    <small class="text-muted">${item.upload_date}</small>
+                </div>
+                <a href="${item.youtube_url}" target="_blank" class="btn btn-sm btn-outline-danger">
+                    <i class="fab fa-youtube me-1"></i>View
+                </a>
+            </div>
+        `).join('');
+    }
+    */
+});
+</script>
+{% endif %}
+{% endblock %}

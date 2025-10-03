@@ -1,0 +1,285 @@
+{
+  "logs": [
+    {
+      "timestamp": 1759211004593.2485,
+      "type": "success",
+      "message": "[05:43:24] \ud83d\ude80 Started Monitoring Service"
+    },
+    {
+      "timestamp": 1759211004594.6597,
+      "type": "info",
+      "message": "[05:43:24] \ud83d\udd0d Searching for videos in SOHEL HACKS V2"
+    },
+    {
+      "timestamp": 1759211004757.2056,
+      "type": "info",
+      "message": "[05:43:24] \ud83d\udcca Found 0 new videos."
+    },
+    {
+      "timestamp": 1759211004758.0618,
+      "type": "info",
+      "message": "[05:43:24] \u23f0 STARTING COOLDOWN: 300 seconds"
+    },
+    {
+      "timestamp": 1759211304005.3145,
+      "type": "info",
+      "message": "[05:48:24] \u23f3 Cooldown: 1s remaining"
+    },
+    {
+      "timestamp": 1759211305006.141,
+      "type": "info",
+      "message": "[05:48:25] \ud83d\udd0d Searching for videos in SOHEL HACKS V2"
+    },
+    {
+      "timestamp": 1759211305591.4521,
+      "type": "info",
+      "message": "[05:48:25] \ud83d\udcc4 Extracting video metadata... youtube_1742971901918.mp4 , 2025-09-30T05:44:04Z"
+    },
+    {
+      "timestamp": 1759211322330.319,
+      "type": "success",
+      "message": "[05:48:42] \u2705 Successfully Extracted metadata"
+    },
+    {
+      "timestamp": 1759211322330.6335,
+      "type": "info",
+      "message": "[05:48:42]     \ud83d\udcfa youtube_1742971901918.mp4 , 20250930"
+    },
+    {
+      "timestamp": 1759211322330.8796,
+      "type": "info",
+      "message": "[05:48:42] \ud83d\udcca Found 1 new videos."
+    },
+    {
+      "timestamp": 1759211322331.2075,
+      "type": "warning",
+      "message": "[05:48:42] \u26a0\ufe0f YouTube upload requires active user session"
+    },
+    {
+      "timestamp": 1759211322331.7046,
+      "type": "info",
+      "message": "[05:48:42] \u2b07\ufe0f Downloading: 1/1 - youtube_1742971901918.mp4"
+    },
+    {
+      "timestamp": 1759211322332.0095,
+      "type": "info",
+      "message": "[05:48:42] \u2b06\ufe0f Uploading: 1/1 - youtube_1742971901918.mp4"
+    },
+    {
+      "timestamp": 1759211322332.3801,
+      "type": "error",
+      "message": "[05:48:42] \u274c Failed to process youtube_1742971901918.mp4: No stored access token for user"
+    },
+    {
+      "timestamp": 1759211322332.832,
+      "type": "info",
+      "message": "[05:48:42] \u23f0 STARTING COOLDOWN: 300 seconds"
+    },
+    {
+      "timestamp": 1759211621527.3684,
+      "type": "info",
+      "message": "[05:53:41] \u23f3 Cooldown: 1s remaining"
+    },
+    {
+      "timestamp": 1759211622532.7166,
+      "type": "info",
+      "message": "[05:53:42] \ud83d\udd0d Searching for videos in SOHEL HACKS V2"
+    },
+    {
+      "timestamp": 1759211623060.2307,
+      "type": "info",
+      "message": "[05:53:43] \ud83d\udcc4 Extracting video metadata... youtube_1742971969916.mp4 , 2025-09-30T05:52:32Z"
+    },
+    {
+      "timestamp": 1759211638061.7705,
+      "type": "success",
+      "message": "[05:53:58] \u2705 Successfully Extracted metadata"
+    },
+    {
+      "timestamp": 1759211638063.1523,
+      "type": "info",
+      "message": "[05:53:58]     \ud83d\udcfa youtube_1742971969916.mp4 , 20250930"
+    },
+    {
+      "timestamp": 1759211638069.8457,
+      "type": "info",
+      "message": "[05:53:58] \ud83d\udcca Found 1 new videos."
+    },
+    {
+      "timestamp": 1759211638081.922,
+      "type": "warning",
+      "message": "[05:53:58] \u26a0\ufe0f YouTube upload requires active user session"
+    },
+    {
+      "timestamp": 1759211638085.662,
+      "type": "info",
+      "message": "[05:53:58] \u2b07\ufe0f Downloading: 1/1 - youtube_1742971969916.mp4"
+    },
+    {
+      "timestamp": 1759211638088.016,
+      "type": "info",
+      "message": "[05:53:58] \u2b06\ufe0f Uploading: 1/1 - youtube_1742971969916.mp4"
+    },
+    {
+      "timestamp": 1759211666762.1235,
+      "type": "success",
+      "message": "[05:54:26] \u2705 Successfully Downloaded 1 video(s)"
+    },
+    {
+      "timestamp": 1759211666762.6335,
+      "type": "success",
+      "message": "[05:54:26] \u2705 Successfully uploaded 1 video(s) - https://www.youtube.com/watch?v=z6zMR2uykc8"
+    },
+    {
+      "timestamp": 1759211666771.5632,
+      "type": "info",
+      "message": "[05:54:26] \u23f0 STARTING COOLDOWN: 300 seconds"
+    },
+    {
+      "timestamp": 1759211966051.894,
+      "type": "info",
+      "message": "[05:59:26] \u23f3 Cooldown: 1s remaining"
+    },
+    {
+      "timestamp": 1759211967053.2805,
+      "type": "info",
+      "message": "[05:59:27] \ud83d\udd0d Searching for videos in SOHEL HACKS V2"
+    },
+    {
+      "timestamp": 1759211967181.2095,
+      "type": "info",
+      "message": "[05:59:27] \ud83d\udcca Found 0 new videos."
+    },
+    {
+      "timestamp": 1759211967182.836,
+      "type": "info",
+      "message": "[05:59:27] \u23f0 STARTING COOLDOWN: 300 seconds"
+    },
+    {
+      "timestamp": 1759212266567.1096,
+      "type": "info",
+      "message": "[06:04:26] \u23f3 Cooldown: 1s remaining"
+    },
+    {
+      "timestamp": 1759212267568.4045,
+      "type": "info",
+      "message": "[06:04:27] \ud83d\udd0d Searching for videos in SOHEL HACKS V2"
+    },
+    {
+      "timestamp": 1759212267709.538,
+      "type": "info",
+      "message": "[06:04:27] \ud83d\udcca Found 0 new videos."
+    },
+    {
+      "timestamp": 1759212267710.4204,
+      "type": "info",
+      "message": "[06:04:27] \u23f0 STARTING COOLDOWN: 300 seconds"
+    },
+    {
+      "timestamp": 1759212567045.5537,
+      "type": "info",
+      "message": "[06:09:27] \u23f3 Cooldown: 1s remaining"
+    },
+    {
+      "timestamp": 1759212568046.5615,
+      "type": "info",
+      "message": "[06:09:28] \ud83d\udd0d Searching for videos in SOHEL HACKS V2"
+    },
+    {
+      "timestamp": 1759212568167.047,
+      "type": "info",
+      "message": "[06:09:28] \ud83d\udcca Found 0 new videos."
+    },
+    {
+      "timestamp": 1759212568168.193,
+      "type": "info",
+      "message": "[06:09:28] \u23f0 STARTING COOLDOWN: 300 seconds"
+    },
+    {
+      "timestamp": 1759212867502.5771,
+      "type": "info",
+      "message": "[06:14:27] \u23f3 Cooldown: 1s remaining"
+    },
+    {
+      "timestamp": 1759212868504.3396,
+      "type": "info",
+      "message": "[06:14:28] \ud83d\udd0d Searching for videos in SOHEL HACKS V2"
+    },
+    {
+      "timestamp": 1759212868619.96,
+      "type": "info",
+      "message": "[06:14:28] \ud83d\udcca Found 0 new videos."
+    },
+    {
+      "timestamp": 1759212868623.4282,
+      "type": "info",
+      "message": "[06:14:28] \u23f0 STARTING COOLDOWN: 300 seconds"
+    },
+    {
+      "timestamp": 1759213167880.3079,
+      "type": "info",
+      "message": "[06:19:27] \u23f3 Cooldown: 1s remaining"
+    },
+    {
+      "timestamp": 1759213168883.009,
+      "type": "info",
+      "message": "[06:19:28] \ud83d\udd0d Searching for videos in SOHEL HACKS V2"
+    },
+    {
+      "timestamp": 1759213168991.5942,
+      "type": "info",
+      "message": "[06:19:28] \ud83d\udcca Found 0 new videos."
+    },
+    {
+      "timestamp": 1759213168997.0225,
+      "type": "info",
+      "message": "[06:19:28] \u23f0 STARTING COOLDOWN: 300 seconds"
+    },
+    {
+      "timestamp": 1759213468244.7605,
+      "type": "info",
+      "message": "[06:24:28] \u23f3 Cooldown: 1s remaining"
+    },
+    {
+      "timestamp": 1759213469246.1064,
+      "type": "info",
+      "message": "[06:24:29] \ud83d\udd0d Searching for videos in SOHEL HACKS V2"
+    },
+    {
+      "timestamp": 1759213469356.7559,
+      "type": "info",
+      "message": "[06:24:29] \ud83d\udcca Found 0 new videos."
+    },
+    {
+      "timestamp": 1759213469357.852,
+      "type": "info",
+      "message": "[06:24:29] \u23f0 STARTING COOLDOWN: 300 seconds"
+    },
+    {
+      "timestamp": 1759213768605.0923,
+      "type": "info",
+      "message": "[06:29:28] \u23f3 Cooldown: 1s remaining"
+    },
+    {
+      "timestamp": 1759213769606.7678,
+      "type": "info",
+      "message": "[06:29:29] \ud83d\udd0d Searching for videos in SOHEL HACKS V2"
+    },
+    {
+      "timestamp": 1759213769719.7532,
+      "type": "info",
+      "message": "[06:29:29] \ud83d\udcca Found 0 new videos."
+    },
+    {
+      "timestamp": 1759213769721.9583,
+      "type": "info",
+      "message": "[06:29:29] \u23f0 STARTING COOLDOWN: 300 seconds"
+    },
+    {
+      "timestamp": 1759213949904.6055,
+      "type": "info",
+      "message": "[06:32:29] \u23f3 Cooldown: 2m 0s remaining"
+    }
+  ],
+  "service_status": true
+}

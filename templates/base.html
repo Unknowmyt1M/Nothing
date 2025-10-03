@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Multi-Platform Video Downloader{% endblock %}</title>
+    
+    <!-- Bootstrap CSS with Replit theme -->
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('home') }}">
+                <i class="fas fa-cloud-download-alt text-primary me-2"></i>
+                UpDownVid
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'home' %}active{% endif %}" href="{{ url_for('home') }}">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'accounts' %}active{% endif %}" href="{{ url_for('accounts') }}">
+                            <i class="fas fa-user me-1"></i>Accounts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'metadata' %}active{% endif %}" href="{{ url_for('metadata') }}">
+                            <i class="fas fa-tags me-1"></i>Metadata
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'automation' %}active{% endif %}" href="{{ url_for('automation') }}">
+                            <i class="fas fa-robot me-1"></i>Automation
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'platforms' %}active{% endif %}" href="{{ url_for('platforms') }}">
+                            <i class="fas fa-list me-1"></i>Platforms
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'privacy' %}active{% endif %}" href="{{ url_for('privacy') }}">
+                            <i class="fas fa-shield-alt me-1"></i>Privacy
+                        </a>
+                    </li>
+                </ul>
+                
+                {% if current_user_info %}
+                <div class="navbar-text">
+                    <a href="{{ url_for('accounts') }}" class="text-decoration-none d-flex align-items-center">
+                        {% if current_youtube_channel %}
+                            <img src="{{ current_youtube_channel.snippet.thumbnails.default.url }}" 
+                                 alt="{{ current_youtube_channel.snippet.title }}" 
+                                 class="rounded-circle me-2" 
+                                 width="32" height="32"
+                                 title="{{ current_youtube_channel.snippet.title }}">
+                            <span class="text-light">{{ current_youtube_channel.snippet.title }}</span>
+                        {% else %}
+                            <img src="{{ current_user_info.picture }}" 
+                                 alt="{{ current_user_info.name }}" 
+                                 class="rounded-circle me-2" 
+                                 width="32" height="32"
+                                 title="{{ current_user_info.name }}">
+                            <span class="text-light">{{ current_user_info.name }}</span>
+                        {% endif %}
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                        <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main class="container my-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark border-top mt-5 py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h5 class="text-light mb-3">
+                        <i class="fas fa-cloud-download-alt text-primary me-2"></i>
+                        UpDownVid
+                    </h5>
+                    <p class="text-muted small">
+                        Multi-platform video downloader and metadata extraction tool. 
+                        Fast, simple, and free for personal use.
+                    </p>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <h6 class="text-light mb-3">Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="{{ url_for('about') }}" class="text-muted text-decoration-none">
+                                <i class="fas fa-info-circle me-1"></i>About
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="{{ url_for('faq') }}" class="text-muted text-decoration-none">
+                                <i class="fas fa-question-circle me-1"></i>FAQ
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="{{ url_for('contact') }}" class="text-muted text-decoration-none">
+                                <i class="fas fa-envelope me-1"></i>Contact
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="{{ url_for('platforms') }}" class="text-muted text-decoration-none">
+                                <i class="fas fa-list me-1"></i>Supported Platforms
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <h6 class="text-light mb-3">Legal & Policies</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="{{ url_for('tos') }}" class="text-muted text-decoration-none">
+                                <i class="fas fa-file-contract me-1"></i>Terms of Service
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="{{ url_for('privacy') }}" class="text-muted text-decoration-none">
+                                <i class="fas fa-shield-alt me-1"></i>Privacy Policy
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="{{ url_for('copyright_policy') }}" class="text-muted text-decoration-none">
+                                <i class="fas fa-copyright me-1"></i>Copyright & DMCA
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="{{ os.environ.get('GITHUB_URL', '#') }}" class="text-muted text-decoration-none" target="_blank">
+                                <i class="fab fa-github me-1"></i>GitHub
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <hr class="border-secondary my-3">
+            
+            <div class="text-center">
+                <p class="text-muted small mb-2">
+                    &copy; 2025 UpDownVid. Built with ❤️ using Flask and yt-dlp.
+                </p>
+                <p class="text-muted small">
+                    Open Source • Privacy-First • Community-Driven
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

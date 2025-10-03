@@ -1,0 +1,11 @@
+{
+  "monitor_interval": 300,
+  "quality": "lowest",
+  "metadata_mode": "original",
+  "api_key": "",
+  "custom_metadata": {
+    "title": "",
+    "description": "",
+    "tags": []
+  }
+}

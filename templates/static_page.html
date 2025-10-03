@@ -1,0 +1,88 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - UpDownVid{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <article class="static-content">
+                {{ content|safe }}
+            </article>
+        </div>
+    </div>
+</div>
+
+<style>
+.static-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+.static-content h1 {
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+    color: #fff;
+}
+
+.static-content h2 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #e0e0e0;
+    border-bottom: 2px solid #444;
+    padding-bottom: 0.5rem;
+}
+
+.static-content h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: #d0d0d0;
+}
+
+.static-content ul, .static-content ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.static-content li {
+    margin-bottom: 0.5rem;
+}
+
+.static-content code {
+    background-color: #2d2d2d;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+.static-content pre {
+    background-color: #1e1e1e;
+    padding: 1rem;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+
+.static-content a {
+    color: #4a9eff;
+    text-decoration: none;
+}
+
+.static-content a:hover {
+    text-decoration: underline;
+}
+
+.static-content hr {
+    margin: 2rem 0;
+    border-color: #444;
+}
+
+.static-content blockquote {
+    border-left: 4px solid #4a9eff;
+    padding-left: 1rem;
+    margin-left: 0;
+    color: #b0b0b0;
+    font-style: italic;
+}
+</style>
+{% endblock %}

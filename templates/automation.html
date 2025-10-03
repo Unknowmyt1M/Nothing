@@ -1,0 +1,1099 @@
+{% extends "base.html" %}
+
+{% block title %}YouTube Channel Automation - Multi-Platform Video Downloader{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title mb-0">
+                    <i class="fas fa-robot me-2"></i>YouTube Channel Automation
+                </h2>
+                <p class="mb-0 text-muted">Monitor channels and automatically download & upload videos</p>
+            </div>
+            <div class="card-body">
+                <!-- Tab Navigation -->
+                <ul class="nav nav-tabs mb-4" id="automationTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs" 
+                                type="button" role="tab" aria-controls="logs" aria-selected="true">
+                            <i class="fas fa-list-alt me-2"></i>Logs
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" 
+                                type="button" role="tab" aria-controls="settings" aria-selected="false">
+                            <i class="fas fa-cog me-2"></i>Settings
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="automationTabContent">
+                    <!-- Logs Tab -->
+                    <div class="tab-pane fade show active" id="logs" role="tabpanel" aria-labelledby="logs-tab">
+                        <!-- Log Display -->
+                        <div class="mb-4">
+                            <h5><i class="fas fa-terminal me-2"></i>Activity Logs</h5>
+                            <div id="logContainer" class="border rounded p-3 bg-dark text-light" 
+                                 style="height: 400px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 0.9em;">
+                                <div class="text-muted">Automation service not started. Waiting for activity...</div>
+                            </div>
+                            <div class="mt-2">
+                                <button class="btn btn-sm btn-outline-secondary" id="clearLogsBtn">
+                                    <i class="fas fa-trash me-1"></i>Clear Logs
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" id="refreshLogsBtn">
+                                    <i class="fas fa-refresh me-1"></i>Refresh
+                                </button>
+                                <span class="ms-3 text-muted">
+                                    <i class="fas fa-circle" id="statusIndicator"></i>
+                                    <span id="serviceStatus">Service Status: Stopped</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Monitored Channels -->
+                        <div>
+                            <h5><i class="fas fa-eye me-2"></i>Monitored Channels</h5>
+                            <div id="channelCards" class="row">
+                                <div class="col-12">
+                                    <div class="text-center py-5 text-muted">
+                                        <i class="fas fa-info-circle fa-2x mb-3"></i>
+                                        <p>No channels are being monitored yet.</p>
+                                        <p>Go to Settings tab to add channels for monitoring.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings Tab -->
+                    <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
+                        <!-- Channel Management -->
+                        <div class="mb-5">
+                            <h5><i class="fas fa-plus-circle me-2"></i>Add New Channel</h5>
+                            <div class="card">
+                                <div class="card-body">
+                                    <form id="addChannelForm">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <label for="channelUrl" class="form-label">YouTube Channel URL or ID</label>
+                                                <input type="text" class="form-control" id="channelUrl" 
+                                                       placeholder="https://www.youtube.com/@channelname or UCxxxxxxxxxx"
+                                                       required>
+                                                <small class="form-text text-muted">
+                                                    Paste the complete YouTube channel URL or just the channel ID
+                                                </small>
+                                            </div>
+                                            <div class="col-md-4 d-flex align-items-end">
+                                                <button type="submit" class="btn btn-primary w-100">
+                                                    <i class="fas fa-plus me-2"></i>Add Channel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Current Channels List -->
+                        <div class="mb-5">
+                            <h5><i class="fas fa-list me-2"></i>Monitored Channels</h5>
+                            <div id="channelsList">
+                                <div class="text-center py-4 text-muted">
+                                    <i class="fas fa-info-circle fa-2x mb-3"></i>
+                                    <p>No channels added yet.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Global Settings -->
+                        <div class="mb-4">
+                            <h5><i class="fas fa-cog me-2"></i>Global Settings</h5>
+                            <div class="card">
+                                <div class="card-body">
+                                    <!-- API Key Section -->
+                                    <div class="row mb-4">
+                                        <div class="col-md-12">
+                                            <label for="apiKey" class="form-label">
+                                                <i class="fab fa-youtube me-2 text-danger"></i>Enter API Key
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">
+                                                    <i class="fas fa-key"></i>
+                                                </span>
+                                                <input type="password" class="form-control" id="apiKey" 
+                                                       placeholder="AIzaSyxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                                                       autocomplete="off">
+                                                <button class="btn btn-outline-secondary" type="button" id="toggleApiKey">
+                                                    <i class="fas fa-eye" id="toggleApiKeyIcon"></i>
+                                                </button>
+                                            </div>
+                                            <small class="form-text text-muted">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                Your personal YouTube API key for channel monitoring
+                                            </small>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <!-- Monitor Interval -->
+                                        <div class="col-md-4">
+                                            <label for="monitorInterval" class="form-label">Check Interval (seconds)</label>
+                                            <select class="form-select" id="monitorInterval">
+                                                <option value="60">1 minute</option>
+                                                <option value="300">5 minutes</option>
+                                                <option value="600">10 minutes</option>
+                                                <option value="900">15 minutes</option>
+                                                <option value="1800">30 minutes</option>
+                                                <option value="3600">1 hour</option>
+                                                <option value="7200">2 hours</option>
+                                                <option value="18000" selected>5 hours</option>
+                                                <option value="43200">12 hours</option>
+                                                <option value="86400">24 hours</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Upload Quality -->
+                                        <div class="col-md-4">
+                                            <label for="uploadQuality" class="form-label">Upload Quality</label>
+                                            <select class="form-select" id="uploadQuality">
+                                                <option value="lowest">Lowest</option>
+                                                <option value="360p">360p</option>
+                                                <option value="480p">480p</option>
+                                                <option value="720p">720p</option>
+                                                <option value="1080p" selected>1080p</option>
+                                                <option value="1440p">1440p</option>
+                                                <option value="highest">Highest Available</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Metadata Mode -->
+                                        <div class="col-md-4">
+                                            <label for="metadataMode" class="form-label">Metadata Mode</label>
+                                            <select class="form-select" id="metadataMode">
+                                                <option value="original" selected>Use Original</option>
+                                                <option value="manual">Manual Override</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Manual Metadata Section -->
+                                    <div id="manualMetadataSection" class="mt-4 d-none">
+                                        <hr>
+                                        <h6><i class="fas fa-edit me-2"></i>Manual Metadata Override</h6>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label for="customTitle" class="form-label">Title Template</label>
+                                                <input type="text" class="form-control" id="customTitle" 
+                                                       placeholder="e.g., [REPOST] {original_title}">
+                                                <small class="form-text text-muted">
+                                                    Use {original_title} to include the original video title
+                                                </small>
+                                            </div>
+                                            <div class="col-md-12 mb-3">
+                                                <label for="customDescription" class="form-label">Description Template</label>
+                                                <textarea class="form-control" id="customDescription" rows="3"
+                                                          placeholder="e.g., Original video by {original_uploader}&#10;&#10;{original_description}"></textarea>
+                                                <small class="form-text text-muted">
+                                                    Use {original_description}, {original_uploader}, {original_url} for placeholders
+                                                </small>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label for="customTags" class="form-label">Additional Tags</label>
+                                                <input type="text" class="form-control" id="customTags" 
+                                                       placeholder="repost, highlight, compilation">
+                                                <small class="form-text text-muted">
+                                                    Comma-separated tags to add to all uploaded videos
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4">
+                                        <button class="btn btn-success" id="saveSettingsBtn">
+                                            <i class="fas fa-save me-2"></i>Save Settings
+                                        </button>
+                                        <button class="btn btn-outline-primary ms-2" id="startServiceBtn">
+                                            <i class="fas fa-play me-2"></i>Start Monitoring
+                                        </button>
+                                        <button class="btn btn-outline-danger ms-2 d-none" id="stopServiceBtn">
+                                            <i class="fas fa-stop me-2"></i>Stop Monitoring
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Channel Confirmation Modal -->
+<div class="modal fade" id="channelConfirmModal" tabindex="-1" aria-labelledby="channelConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="channelConfirmModalLabel">Confirm Channel Addition</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="channelInfoSection" class="mb-4">
+                    <!-- Channel info will be loaded here -->
+                </div>
+                <hr>
+                <div id="latestVideosSection" class="mb-4" style="display: none;">
+                    <h6><i class="fas fa-video me-2"></i>Latest Videos</h6>
+                    <div id="latestVideosContainer" class="row"> <!-- Changed ID to match new function -->
+                        <div class="text-muted">Fetching latest videos...</div>
+                    </div>
+                    <div class="mt-3 text-center">
+                        <button class="btn btn-sm btn-outline-secondary" id="testFetchBtn">
+                            <i class="fas fa-sync me-1"></i>Test Fetch
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-primary" id="confirmAddChannelBtn" disabled>
+                    <i class="fas fa-check me-1"></i>Confirm & Add Channel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // DOM Elements
+    const addChannelForm = document.getElementById('addChannelForm');
+    const channelUrlInput = document.getElementById('channelUrl'); // Renamed for clarity with modal input
+    const channelsList = document.getElementById('channelsList');
+    const channelCards = document.getElementById('channelCards');
+    const logContainer = document.getElementById('logContainer');
+    const clearLogsBtn = document.getElementById('clearLogsBtn');
+    const refreshLogsBtn = document.getElementById('refreshLogsBtn');
+    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+    const startServiceBtn = document.getElementById('startServiceBtn');
+    const stopServiceBtn = document.getElementById('stopServiceBtn');
+    const metadataMode = document.getElementById('metadataMode');
+    const manualMetadataSection = document.getElementById('manualMetadataSection');
+    const statusIndicator = document.getElementById('statusIndicator');
+    const serviceStatus = document.getElementById('serviceStatus');
+
+    // State
+    let channels = [];
+    let settings = {};
+    let logRefreshInterval = null;
+    let isServiceRunning = false;
+    let currentChannelInfo = null; // To store info for the modal
+
+    // Initialize
+    loadSettings();
+    loadChannels();
+    startLogRefresh();
+
+    // API Key toggle visibility
+    const toggleApiKeyBtn = document.getElementById('toggleApiKey');
+    const apiKeyInput = document.getElementById('apiKey');
+    const toggleApiKeyIcon = document.getElementById('toggleApiKeyIcon');
+
+    toggleApiKeyBtn.addEventListener('click', function() {
+        if (apiKeyInput.type === 'password') {
+            apiKeyInput.type = 'text';
+            toggleApiKeyIcon.className = 'fas fa-eye-slash';
+        } else {
+            apiKeyInput.type = 'password';
+            toggleApiKeyIcon.className = 'fas fa-eye';
+        }
+    });
+
+    // Metadata mode toggle
+    metadataMode.addEventListener('change', function() {
+        if (this.value === 'manual') {
+            manualMetadataSection.classList.remove('d-none');
+        } else {
+            manualMetadataSection.classList.add('d-none');
+        }
+    });
+
+    // Add channel form submission (now triggers modal)
+    addChannelForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const url = channelUrlInput.value.trim();
+        if (!url) {
+            showToast('Please enter a channel URL', 'error');
+            return;
+        }
+        showChannelConfirmModal(url);
+    });
+
+    // Settings actions
+    saveSettingsBtn.addEventListener('click', saveSettings);
+    startServiceBtn.addEventListener('click', startMonitoring);
+    stopServiceBtn.addEventListener('click', stopMonitoring);
+
+    // Log actions
+    clearLogsBtn.addEventListener('click', clearLogs);
+    refreshLogsBtn.addEventListener('click', refreshLogs);
+
+    // --- Channel Confirmation Modal Functions ---
+    function showChannelConfirmModal(channelUrl) {
+        const modalElement = document.getElementById('channelConfirmModal');
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+
+        // Reset modal state
+        document.getElementById('channelInfoSection').innerHTML = `
+            <div class="text-center">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Fetching channel information...</p>
+            </div>
+        `;
+        document.getElementById('latestVideosSection').style.display = 'none';
+        document.getElementById('confirmAddChannelBtn').disabled = true;
+        // document.getElementById('channelUrlInput').value = channelUrl; // Not needed with current structure
+
+        // Fetch channel info using YouTube API v3 parameters
+        fetch('/automation/fetch_channel_info', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ channel_url: channelUrl }) // Send the URL to the backend
+        })
+        .then(response => {
+            if (!response.ok) {
+                // Handle HTTP errors
+                return response.json().then(errData => {
+                    throw new Error(errData.error || `HTTP error! status: ${response.status}`);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            currentChannelInfo = data; // Store channel info
+            displayChannelInfo(data);
+            document.getElementById('latestVideosSection').style.display = 'block';
+            document.getElementById('confirmAddChannelBtn').disabled = false;
+        })
+        .catch(error => {
+            // Use the updated error display
+            let errorMessage = error.message || 'An unknown error occurred.';
+            document.getElementById('channelInfoSection').innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Error:</strong> ${errorMessage}
+                    <br><small class="mt-2 d-block">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Supported formats: @username, /channel/ID, /c/customname, or /user/username
+                    </small>
+                </div>
+            `;
+            document.getElementById('latestVideosSection').style.display = 'none';
+            document.getElementById('confirmAddChannelBtn').disabled = true;
+            currentChannelInfo = null; // Clear if error
+        });
+    }
+
+    function displayChannelInfo(data) {
+        const channelInfoHtml = `
+            <div class="card border-success">
+                <div class="card-header bg-success bg-opacity-10">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    <strong>Channel Found</strong>
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <img src="${data.logo_url}" alt="Channel Logo" class="rounded-circle border" 
+                                 style="width: 80px; height: 80px; object-fit: cover;"
+                                 onerror="this.src='https://yt3.ggpht.com/a/default-user=s800-c-k-c0x00ffffff-no-rj'">
+                        </div>
+                        <div class="col">
+                            <h5 class="card-title mb-1">${data.name}</h5>
+                            <p class="text-muted mb-1">
+                                <i class="fas fa-users me-1"></i> ${data.subscriber_count}
+                            </p>
+                            <p class="text-muted mb-1">
+                                <i class="fas fa-video me-1"></i> ${data.total_videos} videos
+                            </p>
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-link me-1"></i> Channel ID: ${data.channel_id}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.getElementById('channelInfoSection').innerHTML = channelInfoHtml;
+
+        // Display latest videos with better formatting
+        if (data.latest_videos && data.latest_videos.length > 0) {
+            const videosHtml = data.latest_videos.map((video, index) => `
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 border-light shadow-sm">
+                        <img src="${video.thumbnail_url || video.thumbnail || 'https://img.youtube.com/vi/placeholder/mqdefault.jpg'}" 
+                             class="card-img-top" alt="Video Thumbnail" 
+                             style="height: 180px; object-fit: cover;"
+                             onerror="this.src='https://via.placeholder.com/320x180/f8f9fa/6c757d?text=No+Thumbnail'">
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title" title="${video.title}">
+                                ${video.title && video.title.length > 60 ? video.title.substring(0, 60) + '...' : video.title || 'Untitled Video'}
+                            </h6>
+                            <div class="mt-auto">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar-alt me-1"></i>
+                                    ${formatDate(video.published_at || video.published)}
+                                </small>
+                                <br>
+                                <small class="text-muted">
+                                    <i class="fas fa-play me-1"></i>
+                                    <a href="${video.url}" target="_blank" class="text-decoration-none">Watch Video</a>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('latestVideosContainer').innerHTML = videosHtml;
+        } else {
+            document.getElementById('latestVideosContainer').innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        No recent videos found for this channel, or videos are private.
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    // Test Fetch Latest Videos Button
+    document.getElementById('testFetchBtn').addEventListener('click', function() {
+        if (!currentChannelInfo) {
+            showToast('Please fetch channel info first', 'error');
+            return;
+        }
+
+        const testFetchBtn = this;
+        testFetchBtn.disabled = true;
+        testFetchBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Fetching...';
+
+        fetch(`/automation/fetch_latest_videos?channel_id=${currentChannelInfo.channel_id}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            displayLatestVideos(data.videos);
+        })
+        .catch(error => {
+            document.getElementById('latestVideosContainer').innerHTML = `
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Could not fetch videos: ${error.message}
+                </div>
+            `;
+        })
+        .finally(() => {
+            testFetchBtn.disabled = false;
+            testFetchBtn.innerHTML = '<i class="fas fa-sync me-1"></i>Test Fetch';
+        });
+    });
+
+    function displayLatestVideos(videos) {
+        const latestVideosList = document.getElementById('latestVideosContainer'); // Use the correct ID
+        if (!videos || videos.length === 0) {
+            latestVideosList.innerHTML = `
+                <div class="col-12 text-muted">No recent videos found</div>
+            `;
+            return;
+        }
+
+        const videosHtml = videos.map(video => `
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 border-light shadow-sm">
+                    <img src="${video.thumbnail_url || video.thumbnail || 'https://img.youtube.com/vi/placeholder/mqdefault.jpg'}" 
+                         class="card-img-top" alt="Video Thumbnail" 
+                         style="height: 180px; object-fit: cover;"
+                         onerror="this.src='https://via.placeholder.com/320x180/f8f9fa/6c757d?text=No+Thumbnail'">
+                    <div class="card-body d-flex flex-column">
+                        <h6 class="card-title" title="${video.title}">
+                            ${video.title && video.title.length > 60 ? video.title.substring(0, 60) + '...' : video.title || 'Untitled Video'}
+                        </h6>
+                        <div class="mt-auto">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar-alt me-1"></i>
+                                ${formatDate(video.published_at || video.published)}
+                            </small>
+                            <br>
+                            <small class="text-muted">
+                                <i class="fas fa-play me-1"></i>
+                                <a href="${video.url}" target="_blank" class="text-decoration-none">Watch Video</a>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        latestVideosList.innerHTML = videosHtml;
+    }
+
+    // Confirm Add Channel Button
+    document.getElementById('confirmAddChannelBtn').addEventListener('click', function() {
+        if (!currentChannelInfo) {
+            showToast('No channel information available', 'error');
+            return;
+        }
+
+        const confirmBtn = this;
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Adding...';
+
+        fetch('/automation/add_channel', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                channel_info: currentChannelInfo
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            showToast('Channel added successfully and monitoring started!', 'success');
+            channelUrlInput.value = ''; // Clear the main input field
+            loadChannels(); // Refresh the list of channels
+
+            // Close modal
+            const modalElement = document.getElementById('channelConfirmModal');
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            modal.hide();
+            currentChannelInfo = null; // Clear modal state
+        })
+        .catch(error => {
+            showToast('Error adding channel: ' + error.message, 'error');
+        })
+        .finally(() => {
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML = '<i class="fas fa-check me-1"></i>Confirm & Add Channel';
+        });
+    });
+
+    // --- Existing Functions (slightly adjusted if needed) ---
+
+    function addChannel() {
+        // This function is now replaced by the modal workflow.
+        // Kept here for reference but shouldn't be directly called by the UI anymore.
+        const url = channelUrlInput.value.trim();
+        if (!url) {
+            showToast('Please enter a channel URL', 'error');
+            return;
+        }
+        // Call modal logic instead
+        showChannelConfirmModal(url);
+    }
+
+
+    function removeChannel(channelId) {
+        if (!confirm('Are you sure you want to remove this channel from monitoring?')) {
+            return;
+        }
+
+        fetch('/automation/remove_channel', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ channel_id: channelId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            // Remove from local state
+            channels = channels.filter(ch => ch.channel_id !== channelId);
+            updateChannelsList();
+            updateChannelCards();
+
+            showToast('Channel removed successfully!', 'success');
+            addLogEntry('info', `Removed channel from monitoring: ${channelId}`);
+        })
+        .catch(error => {
+            showToast('Error removing channel: ' + error.message, 'error');
+            addLogEntry('error', `Failed to remove channel ${channelId}: ${error.message}`);
+        });
+    }
+
+    function saveSettings() {
+        const apiKey = document.getElementById('apiKey').value.trim();
+
+        const formData = {
+            monitor_interval: parseInt(document.getElementById('monitorInterval').value),
+            quality: document.getElementById('uploadQuality').value,
+            metadata_mode: document.getElementById('metadataMode').value,
+            api_key: apiKey,
+            custom_metadata: {
+                title: document.getElementById('customTitle').value,
+                description: document.getElementById('customDescription').value,
+                tags: document.getElementById('customTags').value.split(',').map(tag => tag.trim()).filter(tag => tag)
+            }
+        };
+
+        saveSettingsBtn.disabled = true;
+        saveSettingsBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+
+        fetch('/automation/save_settings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            settings = formData;
+            showToast('Settings saved successfully!', 'success');
+            addLogEntry('info', 'Settings updated');
+        })
+        .catch(error => {
+            showToast('Error saving settings: ' + error.message, 'error');
+            addLogEntry('error', `Failed to save settings: ${error.message}`);
+        })
+        .finally(() => {
+            saveSettingsBtn.disabled = false;
+            saveSettingsBtn.innerHTML = '<i class="fas fa-save me-2"></i>Save Settings';
+        });
+    }
+
+    function startMonitoring() {
+        startServiceBtn.disabled = true;
+        startServiceBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Starting...';
+
+        fetch('/automation/start_monitoring', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            isServiceRunning = true;
+            updateServiceStatus();
+            showToast('Monitoring service started!', 'success');
+            addLogEntry('success', 'Monitoring service started');
+        })
+        .catch(error => {
+            showToast('Error starting monitoring: ' + error.message, 'error');
+            addLogEntry('error', `Failed to start monitoring: ${error.message}`);
+        })
+        .finally(() => {
+            startServiceBtn.disabled = false;
+            startServiceBtn.innerHTML = '<i class="fas fa-play me-2"></i>Start Monitoring';
+        });
+    }
+
+    function stopMonitoring() {
+        stopServiceBtn.disabled = true;
+        stopServiceBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Stopping...';
+
+        fetch('/automation/stop_monitoring', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            isServiceRunning = false;
+            updateServiceStatus();
+            showToast('Monitoring service stopped!', 'info');
+            addLogEntry('info', 'Monitoring service stopped');
+        })
+        .catch(error => {
+            showToast('Error stopping monitoring: ' + error.message, 'error');
+            addLogEntry('error', `Failed to stop monitoring: ${error.message}`);
+        })
+        .finally(() => {
+            stopServiceBtn.disabled = false;
+            stopServiceBtn.innerHTML = '<i class="fas fa-stop me-2"></i>Stop Monitoring';
+        });
+    }
+
+    function loadSettings() {
+        fetch('/automation/get_settings')
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.warn("Could not load settings, using defaults.");
+                return; // Use defaults if no settings found
+            }
+
+            settings = data;
+
+            // Apply settings to form
+            document.getElementById('monitorInterval').value = settings.monitor_interval || 300;
+            document.getElementById('uploadQuality').value = settings.quality || '1080p';
+            document.getElementById('metadataMode').value = settings.metadata_mode || 'original';
+            document.getElementById('apiKey').value = settings.api_key || '';
+
+            if (settings.custom_metadata) {
+                document.getElementById('customTitle').value = settings.custom_metadata.title || '';
+                document.getElementById('customDescription').value = settings.custom_metadata.description || '';
+                document.getElementById('customTags').value = (settings.custom_metadata.tags || []).join(', ');
+            }
+
+            // Trigger metadata mode change to update UI
+            metadataMode.dispatchEvent(new Event('change'));
+        })
+        .catch(error => {
+            console.error('Error loading settings:', error);
+        });
+    }
+
+    function loadChannels() {
+        fetch('/automation/get_channels')
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error("Error loading channels:", data.error);
+                channels = [];
+            } else {
+                channels = data.channels || [];
+            }
+            updateChannelsList();
+            updateChannelCards();
+        })
+        .catch(error => {
+            console.error('Error fetching channels:', error);
+            channels = [];
+        });
+    }
+
+    function updateChannelsList() {
+        if (channels.length === 0) {
+            channelsList.innerHTML = `
+                <div class="text-center py-4 text-muted">
+                    <i class="fas fa-info-circle fa-2x mb-3"></i>
+                    <p>No channels added yet.</p>
+                </div>
+            `;
+            return;
+        }
+
+        channelsList.innerHTML = channels.map(channel => `
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-2">
+                            <img src="${channel.logo_url || '/static/images/default-channel.png'}" 
+                                 alt="${channel.name}" class="rounded-circle" width="60" height="60">
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="mb-1">${channel.name}</h6>
+                            <small class="text-muted">Channel ID: ${channel.channel_id}</small>
+                            <br>
+                            <small class="text-muted">Videos monitored: ${channel.total_videos || 0}</small>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-sm btn-outline-danger" onclick="removeChannel('${channel.channel_id}')">
+                                <i class="fas fa-trash me-1"></i>Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function updateChannelCards() {
+        if (channels.length === 0) {
+            channelCards.innerHTML = `
+                <div class="col-12">
+                    <div class="text-center py-5 text-muted">
+                        <i class="fas fa-info-circle fa-2x mb-3"></i>
+                        <p>No channels are being monitored yet.</p>
+                        <p>Go to Settings tab to add channels for monitoring.</p>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        channelCards.innerHTML = channels.map(channel => `
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <img src="${channel.logo_url || '/static/images/default-channel.png'}" 
+                             alt="${channel.name}" class="rounded-circle mb-3" width="80" height="80">
+                        <h6 class="card-title">${channel.name}</h6>
+                        <p class="card-text text-muted">
+                            <small>Videos: ${channel.total_videos || 0}</small>
+                        </p>
+                        <div class="mt-auto">
+                            <span class="badge bg-success">
+                                <i class="fas fa-eye me-1"></i>Monitoring
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function updateServiceStatus(service_status) { // Accept status as parameter
+        if (service_status !== undefined) {
+            isServiceRunning = service_status;
+        }
+
+        if (isServiceRunning) {
+            statusIndicator.className = 'fas fa-circle text-success';
+            serviceStatus.textContent = 'Service Status: Running';
+            startServiceBtn.classList.add('d-none');
+            stopServiceBtn.classList.remove('d-none');
+        } else {
+            statusIndicator.className = 'fas fa-circle text-danger';
+            serviceStatus.textContent = 'Service Status: Stopped';
+            startServiceBtn.classList.remove('d-none');
+            stopServiceBtn.classList.add('d-none');
+        }
+    }
+
+    function startLogRefresh() {
+        if (logRefreshInterval) {
+            clearInterval(logRefreshInterval);
+        }
+
+        logRefreshInterval = setInterval(refreshLogs, 2000); // Refresh every 2 seconds
+    }
+
+    function refreshLogs() {
+        fetch('/automation/get_logs')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    console.error('Error fetching logs:', data.error);
+                    showError('Failed to fetch logs: ' + data.error);
+                    return;
+                }
+
+                const logContainer = document.getElementById('logContainer');
+                if (!logContainer) {
+                    console.error('Log container not found');
+                    return;
+                }
+
+                logContainer.innerHTML = '';
+
+                if (data.logs && data.logs.length > 0) {
+                    data.logs.forEach(log => {
+                        const logEntry = document.createElement('div');
+                        logEntry.className = `log-entry log-${log.type}`;
+                        logEntry.innerHTML = `
+                            <span class="log-time">${new Date(log.timestamp).toLocaleTimeString()}</span>
+                            <span class="log-message">${escapeHtml(log.message)}</span>
+                        `;
+                        logContainer.appendChild(logEntry);
+                    });
+
+                    // Auto-scroll to bottom
+                    logContainer.scrollTop = logContainer.scrollHeight;
+                } else {
+                    logContainer.innerHTML = '<div class="log-entry log-info"><span class="log-message">No logs available</span></div>';
+                }
+
+                // Update service status
+                updateServiceStatus(data.service_status);
+            })
+            .catch(error => {
+                console.error('Error refreshing logs:', error);
+                showError('Connection error: Unable to fetch logs. Please check your connection.');
+            });
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function showError(message) {
+        const logContainer = document.getElementById('logContainer');
+        if (logContainer) {
+            logContainer.innerHTML = `<div class="log-entry log-error"><span class="log-message">⚠️ ${escapeHtml(message)}</span></div>`;
+        }
+    }
+
+    function addLogEntry(type, message) {
+        const log = {
+            timestamp: new Date().toISOString(),
+            type: type,
+            message: message
+        };
+
+        if (logContainer.innerHTML.includes('Waiting for activity')) {
+            logContainer.innerHTML = '';
+        }
+
+        logContainer.innerHTML += formatLogEntry(log);
+        logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    function clearLogs() {
+        if (confirm('Are you sure you want to clear all logs?')) {
+            fetch('/automation/clear_logs', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    logContainer.innerHTML = '<div class="text-muted text-center py-3">Logs cleared</div>';
+                    showToast('Logs cleared successfully!', 'info');
+                } else {
+                    throw new Error(data.error || 'Failed to clear logs on server.');
+                }
+            })
+            .catch(error => {
+                showToast('Error clearing logs: ' + error.message, 'error');
+            });
+        }
+    }
+
+    // Make removeChannel function global for onclick attribute
+    window.removeChannel = removeChannel;
+
+    function showToast(message, type) {
+        // Simple toast implementation using Bootstrap alerts
+        const alertClass = type === 'error' ? 'alert-danger' : type === 'success' ? 'alert-success' : 'alert-info';
+        const toastContainer = document.getElementById('toastContainer') || document.createElement('div');
+        if (!document.getElementById('toastContainer')) {
+            toastContainer.id = 'toastContainer';
+            toastContainer.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; width: 300px;';
+            document.body.appendChild(toastContainer);
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `alert ${alertClass} alert-dismissible fade show`;
+        toast.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        toastContainer.prepend(toast); // Add to top
+
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+            // If toast container is empty, remove it
+            if (toastContainer.children.length === 0 && toastContainer.parentNode) {
+                toastContainer.parentNode.removeChild(toastContainer);
+            }
+        }, 5000);
+    }
+
+    // Utility function for date formatting
+    function formatDate(dateString) {
+        if (!dateString) return 'Unknown date';
+        try {
+            const date = new Date(dateString);
+            // Check if the date is valid
+            if (isNaN(date.getTime())) {
+                return dateString; // Return original string if parsing failed
+            }
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        } catch (e) {
+            console.error("Error formatting date:", dateString, e);
+            return dateString; // Return original string in case of error
+        }
+    }
+
+    // Helper functions for logs (if they were used elsewhere, otherwise can be removed)
+    function getLogTypeClass(type) {
+        switch(type) {
+            case 'success': return 'text-success';
+            case 'error': return 'text-danger';
+            case 'info': return 'text-info';
+            case 'progress': return 'text-warning';
+            default: return 'text-light';
+        }
+    }
+
+    function getLogTypeIcon(type) {
+        switch(type) {
+            case 'success': return 'fas fa-check-circle';
+            case 'error': return 'fas fa-exclamation-triangle';
+            case 'info': return 'fas fa-info-circle';
+            case 'progress': return 'fas fa-cog fa-spin';
+            default: return 'fas fa-info-circle';
+        }
+    }
+
+    function formatLogEntry(log) {
+        const timestamp = new Date(log.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+        let className = 'text-light';
+        let icon = 'fas fa-info-circle';
+
+        switch(log.type) {
+            case 'success':
+                className = 'text-success';
+                icon = 'fas fa-check-circle';
+                break;
+            case 'error':
+                className = 'text-danger';
+                icon = 'fas fa-exclamation-triangle';
+                break;
+            case 'info':
+                className = 'text-info';
+                icon = 'fas fa-info-circle';
+                break;
+            case 'progress':
+                className = 'text-warning';
+                icon = 'fas fa-cog fa-spin';
+                break;
+        }
+
+        return `<div class="${className}"><i class="${icon} me-2"></i>[${timestamp}] ${log.message}</div>`;
+    }
+
+    // Initial call to refreshLogs to set the correct status and content on load
+    refreshLogs();
+});
+</script>
+{% endblock %}

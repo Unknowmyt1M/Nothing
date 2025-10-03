@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Supported Platforms - Multi-Platform Video Downloader{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i>Supported Platforms
+                </h2>
+            </div>
+            <div class="card-body">
+                <p class="lead">Our multi-platform downloader supports video extraction from various social media and video platforms:</p>
+
+                <div id="platformGrid" class="row g-3">
+                    <!-- Platforms will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Overview -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-star me-2"></i>Features
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-hd-video text-primary me-2"></i>
+                                <strong>High Quality Downloads:</strong> Minimum 720p, up to 1080p HD
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-tags text-info me-2"></i>
+                                <strong>Metadata Extraction:</strong> Title, description, tags, and thumbnails
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-globe text-success me-2"></i>
+                                <strong>Multi-Platform:</strong> Support for 11+ major platforms
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-cloud-upload-alt text-warning me-2"></i>
+                                <strong>YouTube Upload:</strong> Direct upload to your YouTube channel
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-shield-alt text-danger me-2"></i>
+                                <strong>Privacy Settings:</strong> Public, unlisted, or private uploads
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-chart-line text-secondary me-2"></i>
+                                <strong>Progress Tracking:</strong> Real-time download and upload progress
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usage Instructions -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-question-circle me-2"></i>How to Use
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <i class="fas fa-link text-white fs-4"></i>
+                            </div>
+                            <h6>1. Paste URL</h6>
+                            <p class="text-muted small">Copy and paste any video URL from supported platforms</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="bg-info rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <i class="fas fa-search text-white fs-4"></i>
+                            </div>
+                            <h6>2. Extract Metadata</h6>
+                            <p class="text-muted small">Automatically extract video information and preview</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="bg-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <i class="fas fa-cloud-upload-alt text-white fs-4"></i>
+                            </div>
+                            <h6>3. Upload to YouTube</h6>
+                            <p class="text-muted small">Download and upload to your YouTube channel with one click</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadPlatformStatus();
+
+    function loadPlatformStatus() {
+        fetch('/platform_status')
+        .then(response => response.json())
+        .then(data => {
+            displayPlatforms(data.platforms);
+            updateStats(data);
+        })
+        .catch(error => {
+            console.error('Error loading platform status:', error);
+            showErrorMessage();
+        });
+    }
+
+    function displayPlatforms(platforms) {
+        const platformGrid = document.getElementById('platformGrid');
+
+        platformGrid.innerHTML = platforms.map(platform => `
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 ${platform.supported ? 'border-success' : 'border-warning'}">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="${getPlatformIcon(platform.platform)} fs-1"></i>
+                        </div>
+                        <h6 class="card-title">${platform.display_name}</h6>
+                        <span class="badge ${platform.supported ? 'bg-success' : 'bg-warning'} mb-2">
+                            ${platform.status}
+                        </span>
+                        <p class="card-text small text-muted">
+                            ${platform.description}
+                        </p>
+                        ${platform.supported ?
+                            '<div class="text-success small"><i class="fas fa-check-circle me-1"></i>Ready to use</div>' :
+                            '<div class="text-warning small"><i class="fas fa-clock me-1"></i>Coming soon</div>'
+                        }
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function updateStats(data) {
+        // You could add stats display here if needed
+        console.log(`Platform support: ${data.supported_count}/${data.total_count} platforms`);
+    }
+
+    function getPlatformIcon(platform) {
+        const icons = {
+            'youtube': 'fab fa-youtube text-danger',
+            'instagram': 'fab fa-instagram text-warning',
+            'facebook': 'fab fa-facebook text-primary',
+            'twitter': 'fab fa-twitter text-info',
+            'tiktok': 'fab fa-tiktok text-dark',
+            'vimeo': 'fab fa-vimeo text-info',
+            'reddit': 'fab fa-reddit text-warning',
+            'twitch': 'fab fa-twitch text-purple',
+            'dailymotion': 'fas fa-video text-primary',
+            'pinterest': 'fab fa-pinterest text-danger',
+            'snapchat': 'fab fa-snapchat text-warning',
+            'rumble': 'fas fa-video text-success'
+        };
+        return icons[platform] || 'fas fa-globe text-secondary';
+    }
+
+    function showErrorMessage() {
+        const platformGrid = document.getElementById('platformGrid');
+        platformGrid.innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-warning text-center">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Unable to load platform status. Please try refreshing the page.
+                </div>
+            </div>
+        `;
+    }
+});
+</script>
+{% endblock %}
