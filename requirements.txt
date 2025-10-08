@@ -18,3 +18,9 @@ beautifulsoup4
 ffmpeg-python
 feedparser
 markdown>=3.7
+email_validator
+flask
+flask-sqlalchemy
+gunicorn
+psycopg2-binary
+gunicorn
