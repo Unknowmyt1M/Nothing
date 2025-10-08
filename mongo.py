@@ -127,7 +127,12 @@ async def save_user_channels(user_id, channels_data):
     """Save user's monitored channels"""
     channels_data['user_id'] = user_id
     result = await db[CHANNELS_COLLECTION].update_one(
-
+        {'user_id': user_id},
+        {'$set': channels_data},
+        upsert=True
+    )
+    logging.info(f"✅ New Data stored - User channels for {user_id}")
+    return result
 
 async def get_oauth_tokens(user_id):
     """Get OAuth tokens (token.json data) from database"""
@@ -152,13 +157,6 @@ async def delete_oauth_tokens(user_id):
     """Delete OAuth tokens from database"""
     result = await db[OAUTH_TOKENS_COLLECTION].delete_one({'user_id': user_id})
     logging.info(f"🗑️ Deleted OAuth tokens for {user_id}")
-    return result
-
-        {'user_id': user_id},
-        {'$set': channels_data},
-        upsert=True
-    )
-    logging.info(f"✅ New Data stored - User channels for {user_id}")
     return result
 
 async def get_automation_logs(user_id):
