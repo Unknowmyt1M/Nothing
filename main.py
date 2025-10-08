@@ -10,9 +10,13 @@ async def init_database():
     """Initialize MongoDB connection"""
     try:
         from mongo import database_init
+        print("🔌 Connecting to MongoDB...")
         await database_init()
+        print("✅ MongoDB initialized successfully")
     except Exception as e:
-        logging.error(f"Failed to initialize database: {e}")
+        logging.error(f"❌ Failed to initialize database: {e}")
+        print(f"❌ MongoDB Error: {e}")
+        print("💡 Please run 'python mongo_test.py' to test your MongoDB connection")
         sys.exit(1)
 
 def main():

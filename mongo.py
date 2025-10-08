@@ -22,6 +22,7 @@ db = client[DB_NAME]
 # Collection names
 USERS_COLLECTION = 'users'
 TOKENS_COLLECTION = 'tokens'
+OAUTH_TOKENS_COLLECTION = 'oauth_tokens'  # For token.json data
 HISTORY_COLLECTION = 'history'
 SETTINGS_COLLECTION = 'settings'
 CHANNELS_COLLECTION = 'channels'
@@ -41,6 +42,7 @@ async def database_init():
         collections_to_create = [
             USERS_COLLECTION,
             TOKENS_COLLECTION,
+            OAUTH_TOKENS_COLLECTION,
             HISTORY_COLLECTION,
             SETTINGS_COLLECTION,
             CHANNELS_COLLECTION,
@@ -54,6 +56,7 @@ async def database_init():
         
         # Create indexes for better query performance
         await db[TOKENS_COLLECTION].create_index('user_id', unique=True)
+        await db[OAUTH_TOKENS_COLLECTION].create_index('user_id', unique=True)
         await db[SETTINGS_COLLECTION].create_index('user_id', unique=True)
         await db[CHANNELS_COLLECTION].create_index('user_id')
         await db[HISTORY_COLLECTION].create_index('user_id')
@@ -124,6 +127,33 @@ async def save_user_channels(user_id, channels_data):
     """Save user's monitored channels"""
     channels_data['user_id'] = user_id
     result = await db[CHANNELS_COLLECTION].update_one(
+
+
+async def get_oauth_tokens(user_id):
+    """Get OAuth tokens (token.json data) from database"""
+    result = await db[OAUTH_TOKENS_COLLECTION].find_one({'user_id': user_id})
+    return result.get('tokens') if result else None
+
+async def save_oauth_tokens(user_id, token_data):
+    """Save OAuth tokens (token.json data) to database"""
+    data = {
+        'user_id': user_id,
+        'tokens': token_data
+    }
+    result = await db[OAUTH_TOKENS_COLLECTION].update_one(
+        {'user_id': user_id},
+        {'$set': data},
+        upsert=True
+    )
+    logging.info(f"✅ New Data stored - OAuth tokens for {user_id}")
+    return result
+
+async def delete_oauth_tokens(user_id):
+    """Delete OAuth tokens from database"""
+    result = await db[OAUTH_TOKENS_COLLECTION].delete_one({'user_id': user_id})
+    logging.info(f"🗑️ Deleted OAuth tokens for {user_id}")
+    return result
+
         {'user_id': user_id},
         {'$set': channels_data},
         upsert=True
