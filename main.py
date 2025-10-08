@@ -1,11 +1,25 @@
 import os
 import sys
+import asyncio
+import logging
 
 # Import app at module level for gunicorn compatibility
 from app import app
 
+async def init_database():
+    """Initialize MongoDB connection"""
+    try:
+        from mongo import database_init
+        await database_init()
+    except Exception as e:
+        logging.error(f"Failed to initialize database: {e}")
+        sys.exit(1)
+
 def main():
     """Main entry point for the application"""
+    # Initialize database
+    asyncio.run(init_database())
+    
     # Get port from environment or use default
     port = int(os.environ.get('PORT', 5000))
     

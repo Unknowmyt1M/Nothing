@@ -218,30 +218,17 @@ def google_callback():
         session['access_token'] = tokens['access_token']
         session['refresh_token'] = tokens.get('refresh_token')
 
-        # Get user info and save cookies
+        # Get user info and store tokens in MongoDB
         user_info = get_user_info(tokens['access_token'])
         user_email_dir = user_info['email'].replace('@', '_').replace('.', '_')
         session['user_id'] = user_email_dir
         session['user_name'] = user_info['name']
         session['user_email'] = user_info['email']
 
-        # Create user directory and save cookies
-        user_dir = f"db/{user_email_dir}"
-        os.makedirs(user_dir, exist_ok=True)
-        
-        # Store tokens for background automation
-        store_user_tokens(user_email_dir, tokens['access_token'], tokens.get('refresh_token'))
-
-        # Save a placeholder cookies file (in real implementation, this would extract browser cookies)
-        cookies_path = f"{user_dir}/cookies.txt"
-        with open(cookies_path, 'w') as f:
-            f.write("# Netscape HTTP Cookie File\n# This is a placeholder - implement cookie extraction\n")
-
-        # Initialize history file
-        history_path = f"{user_dir}/history.json"
-        if not os.path.exists(history_path):
-            with open(history_path, 'w') as f:
-                json.dump([], f)
+        # Store tokens for background automation in MongoDB
+        import asyncio
+        from mongo import store_user_tokens as mongo_store_tokens
+        asyncio.run(mongo_store_tokens(user_email_dir, tokens['access_token'], tokens.get('refresh_token')))
 
         flash('Successfully connected to Google account!', 'success')
         return redirect(url_for('accounts'))
@@ -1175,24 +1162,10 @@ def get_automation_settings():
     """Get current automation settings"""
     try:
         user_id = get_user_id()
-        settings_file = f"db/{user_id}/settings.json"
-        
-        if os.path.exists(settings_file):
-            with open(settings_file, 'r') as f:
-                settings = json.load(f)
-            return jsonify(settings)
-        else:
-            # Return default settings
-            return jsonify({
-                'monitor_interval': 300,
-                'quality': '1080p',
-                'metadata_mode': 'original',
-                'custom_metadata': {
-                    'title': '',
-                    'description': '',
-                    'tags': []
-                }
-            })
+        import asyncio
+        from mongo import get_user_settings
+        settings = asyncio.run(get_user_settings(user_id))
+        return jsonify(settings)
     except Exception as e:
         logging.error(f"Error getting automation settings: {e}")
         return jsonify({'error': str(e)}), 500
@@ -1202,14 +1175,11 @@ def save_automation_settings():
     """Save automation settings"""
     try:
         user_id = get_user_id()
-        user_dir = f"db/{user_id}"
-        os.makedirs(user_dir, exist_ok=True)
-        
-        settings_file = f"{user_dir}/settings.json"
         settings = request.get_json()
         
-        with open(settings_file, 'w') as f:
-            json.dump(settings, f, indent=2)
+        import asyncio
+        from mongo import save_user_settings
+        asyncio.run(save_user_settings(user_id, settings))
         
         return jsonify({'success': True})
     except Exception as e:
@@ -1221,14 +1191,10 @@ def get_automation_channels():
     """Get monitored channels"""
     try:
         user_id = get_user_id()
-        channels_file = f"db/{user_id}/channels.json"
-        
-        if os.path.exists(channels_file):
-            with open(channels_file, 'r') as f:
-                data = json.load(f)
-            return jsonify(data)
-        else:
-            return jsonify({'channels': []})
+        import asyncio
+        from mongo import get_user_channels
+        data = asyncio.run(get_user_channels(user_id))
+        return jsonify(data)
     except Exception as e:
         logging.error(f"Error getting automation channels: {e}")
         return jsonify({'error': str(e)}), 500
@@ -1342,22 +1308,17 @@ def add_automation_channel():
     """Add channel for monitoring"""
     try:
         user_id = get_user_id()
-        user_dir = f"db/{user_id}"
-        os.makedirs(user_dir, exist_ok=True)
-        
-        channels_file = f"{user_dir}/channels.json"
         data = request.get_json()
         channel_info = data.get('channel_info')
         
         if not channel_info:
             return jsonify({'error': 'Channel info is required'}), 400
         
+        import asyncio
+        from mongo import get_user_channels, save_user_channels
+        
         # Load existing channels
-        if os.path.exists(channels_file):
-            with open(channels_file, 'r') as f:
-                channels_data = json.load(f)
-        else:
-            channels_data = {'channels': []}
+        channels_data = asyncio.run(get_user_channels(user_id))
         
         # Check if channel already exists
         for existing_channel in channels_data['channels']:
@@ -1365,7 +1326,7 @@ def add_automation_channel():
                 return jsonify({'error': 'Channel is already being monitored'}), 400
         
         # Add monitor interval and quality defaults
-        channel_info['monitor_interval'] = 10  # 10 seconds for fast checking
+        channel_info['monitor_interval'] = 10
         channel_info['quality'] = '1080p'
         channel_info['last_checked'] = None
         channel_info['last_video_count'] = channel_info.get('total_videos', 0)
@@ -1373,8 +1334,7 @@ def add_automation_channel():
         # Add new channel
         channels_data['channels'].append(channel_info)
         
-        with open(channels_file, 'w') as f:
-            json.dump(channels_data, f, indent=2)
+        asyncio.run(save_user_channels(user_id, channels_data))
         
         return jsonify({'success': True, 'channel': channel_info})
     except Exception as e:
@@ -1386,21 +1346,17 @@ def remove_automation_channel():
     """Remove channel from monitoring"""
     try:
         user_id = get_user_id()
-        channels_file = f"db/{user_id}/channels.json"
         channel_id = request.get_json().get('channel_id')
         
         if not channel_id:
             return jsonify({'error': 'Channel ID is required'}), 400
         
-        if os.path.exists(channels_file):
-            with open(channels_file, 'r') as f:
-                data = json.load(f)
-            
-            # Remove channel
-            data['channels'] = [ch for ch in data['channels'] if ch['channel_id'] != channel_id]
-            
-            with open(channels_file, 'w') as f:
-                json.dump(data, f, indent=2)
+        import asyncio
+        from mongo import get_user_channels, save_user_channels
+        
+        data = asyncio.run(get_user_channels(user_id))
+        data['channels'] = [ch for ch in data['channels'] if ch['channel_id'] != channel_id]
+        asyncio.run(save_user_channels(user_id, data))
         
         return jsonify({'success': True})
     except Exception as e:
@@ -1418,16 +1374,15 @@ def get_automation_logs():
         # Try to get user info to validate token
         try:
             user_info = get_user_info(session['access_token'])
-            user_id = user_info['id']
+            user_id = user_info['email'].replace('@', '_').replace('.', '_')
         except Exception as auth_error:
             logging.warning(f"Authentication error: {auth_error}")
-            # Token might be expired, try to refresh
             if 'refresh_token' in session:
                 try:
                     new_access_token = refresh_access_token(session['refresh_token'])
                     session['access_token'] = new_access_token
                     user_info = get_user_info(new_access_token)
-                    user_id = user_info['id']
+                    user_id = user_info['email'].replace('@', '_').replace('.', '_')
                     logging.info("Successfully refreshed access token")
                 except Exception as refresh_error:
                     logging.error(f"Token refresh failed: {refresh_error}")
@@ -1435,52 +1390,29 @@ def get_automation_logs():
             else:
                 return jsonify({'logs': [], 'service_status': False, 'error': 'Authentication expired'})
         
-        logs_file = f"db/{user_id}/automation_logs.json"
+        import asyncio
+        from mongo import get_automation_logs as get_logs_mongo
+        logs_data = asyncio.run(get_logs_mongo(user_id))
         
-        if os.path.exists(logs_file):
-            try:
-                with open(logs_file, 'r', encoding='utf-8') as f:
-                    logs_data = json.load(f)
-                
-                # Ensure logs are in the correct format
-                logs = logs_data.get('logs', [])
-                if not isinstance(logs, list):
-                    logs = []
-                
-                # Return last 100 logs, ensure they have required fields
-                filtered_logs = []
-                for log in logs[-100:]:
-                    if isinstance(log, dict) and 'timestamp' in log and 'message' in log:
-                        filtered_logs.append({
-                            'timestamp': log.get('timestamp', 0),
-                            'type': log.get('type', 'info'),
-                            'message': str(log.get('message', ''))
-                        })
-                
-                return jsonify({
-                    'logs': filtered_logs,
-                    'service_status': bool(logs_data.get('service_status', False))
+        # Ensure logs are in the correct format
+        logs = logs_data.get('logs', [])
+        if not isinstance(logs, list):
+            logs = []
+        
+        # Return last 100 logs
+        filtered_logs = []
+        for log in logs[-100:]:
+            if isinstance(log, dict) and 'timestamp' in log and 'message' in log:
+                filtered_logs.append({
+                    'timestamp': log.get('timestamp', 0),
+                    'type': log.get('type', 'info'),
+                    'message': str(log.get('message', ''))
                 })
-            except json.JSONDecodeError as json_error:
-                logging.error(f"JSON decode error in logs file: {json_error}")
-                # Reset corrupted logs file
-                with open(logs_file, 'w', encoding='utf-8') as f:
-                    json.dump({'logs': [], 'service_status': False}, f, indent=2)
-                return jsonify({'logs': [], 'service_status': False})
-            except Exception as file_error:
-                logging.error(f"Error reading logs file: {file_error}")
-                return jsonify({'logs': [], 'service_status': False, 'error': 'Failed to read logs'})
-        else:
-            # Create empty logs file if it doesn't exist
-            try:
-                user_dir = f"db/{user_id}"
-                os.makedirs(user_dir, exist_ok=True)
-                with open(logs_file, 'w', encoding='utf-8') as f:
-                    json.dump({'logs': [], 'service_status': False}, f, indent=2)
-            except Exception as create_error:
-                logging.error(f"Error creating logs file: {create_error}")
-            
-            return jsonify({'logs': [], 'service_status': False})
+        
+        return jsonify({
+            'logs': filtered_logs,
+            'service_status': bool(logs_data.get('service_status', False))
+        })
             
     except Exception as e:
         logging.error(f"Error getting automation logs: {e}")
@@ -1491,15 +1423,11 @@ def clear_automation_logs():
     """Clear automation logs"""
     try:
         user_id = get_user_id()
-        logs_file = f"db/{user_id}/automation_logs.json"
         
+        import asyncio
+        from mongo import save_automation_logs
         logs_data = {'logs': [], 'service_status': False}
-        
-        user_dir = f"db/{user_id}"
-        os.makedirs(user_dir, exist_ok=True)
-        
-        with open(logs_file, 'w') as f:
-            json.dump(logs_data, f, indent=2)
+        asyncio.run(save_automation_logs(user_id, logs_data))
         
         return jsonify({'success': True})
     except Exception as e:
@@ -1564,12 +1492,10 @@ def get_user_id():
 def get_stored_user_tokens(user_email_dir):
     """Get stored access tokens for background automation"""
     try:
-        user_dir = f"db/{user_email_dir}"
-        tokens_file = f"{user_dir}/tokens.json"
-        
-        if os.path.exists(tokens_file):
-            with open(tokens_file, 'r') as f:
-                tokens = json.load(f)
+        import asyncio
+        from mongo import get_user_tokens
+        tokens = asyncio.run(get_user_tokens(user_email_dir))
+        if tokens:
             return tokens.get('access_token'), tokens.get('refresh_token')
         return None, None
     except Exception:
@@ -1578,18 +1504,9 @@ def get_stored_user_tokens(user_email_dir):
 def store_user_tokens(user_email_dir, access_token, refresh_token):
     """Store user tokens for background automation"""
     try:
-        user_dir = f"db/{user_email_dir}"
-        os.makedirs(user_dir, exist_ok=True)
-        tokens_file = f"{user_dir}/tokens.json"
-        
-        tokens = {
-            'access_token': access_token,
-            'refresh_token': refresh_token,
-            'updated_at': time.time()
-        }
-        
-        with open(tokens_file, 'w') as f:
-            json.dump(tokens, f, indent=2)
+        import asyncio
+        from mongo import store_user_tokens as mongo_store
+        asyncio.run(mongo_store(user_email_dir, access_token, refresh_token))
     except Exception as e:
         logging.error(f"Error storing user tokens: {e}")
 
@@ -1924,17 +1841,10 @@ def format_number_short(number):
 def add_automation_log(user_id, log_type, message, flush=False):
     """Add log entry to automation logs with proper formatting"""
     try:
-        user_dir = f"db/{user_id}"
-        os.makedirs(user_dir, exist_ok=True)
+        import asyncio
+        from mongo import get_automation_logs, save_automation_logs
         
-        logs_file = f"{user_dir}/automation_logs.json"
-        
-        # Load existing logs
-        if os.path.exists(logs_file):
-            with open(logs_file, 'r') as f:
-                logs_data = json.load(f)
-        else:
-            logs_data = {'logs': [], 'service_status': False}
+        logs_data = asyncio.run(get_automation_logs(user_id))
         
         # Create formatted timestamp
         from datetime import datetime
@@ -1943,17 +1853,15 @@ def add_automation_log(user_id, log_type, message, flush=False):
         
         # If flush is True, replace the last log entry if it's a countdown message
         if flush and logs_data['logs'] and '⏳ Cooldown:' in logs_data['logs'][-1].get('message', ''):
-            # Replace the last countdown message
             log_entry = {
-                'timestamp': time.time() * 1000,  # JavaScript timestamp for frontend
+                'timestamp': time.time() * 1000,
                 'type': log_type,
                 'message': f"[{formatted_time}] {message}"
             }
             logs_data['logs'][-1] = log_entry
         else:
-            # Add new log entry with proper formatting
             log_entry = {
-                'timestamp': time.time() * 1000,  # JavaScript timestamp for frontend
+                'timestamp': time.time() * 1000,
                 'type': log_type,
                 'message': f"[{formatted_time}] {message}"
             }
@@ -1963,8 +1871,7 @@ def add_automation_log(user_id, log_type, message, flush=False):
         if len(logs_data['logs']) > 1000:
             logs_data['logs'] = logs_data['logs'][-1000:]
         
-        with open(logs_file, 'w') as f:
-            json.dump(logs_data, f, indent=2)
+        asyncio.run(save_automation_logs(user_id, logs_data))
             
     except Exception as e:
         logging.error(f"Error adding automation log: {e}")
@@ -1972,21 +1879,12 @@ def add_automation_log(user_id, log_type, message, flush=False):
 def set_automation_service_status(user_id, status):
     """Set automation service status"""
     try:
-        user_dir = f"db/{user_id}"
-        os.makedirs(user_dir, exist_ok=True)
+        import asyncio
+        from mongo import get_automation_logs, save_automation_logs
         
-        logs_file = f"{user_dir}/automation_logs.json"
-        
-        if os.path.exists(logs_file):
-            with open(logs_file, 'r') as f:
-                logs_data = json.load(f)
-        else:
-            logs_data = {'logs': [], 'service_status': False}
-        
+        logs_data = asyncio.run(get_automation_logs(user_id))
         logs_data['service_status'] = status
-        
-        with open(logs_file, 'w') as f:
-            json.dump(logs_data, f, indent=2)
+        asyncio.run(save_automation_logs(user_id, logs_data))
             
     except Exception as e:
         logging.error(f"Error setting automation service status: {e}")
@@ -2009,27 +1907,21 @@ def automation_monitor_worker(user_id):
                         break
                 
                 # Load settings for API key and interval
-                settings_file = f"db/{user_id}/settings.json"
-                api_key = None
-                monitor_interval = 300  # Default 5 minutes
+                import asyncio
+                from mongo import get_user_settings, get_user_channels, save_user_channels
                 
-                if os.path.exists(settings_file):
-                    with open(settings_file, 'r') as f:
-                        settings = json.load(f)
-                        api_key = settings.get('api_key')
-                        monitor_interval = settings.get('monitor_interval', 300)
+                settings = asyncio.run(get_user_settings(user_id))
+                api_key = settings.get('api_key')
+                monitor_interval = settings.get('monitor_interval', 300)
                 
                 # Load channels
-                channels_file = f"db/{user_id}/channels.json"
-                if not os.path.exists(channels_file):
+                channels_data = asyncio.run(get_user_channels(user_id))
+                channels = channels_data.get('channels', [])
+                
+                if not channels:
                     add_automation_log(user_id, 'warning', 'No channels configured yet, waiting...')
                     time.sleep(10)
                     continue
-                
-                with open(channels_file, 'r') as f:
-                    channels_data = json.load(f)
-                
-                channels = channels_data.get('channels', [])
                 if not channels:
                     add_automation_log(user_id, 'warning', 'No channels to monitor')
                     time.sleep(10)
@@ -2150,8 +2042,9 @@ def automation_monitor_worker(user_id):
                         add_automation_log(user_id, 'error', f"❌ Upload process error: {str(upload_err)}")
                 
                 # Save updated channels data
-                with open(channels_file, 'w') as f:
-                    json.dump(channels_data, f, indent=2)
+                import asyncio
+                from mongo import save_user_channels
+                asyncio.run(save_user_channels(user_id, channels_data))
                 
                 # Cooldown timer with real-time countdown
                 add_automation_log(user_id, 'info', f"⏰ STARTING COOLDOWN: {monitor_interval} seconds")

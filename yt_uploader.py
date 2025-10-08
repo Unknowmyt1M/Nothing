@@ -290,21 +290,12 @@ def upload_to_youtube(video_file, access_token, title, description, tags, privac
 
 def save_to_history(user_id, upload_data):
     """Save upload information to user's history"""
-    history_file = f"db/{user_id}/history.json"
-    
     try:
-        with open(history_file, 'r') as f:
-            history = json.load(f)
-    except:
-        history = []
-    
-    history.append(upload_data)
-    
-    # Keep only last 50 uploads
-    history = history[-50:]
-    
-    with open(history_file, 'w') as f:
-        json.dump(history, f, indent=2)
+        import asyncio
+        from mongo import add_to_history
+        asyncio.run(add_to_history(user_id, upload_data))
+    except Exception as e:
+        logging.error(f"Error saving to history: {e}")
 
 def format_bytes(bytes_value):
     """Format bytes to human readable format"""
