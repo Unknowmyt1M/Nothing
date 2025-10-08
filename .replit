@@ -42,10 +42,6 @@ args = "python test_new_platforms.py"
 localPort = 5000
 externalPort = 80
 
-[[ports]]
-localPort = 38085
-externalPort = 3000
-
 [agent]
 integrations = ["web_scraper==1.0.0", "flask_google_oauth==1.0.0"]
 expertMode = true
