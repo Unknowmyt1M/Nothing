@@ -420,3 +420,60 @@ img, .img-fluid {
         display: none !important;
     }
 }
+
+/* Animation Utilities for Static Pages */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate__animated {
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+
+.animate__fadeIn {
+    animation-name: fadeIn;
+}
+
+.animate__fadeInUp {
+    animation-name: fadeInUp;
+}
+
+.animate__slideInLeft {
+    animation-name: slideInLeft;
+}
+
+/* Stagger animation delays for children */
+.animate__animated:nth-child(1) { animation-delay: 0.1s; }
+.animate__animated:nth-child(2) { animation-delay: 0.2s; }
+.animate__animated:nth-child(3) { animation-delay: 0.3s; }
+.animate__animated:nth-child(4) { animation-delay: 0.4s; }
+.animate__animated:nth-child(5) { animation-delay: 0.5s; }
+.animate__animated:nth-child(6) { animation-delay: 0.6s; }

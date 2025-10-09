@@ -1,0 +1,151 @@
+
+{% extends "base.html" %}
+
+{% block title %}Terms of Service - UpDownVid{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Hero Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold mb-3">
+            <i class="fas fa-file-contract text-primary me-3"></i>Terms of Service
+        </h1>
+        <p class="lead text-muted">Last Updated: January 2025</p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <!-- Quick Nav -->
+            <div class="card border-0 shadow mb-4">
+                <div class="card-body p-4">
+                    <h5 class="mb-3">Quick Navigation</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="#acceptance" class="btn btn-sm btn-outline-primary">Acceptance</a>
+                        <a href="#user-conduct" class="btn btn-sm btn-outline-primary">User Conduct</a>
+                        <a href="#content" class="btn btn-sm btn-outline-primary">Content</a>
+                        <a href="#liability" class="btn btn-sm btn-outline-primary">Liability</a>
+                        <a href="#termination" class="btn btn-sm btn-outline-primary">Termination</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Sections -->
+            <div class="card border-0 shadow mb-4" id="acceptance">
+                <div class="card-body p-5">
+                    <h2 class="h4 mb-3">
+                        <i class="fas fa-check-circle text-success me-2"></i>1. Acceptance of Terms
+                    </h2>
+                    <p>By accessing and using UpDownVid, you accept and agree to be bound by these Terms of Service. If you do not agree, please do not use our service.</p>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow mb-4" id="user-conduct">
+                <div class="card-body p-5">
+                    <h2 class="h4 mb-3">
+                        <i class="fas fa-user-shield text-primary me-2"></i>2. User Conduct
+                    </h2>
+                    <p><strong>You agree NOT to:</strong></p>
+                    <ul>
+                        <li>Download copyrighted content without permission</li>
+                        <li>Use the service for illegal activities</li>
+                        <li>Attempt to bypass security measures</li>
+                        <li>Upload malicious content or viruses</li>
+                        <li>Automate requests to overload our servers</li>
+                        <li>Violate platform-specific terms (YouTube, Instagram, etc.)</li>
+                    </ul>
+                    
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Important:</strong> You are responsible for ensuring you have the right to download and use any content.
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow mb-4" id="content">
+                <div class="card-body p-5">
+                    <h2 class="h4 mb-3">
+                        <i class="fas fa-copyright text-danger me-2"></i>3. Content Ownership & Copyright
+                    </h2>
+                    <p><strong>Intellectual Property:</strong></p>
+                    <ul>
+                        <li>All downloaded content remains the property of its original creators</li>
+                        <li>UpDownVid does not claim ownership of any user-uploaded or downloaded content</li>
+                        <li>You must comply with copyright laws and fair use policies</li>
+                        <li>We respond to DMCA takedown requests (see <a href="{{ url_for('copyright_policy') }}">Copyright Policy</a>)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow mb-4" id="liability">
+                <div class="card-body p-5">
+                    <h2 class="h4 mb-3">
+                        <i class="fas fa-balance-scale text-warning me-2"></i>4. Limitation of Liability
+                    </h2>
+                    <p>UpDownVid is provided "AS IS" without warranties of any kind. We are NOT liable for:</p>
+                    <ul>
+                        <li>Loss of data or content</li>
+                        <li>Service interruptions or downtime</li>
+                        <li>Third-party platform changes affecting functionality</li>
+                        <li>Misuse of downloaded content by users</li>
+                        <li>Damages resulting from unauthorized access</li>
+                    </ul>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Maximum liability is limited to the amount paid for services (if any) in the past 12 months.
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow mb-4" id="termination">
+                <div class="card-body p-5">
+                    <h2 class="h4 mb-3">
+                        <i class="fas fa-ban text-danger me-2"></i>5. Account Termination
+                    </h2>
+                    <p>We reserve the right to terminate accounts for:</p>
+                    <ul>
+                        <li>Violation of these Terms of Service</li>
+                        <li>Illegal activity or abuse</li>
+                        <li>Multiple DMCA violations</li>
+                        <li>Attempts to compromise security</li>
+                    </ul>
+                    <p>Users may also terminate their account at any time by disconnecting their Google account.</p>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow mb-4">
+                <div class="card-body p-5">
+                    <h2 class="h4 mb-3">
+                        <i class="fas fa-sync text-info me-2"></i>6. Changes to Terms
+                    </h2>
+                    <p>We may update these Terms at any time. Continued use of the service after changes constitutes acceptance of the new terms.</p>
+                    <p><strong>Notification:</strong> Major changes will be announced via email (if registered) or website banner.</p>
+                </div>
+            </div>
+
+            <!-- Contact CTA -->
+            <div class="text-center mt-5">
+                <h3 class="h5 mb-3">Questions about our Terms?</h3>
+                <a href="{{ url_for('contact') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-envelope me-2"></i>Contact Legal Team
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Smooth scroll for anchor links */
+html {
+    scroll-behavior: smooth;
+}
+
+.card {
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateX(5px);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,238 @@
+
+{% extends "base.html" %}
+
+{% block title %}FAQ - Frequently Asked Questions{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Hero Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-3 fw-bold mb-3">
+            <i class="fas fa-question-circle text-primary me-3"></i>Frequently Asked Questions
+        </h1>
+        <p class="lead text-muted">Find answers to common questions about UpDownVid</p>
+    </div>
+
+    <!-- Search Box -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto">
+            <div class="input-group input-group-lg shadow">
+                <span class="input-group-text bg-dark border-0">
+                    <i class="fas fa-search text-primary"></i>
+                </span>
+                <input type="text" class="form-control border-0" id="faqSearch" placeholder="Search FAQs...">
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Categories -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <button class="btn btn-outline-primary w-100 category-btn active" data-category="all">
+                <i class="fas fa-th me-2"></i>All Questions
+            </button>
+        </div>
+        <div class="col-md-4">
+            <button class="btn btn-outline-primary w-100 category-btn" data-category="download">
+                <i class="fas fa-download me-2"></i>Downloads
+            </button>
+        </div>
+        <div class="col-md-4">
+            <button class="btn btn-outline-primary w-100 category-btn" data-category="automation">
+                <i class="fas fa-robot me-2"></i>Automation
+            </button>
+        </div>
+    </div>
+
+    <!-- FAQ Accordion -->
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="accordion accordion-flush" id="faqAccordion">
+                <!-- Download FAQs -->
+                <div class="accordion-item bg-dark border-0 mb-3 shadow faq-item" data-category="download">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            <i class="fas fa-hd-video text-primary me-3"></i>What quality videos can I download?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i><strong>Minimum Quality:</strong> 720p HD</li>
+                                <li><i class="fas fa-check text-success me-2"></i><strong>Maximum Quality:</strong> 1080p Full HD</li>
+                                <li><i class="fas fa-check text-success me-2"></i><strong>Formats:</strong> MP4 (preferred), WebM (fallback)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item bg-dark border-0 mb-3 shadow faq-item" data-category="download">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            <i class="fas fa-globe text-info me-3"></i>Which platforms are supported?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <div class="row g-2">
+                                <div class="col-6 col-md-4"><i class="fab fa-youtube text-danger me-2"></i>YouTube</div>
+                                <div class="col-6 col-md-4"><i class="fab fa-instagram text-warning me-2"></i>Instagram</div>
+                                <div class="col-6 col-md-4"><i class="fab fa-facebook text-primary me-2"></i>Facebook</div>
+                                <div class="col-6 col-md-4"><i class="fab fa-tiktok text-dark me-2"></i>TikTok</div>
+                                <div class="col-6 col-md-4"><i class="fab fa-twitter text-info me-2"></i>Twitter/X</div>
+                                <div class="col-6 col-md-4"><i class="fab fa-vimeo text-info me-2"></i>Vimeo</div>
+                                <div class="col-6 col-md-4"><i class="fab fa-reddit text-warning me-2"></i>Reddit</div>
+                                <div class="col-6 col-md-4"><i class="fab fa-twitch text-purple me-2"></i>Twitch</div>
+                                <div class="col-6 col-md-4"><i class="fas fa-plus text-success me-2"></i>And more!</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item bg-dark border-0 mb-3 shadow faq-item" data-category="download">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                            <i class="fas fa-file-archive text-warning me-3"></i>What's the file size limit?
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <p>Current public limit: <span class="badge bg-primary">500 MB</span> per download</p>
+                            <p>For larger files, contact: <a href="mailto:business@updownvid.com">business@updownvid.com</a></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Automation FAQs -->
+                <div class="accordion-item bg-dark border-0 mb-3 shadow faq-item" data-category="automation">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                            <i class="fas fa-robot text-success me-3"></i>How does YouTube automation work?
+                        </button>
+                    </h2>
+                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <ol>
+                                <li>Connect your Google account</li>
+                                <li>Add YouTube channels to monitor</li>
+                                <li>Set monitoring interval (minimum 10 seconds)</li>
+                                <li>When new videos are detected, they're automatically downloaded and uploaded to your channel</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item bg-dark border-0 mb-3 shadow faq-item" data-category="automation">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                            <i class="fas fa-key text-danger me-3"></i>Do I need a YouTube API key?
+                        </button>
+                    </h2>
+                    <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <p><strong>Yes</strong>, for automation features you'll need:</p>
+                            <ul>
+                                <li>YouTube Data API v3 key (free from Google Cloud Console)</li>
+                                <li>Google OAuth credentials for account access</li>
+                            </ul>
+                            <a href="https://console.cloud.google.com" class="btn btn-sm btn-outline-primary" target="_blank">
+                                <i class="fas fa-external-link-alt me-2"></i>Get API Key
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- General FAQs -->
+                <div class="accordion-item bg-dark border-0 mb-3 shadow faq-item" data-category="all">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">
+                            <i class="fas fa-shield-alt text-info me-3"></i>Is my data safe?
+                        </button>
+                    </h2>
+                    <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <p><strong>Yes!</strong> We prioritize your privacy:</p>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>Videos are automatically deleted after processing</li>
+                                <li><i class="fas fa-check text-success me-2"></i>We don't permanently store your content</li>
+                                <li><i class="fas fa-check text-success me-2"></i>OAuth tokens are securely encrypted</li>
+                                <li><i class="fas fa-check text-success me-2"></i>MongoDB database with industry-standard security</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Still Have Questions CTA -->
+    <div class="text-center mt-5">
+        <h3 class="h4 mb-3">Still have questions?</h3>
+        <a href="{{ url_for('contact') }}" class="btn btn-primary btn-lg">
+            <i class="fas fa-envelope me-2"></i>Contact Support
+        </a>
+    </div>
+</div>
+
+<script>
+// Search functionality
+document.getElementById('faqSearch').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const faqItems = document.querySelectorAll('.faq-item');
+    
+    faqItems.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (text.includes(searchTerm)) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+});
+
+// Category filter
+document.querySelectorAll('.category-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        // Update active button
+        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        const category = this.dataset.category;
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        faqItems.forEach(item => {
+            if (category === 'all' || item.dataset.category === category) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+
+<style>
+.accordion-button:not(.collapsed) {
+    background-color: var(--bs-dark) !important;
+    color: white !important;
+    box-shadow: none;
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+}
+
+.category-btn.active {
+    background-color: var(--bs-primary);
+    color: white;
+}
+
+.faq-item {
+    transition: all 0.3s ease;
+}
+
+.text-purple {
+    color: #7952b3;
+}
+</style>
+{% endblock %}

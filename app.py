@@ -1065,37 +1065,27 @@ def test_platform_detection():
 @app.route('/about')
 def about():
     """About page"""
-    with open('pages/about.md', 'r') as f:
-        content = markdown.markdown(f.read())
-    return render_template('static_page.html', title='About UpDownVid', content=content, page='about')
+    return render_template('about.html')
 
 @app.route('/tos')
 def tos():
     """Terms of Service page"""
-    with open('pages/tos.md', 'r') as f:
-        content = markdown.markdown(f.read())
-    return render_template('static_page.html', title='Terms of Service', content=content, page='tos')
+    return render_template('tos.html')
 
 @app.route('/copyright')
 def copyright_policy():
     """Copyright/DMCA Policy page"""
-    with open('pages/copyright.md', 'r') as f:
-        content = markdown.markdown(f.read())
-    return render_template('static_page.html', title='Copyright & DMCA Policy', content=content, page='copyright')
+    return render_template('copyright.html')
 
 @app.route('/faq')
 def faq():
     """FAQ page"""
-    with open('pages/faq.md', 'r') as f:
-        content = markdown.markdown(f.read())
-    return render_template('static_page.html', title='Frequently Asked Questions', content=content, page='faq')
+    return render_template('faq.html')
 
 @app.route('/contact')
 def contact():
     """Contact page"""
-    with open('pages/contact.md', 'r') as f:
-        content = markdown.markdown(f.read())
-    return render_template('static_page.html', title='Contact Us', content=content, page='contact')
+    return render_template('contact.html')
 
 @app.route('/submit_contact', methods=['POST'])
 def submit_contact():

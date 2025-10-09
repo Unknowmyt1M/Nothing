@@ -1,0 +1,199 @@
+
+{% extends "base.html" %}
+
+{% block title %}About UpDownVid - Multi-Platform Video Management{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Hero Section -->
+    <div class="text-center mb-5 animate__animated animate__fadeIn">
+        <h1 class="display-3 fw-bold mb-3">
+            <i class="fas fa-info-circle text-primary me-3"></i>About UpDownVid
+        </h1>
+        <p class="lead text-muted">Your All-in-One Video Management Platform</p>
+    </div>
+
+    <!-- Mission Section -->
+    <div class="row mb-5 animate__animated animate__fadeInUp">
+        <div class="col-lg-10 mx-auto">
+            <div class="card border-0 shadow-lg bg-dark">
+                <div class="card-body p-5">
+                    <h2 class="h3 mb-4">
+                        <i class="fas fa-bullseye text-warning me-2"></i>Our Mission
+                    </h2>
+                    <p class="lead">
+                        UpDownVid is a powerful, user-friendly platform designed to simplify video management across multiple social media platforms. We empower content creators, marketers, and businesses to seamlessly download, extract metadata, and upload videos without the hassle of complex tools.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow hover-lift">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-primary bg-gradient rounded-circle mx-auto mb-3" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-download fa-2x text-white"></i>
+                    </div>
+                    <h3 class="h5 mb-3">Multi-Platform Downloads</h3>
+                    <p class="text-muted">Download videos from 13+ platforms including YouTube, Instagram, TikTok, Facebook, and more.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow hover-lift">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-success bg-gradient rounded-circle mx-auto mb-3" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-tags fa-2x text-white"></i>
+                    </div>
+                    <h3 class="h5 mb-3">Smart Metadata Extraction</h3>
+                    <p class="text-muted">Automatically extract titles, descriptions, tags, and more from any video URL.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow hover-lift">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-danger bg-gradient rounded-circle mx-auto mb-3" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fab fa-youtube fa-2x text-white"></i>
+                    </div>
+                    <h3 class="h5 mb-3">YouTube Upload</h3>
+                    <p class="text-muted">Directly upload videos to your YouTube channel with customizable metadata.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow hover-lift">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-info bg-gradient rounded-circle mx-auto mb-3" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-hd-video fa-2x text-white"></i>
+                    </div>
+                    <h3 class="h5 mb-3">HD Quality</h3>
+                    <p class="text-muted">All downloads are in minimum 720p HD quality with 1080p support.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow hover-lift">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-warning bg-gradient rounded-circle mx-auto mb-3" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-robot fa-2x text-white"></i>
+                    </div>
+                    <h3 class="h5 mb-3">Channel Automation</h3>
+                    <p class="text-muted">Monitor YouTube channels and auto-upload new videos to your account.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow hover-lift">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-secondary bg-gradient rounded-circle mx-auto mb-3" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-shield-alt fa-2x text-white"></i>
+                    </div>
+                    <h3 class="h5 mb-3">Privacy First</h3>
+                    <p class="text-muted">Your data is secure. Videos are auto-deleted after processing.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technology Stack -->
+    <div class="row mb-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-5">
+                    <h2 class="h3 mb-4">
+                        <i class="fas fa-code text-primary me-2"></i>Built With Modern Technology
+                    </h2>
+                    <div class="row g-3">
+                        <div class="col-6 col-md-4 col-lg-3 text-center">
+                            <div class="tech-badge p-3 rounded">
+                                <i class="fab fa-python fa-3x text-info mb-2"></i>
+                                <p class="mb-0 small">Python/Flask</p>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-3 text-center">
+                            <div class="tech-badge p-3 rounded">
+                                <i class="fab fa-bootstrap fa-3x text-purple mb-2"></i>
+                                <p class="mb-0 small">Bootstrap 5</p>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-3 text-center">
+                            <div class="tech-badge p-3 rounded">
+                                <i class="fas fa-database fa-3x text-success mb-2"></i>
+                                <p class="mb-0 small">MongoDB</p>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-3 text-center">
+                            <div class="tech-badge p-3 rounded">
+                                <i class="fab fa-google fa-3x text-danger mb-2"></i>
+                                <p class="mb-0 small">Google OAuth</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team/Contact CTA -->
+    <div class="text-center">
+        <h2 class="h3 mb-4">Ready to Get Started?</h2>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a href="{{ url_for('home') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-play me-2"></i>Try It Now
+            </a>
+            <a href="{{ url_for('contact') }}" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-envelope me-2"></i>Contact Us
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.5) !important;
+}
+
+.tech-badge {
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.tech-badge:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+}
+
+.text-purple {
+    color: #7952b3;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate__fadeInUp {
+    animation: fadeInUp 0.6s ease-out;
+}
+</style>
+{% endblock %}

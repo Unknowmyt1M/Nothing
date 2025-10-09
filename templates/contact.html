@@ -1,0 +1,182 @@
+
+{% extends "base.html" %}
+
+{% block title %}Contact Us - UpDownVid{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Hero Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-3 fw-bold mb-3">
+            <i class="fas fa-envelope text-primary me-3"></i>Get In Touch
+        </h1>
+        <p class="lead text-muted">We'd love to hear from you!</p>
+    </div>
+
+    <div class="row g-5">
+        <!-- Contact Form -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-5">
+                    <h2 class="h4 mb-4">Send us a Message</h2>
+                    <form id="contactForm">
+                        <div class="mb-4">
+                            <label for="name" class="form-label">Your Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="email" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="subject" class="form-label">Subject</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                                <input type="text" class="form-control" id="subject" name="subject" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea class="form-control" id="message" name="message" rows="6" required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100" id="submitBtn">
+                            <i class="fas fa-paper-plane me-2"></i>Send Message
+                        </button>
+                    </form>
+
+                    <div id="formAlert" class="alert d-none mt-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-lg mb-4">
+                <div class="card-body p-4">
+                    <h3 class="h5 mb-4">
+                        <i class="fas fa-map-marker-alt text-danger me-2"></i>Contact Information
+                    </h3>
+                    
+                    <div class="mb-4">
+                        <h4 class="h6 mb-2">General Inquiries</h4>
+                        <a href="mailto:support@updownvid.com" class="text-decoration-none">
+                            <i class="fas fa-envelope text-primary me-2"></i>support@updownvid.com
+                        </a>
+                    </div>
+
+                    <div class="mb-4">
+                        <h4 class="h6 mb-2">Business & Partnerships</h4>
+                        <a href="mailto:business@updownvid.com" class="text-decoration-none">
+                            <i class="fas fa-briefcase text-success me-2"></i>business@updownvid.com
+                        </a>
+                    </div>
+
+                    <div class="mb-4">
+                        <h4 class="h6 mb-2">Copyright & DMCA</h4>
+                        <a href="mailto:copyright@updownvid.com" class="text-decoration-none">
+                            <i class="fas fa-copyright text-warning me-2"></i>copyright@updownvid.com
+                        </a>
+                    </div>
+
+                    <div>
+                        <h4 class="h6 mb-2">Response Time</h4>
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-clock text-info me-2"></i>48-72 hours
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social Links -->
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-4">
+                    <h3 class="h5 mb-4">
+                        <i class="fas fa-share-alt text-info me-2"></i>Follow Us
+                    </h3>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="btn btn-outline-primary btn-lg">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-danger btn-lg">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-info btn-lg">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-dark btn-lg">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ Link -->
+            <div class="text-center mt-4">
+                <p class="text-muted">Looking for quick answers?</p>
+                <a href="{{ url_for('faq') }}" class="btn btn-outline-light">
+                    <i class="fas fa-question-circle me-2"></i>Visit FAQ
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('contactForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submitBtn');
+    const formAlert = document.getElementById('formAlert');
+    const formData = new FormData(this);
+    
+    // Disable button and show loading
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
+    
+    try {
+        const response = await fetch('/submit_contact', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            formAlert.className = 'alert alert-success';
+            formAlert.textContent = data.message;
+            formAlert.classList.remove('d-none');
+            this.reset();
+        } else {
+            throw new Error(data.error || 'Failed to send message');
+        }
+    } catch (error) {
+        formAlert.className = 'alert alert-danger';
+        formAlert.textContent = error.message;
+        formAlert.classList.remove('d-none');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Send Message';
+    }
+});
+</script>
+
+<style>
+.btn-outline-primary:hover,
+.btn-outline-danger:hover,
+.btn-outline-info:hover,
+.btn-outline-dark:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+</style>
+{% endblock %}
