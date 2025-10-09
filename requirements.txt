@@ -25,3 +25,5 @@ gunicorn
 psycopg2-binary
 gunicorn
 pymongo
+motor
+markdown
