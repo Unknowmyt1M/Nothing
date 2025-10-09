@@ -2,7 +2,9 @@
 <html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description" content="Multi-platform video downloader supporting YouTube, Instagram, TikTok, Facebook and more. Free, fast, and privacy-focused.">
+    <meta name="theme-color" content="#1a1a1a">
     <title>{% block title %}Multi-Platform Video Downloader{% endblock %}</title>
     
     <!-- Bootstrap CSS with Replit theme -->
@@ -13,17 +15,19 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
 </head>
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('home') }}">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home') }}">
                 <i class="fas fa-cloud-download-alt text-primary me-2"></i>
-                UpDownVid
+                <span class="d-none d-sm-inline">UpDownVid</span>
+                <span class="d-inline d-sm-none">UDV</span>
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
@@ -62,7 +66,7 @@
                 </ul>
                 
                 {% if current_user_info %}
-                <div class="navbar-text">
+                <div class="navbar-text ms-lg-3">
                     <a href="{{ url_for('accounts') }}" class="text-decoration-none d-flex align-items-center">
                         {% if current_youtube_channel %}
                             <img src="{{ current_youtube_channel.snippet.thumbnails.default.url }}" 
@@ -70,14 +74,14 @@
                                  class="rounded-circle me-2" 
                                  width="32" height="32"
                                  title="{{ current_youtube_channel.snippet.title }}">
-                            <span class="text-light">{{ current_youtube_channel.snippet.title }}</span>
+                            <span class="text-light d-none d-md-inline">{{ current_youtube_channel.snippet.title }}</span>
                         {% else %}
                             <img src="{{ current_user_info.picture }}" 
                                  alt="{{ current_user_info.name }}" 
                                  class="rounded-circle me-2" 
                                  width="32" height="32"
                                  title="{{ current_user_info.name }}">
-                            <span class="text-light">{{ current_user_info.name }}</span>
+                            <span class="text-light d-none d-md-inline">{{ current_user_info.name }}</span>
                         {% endif %}
                     </a>
                 </div>

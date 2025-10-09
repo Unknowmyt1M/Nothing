@@ -1,0 +1,422 @@
+
+/* ========================================
+   UPDOWNVID RESPONSIVE DESIGN
+   Mobile-first approach with breakpoints
+   ======================================== */
+
+/* Base Mobile Styles (< 480px) */
+:root {
+    --mobile-padding: 0.75rem;
+    --tablet-padding: 1.25rem;
+    --desktop-padding: 2rem;
+}
+
+/* Global Responsive Utilities */
+@media (max-width: 480px) {
+    .container {
+        padding-left: var(--mobile-padding);
+        padding-right: var(--mobile-padding);
+    }
+    
+    .card {
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    h1, .display-1 { font-size: 2rem !important; }
+    h2, .display-2 { font-size: 1.75rem !important; }
+    h3, .display-3 { font-size: 1.5rem !important; }
+    h4, .display-4 { font-size: 1.25rem !important; }
+    h5, .display-5 { font-size: 1.1rem !important; }
+    h6, .display-6 { font-size: 1rem !important; }
+    
+    .btn-lg {
+        padding: 0.75rem 1.25rem;
+        font-size: 1rem;
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Navigation Responsive Styles */
+.navbar {
+    padding: 0.5rem 1rem;
+}
+
+@media (max-width: 991px) {
+    .navbar-collapse {
+        background-color: var(--bs-dark);
+        padding: 1rem;
+        margin-top: 0.5rem;
+        border-radius: 0.375rem;
+    }
+    
+    .navbar-nav {
+        gap: 0.5rem;
+    }
+    
+    .navbar-nav .nav-link {
+        padding: 0.75rem 1rem;
+        border-radius: 0.25rem;
+    }
+    
+    .navbar-nav .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* Sticky Header for Mobile */
+@media (max-width: 768px) {
+    .navbar {
+        position: sticky;
+        top: 0;
+        z-index: 1030;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* Form Responsive Styles */
+@media (max-width: 768px) {
+    .input-group {
+        flex-direction: column;
+    }
+    
+    .input-group > .form-control,
+    .input-group > .btn {
+        width: 100%;
+        border-radius: 0.375rem !important;
+    }
+    
+    .input-group > .btn {
+        margin-top: 0.5rem;
+    }
+    
+    .input-group-text {
+        border-radius: 0.375rem 0.375rem 0 0 !important;
+    }
+}
+
+/* Touch-Friendly Buttons */
+@media (max-width: 768px) {
+    .btn {
+        min-height: 44px; /* Apple's recommended touch target */
+        min-width: 44px;
+    }
+    
+    .badge {
+        font-size: 0.85rem;
+        padding: 0.5em 0.75em;
+    }
+}
+
+/* Grid & Card Layouts */
+@media (max-width: 480px) {
+    .row > [class*="col-"] {
+        margin-bottom: 1rem;
+    }
+    
+    /* Force single column on mobile */
+    .row.mobile-single-col > [class*="col-"] {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    /* Two-column layout for tablets */
+    .row.tablet-two-col > [class*="col-md-"] {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+/* Video Metadata Preview Responsive */
+@media (max-width: 768px) {
+    #metadataPreview .row,
+    #extractedMetadata .row {
+        flex-direction: column;
+    }
+    
+    #videoThumbnail,
+    #metadataThumbnail {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 1rem;
+    }
+    
+    .metadata-info {
+        width: 100%;
+    }
+}
+
+/* Platform Cards Responsive */
+@media (max-width: 480px) {
+    #platformGrid .col-md-6,
+    #platformGrid .col-lg-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    #platformGrid .col-lg-4 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+/* Automation Page Responsive */
+@media (max-width: 768px) {
+    #channelCards .col-md-6,
+    #channelCards .col-lg-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    .nav-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .nav-tabs .nav-link {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+    }
+}
+
+/* Modal Responsive */
+@media (max-width: 768px) {
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+    
+    .modal-lg {
+        max-width: calc(100% - 1rem);
+    }
+}
+
+/* Progress Bars & Stats */
+@media (max-width: 480px) {
+    .progress {
+        height: 24px;
+    }
+    
+    .progress-bar {
+        font-size: 0.85rem;
+    }
+}
+
+/* Footer Responsive */
+@media (max-width: 768px) {
+    footer .row > div {
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    
+    footer ul {
+        padding-left: 0;
+    }
+}
+
+/* Toast Notifications */
+@media (max-width: 480px) {
+    .toast-container {
+        width: 100% !important;
+        padding: 0.5rem !important;
+    }
+    
+    .toast {
+        width: 100%;
+    }
+}
+
+/* Table Responsive */
+@media (max-width: 768px) {
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    table {
+        font-size: 0.85rem;
+    }
+}
+
+/* Image & Thumbnail Responsive */
+img, .img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+.rounded-circle {
+    width: 60px;
+    height: 60px;
+}
+
+@media (max-width: 480px) {
+    .rounded-circle {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+/* Alert Messages */
+@media (max-width: 480px) {
+    .alert {
+        font-size: 0.9rem;
+        padding: 0.75rem;
+    }
+}
+
+/* Video Quality Selector */
+@media (max-width: 768px) {
+    #qualitySelect,
+    #privacySelect {
+        font-size: 0.9rem;
+    }
+}
+
+/* Channel Cards in Automation */
+@media (max-width: 768px) {
+    .card img[width="80"] {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+/* Download/Upload Progress Sections */
+@media (max-width: 480px) {
+    #downloadProgress,
+    #uploadProgress,
+    #progressSection {
+        font-size: 0.9rem;
+    }
+    
+    #downloadProgress small,
+    #uploadProgress small {
+        display: block;
+        margin-top: 0.25rem;
+    }
+}
+
+/* Log Container */
+@media (max-width: 768px) {
+    #logContainer {
+        height: 300px !important;
+        font-size: 0.75rem;
+    }
+}
+
+/* Horizontal Scrolling for Long Content */
+@media (max-width: 768px) {
+    .text-truncate-mobile {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+/* Platform Icons Row */
+@media (max-width: 480px) {
+    .form-text i {
+        font-size: 1.2rem;
+        margin: 0.25rem;
+    }
+}
+
+/* Video Tags Container */
+@media (max-width: 768px) {
+    #videoTagsContainer,
+    #metadataTags {
+        max-height: 150px;
+    }
+}
+
+/* Stats Cards */
+@media (max-width: 480px) {
+    .card .row.text-center > div {
+        margin-bottom: 0.75rem;
+    }
+    
+    .card .row.text-center > div:last-child {
+        margin-bottom: 0;
+    }
+}
+
+/* Settings Form */
+@media (max-width: 768px) {
+    #addChannelForm .row,
+    .card-body .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    #addChannelForm .col-md-8,
+    #addChannelForm .col-md-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 1rem;
+    }
+}
+
+/* Technical Info Tabs */
+@media (max-width: 480px) {
+    .tab-content {
+        font-size: 0.85rem;
+    }
+    
+    .tab-pane p {
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Utility Classes */
+.mobile-hidden {
+    display: none;
+}
+
+@media (min-width: 769px) {
+    .mobile-hidden {
+        display: block;
+    }
+    
+    .desktop-hidden {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .desktop-hidden {
+        display: block;
+    }
+}
+
+/* Smooth Transitions */
+@media (prefers-reduced-motion: no-preference) {
+    .navbar-collapse {
+        transition: all 0.3s ease-in-out;
+    }
+}
+
+/* Landscape Mobile Optimization */
+@media (max-width: 768px) and (orientation: landscape) {
+    .modal-dialog {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .navbar, footer, .btn, .toast-container {
+        display: none !important;
+    }
+}

@@ -55,6 +55,8 @@
 .copy-btn, .tag-copy-btn {
     transition: all 0.2s ease-in-out;
     border: 1px solid transparent;
+    min-width: 36px;
+    min-height: 36px;
 }
 
 .copy-btn:hover, .tag-copy-btn:hover {
@@ -64,6 +66,14 @@
 
 .copy-btn:active, .tag-copy-btn:active {
     transform: scale(0.95);
+}
+
+/* Touch-friendly for mobile */
+@media (max-width: 768px) {
+    .copy-btn, .tag-copy-btn {
+        min-width: 44px;
+        min-height: 44px;
+    }
 }
 
 /* Tag styling enhancements */
