@@ -16,23 +16,23 @@ async def test_mongodb_connection():
     print("=" * 60)
     
     # Get MongoDB credentials
-    MONGODB_URI = os.environ.get('MONGODB_URI')
-    MONGODB_DBNAME = os.environ.get('DB_NAME', 'updownvid')
+    MONGO_URL = os.environ.get('MONGO_URL')
+    DB_NAME = os.environ.get('DB_NAME', 'updownvid')
     
-    if not MONGODB_URI:
+    if not MONGO_URL:
         print("❌ ERROR: MONGO_URL not found in .env file")
         print("💡 Please add MONGO_URL to your .env file")
         return False
     
     print(f"\n📋 Configuration:")
-    print(f"   Database: {MONGODB_DBNAME}")
-    print(f"   Connection URL: {MONGODB_URI[:30]}..." if len(MONGODB_URI) > 30 else MONGODB_URI)
+    print(f"   Database: {DB_NAME}")
+    print(f"   Connection URL: {MONGO_URL[:30]}..." if len(MONGO_URL) > 30 else MONGO_URL)
     
     try:
         # Step 1: Connect to MongoDB
         print("\n🔌 Step 1: Connecting to MongoDB...")
-        client = AsyncIOMotorClient(MONGODB_URI)
-        db = client[MONGODB_DBNAME]
+        client = AsyncIOMotorClient(MONGO_URL)
+        db = client[DB_NAME]
         
         # Test connection with ping
         await client.admin.command('ping')

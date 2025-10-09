@@ -31,11 +31,9 @@ SCOPES = [
 ]
 
 def get_redirect_uri():
-    """Get the appropriate redirect URI"""
-    if os.environ.get('REPLIT_DEV_DOMAIN'):
-        return f"https://{os.environ['REPLIT_DEV_DOMAIN']}/google_login/callback"
-    else:
-        return "http://localhost:5000/google_login/callback"
+    domain = os.getenv("SITE_URL", "http://localhost:5000")
+    return f"{domain}/google_login/callback"
+
 
 def get_google_auth_url():
     """Generate Google OAuth authorization URL"""
