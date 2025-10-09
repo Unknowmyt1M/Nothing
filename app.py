@@ -226,15 +226,21 @@ def google_callback():
         session['user_email'] = user_info['email']
 
         # Store tokens for background automation in MongoDB
-        import asyncio
         from mongo import store_user_tokens as mongo_store_tokens, save_oauth_tokens
         
-        # Store access/refresh tokens
+        # Store access/refresh tokens using asyncio.run() in a new event loop
         try:
-            asyncio.run(mongo_store_tokens(user_email_dir, tokens['access_token'], tokens.get('refresh_token')))
-            # Also store full token.json data
-            asyncio.run(save_oauth_tokens(user_email_dir, tokens))
-            logging.info(f"✅ Successfully stored tokens for user {user_email_dir}")
+            # Create a new event loop for this operation
+            import asyncio
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            try:
+                loop.run_until_complete(mongo_store_tokens(user_email_dir, tokens['access_token'], tokens.get('refresh_token')))
+                # Also store full token.json data
+                loop.run_until_complete(save_oauth_tokens(user_email_dir, tokens))
+                logging.info(f"✅ Successfully stored tokens for user {user_email_dir}")
+            finally:
+                loop.close()
         except Exception as token_error:
             logging.error(f"❌ Failed to store tokens: {token_error}")
             flash('Account connected but token storage failed', 'warning')
