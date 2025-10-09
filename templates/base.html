@@ -27,9 +27,31 @@
                 <span class="d-inline d-sm-none">UDV</span>
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <div class="d-flex align-items-center">
+                {% if current_user_info %}
+                <div class="navbar-text me-2 d-lg-none">
+                    <a href="{{ url_for('accounts') }}" class="text-decoration-none d-flex align-items-center">
+                        {% if current_youtube_channel %}
+                            <img src="{{ current_youtube_channel.snippet.thumbnails.default.url }}" 
+                                 alt="{{ current_youtube_channel.snippet.title }}" 
+                                 class="rounded-circle" 
+                                 width="32" height="32"
+                                 title="{{ current_youtube_channel.snippet.title }}">
+                        {% else %}
+                            <img src="{{ current_user_info.picture }}" 
+                                 alt="{{ current_user_info.name }}" 
+                                 class="rounded-circle" 
+                                 width="32" height="32"
+                                 title="{{ current_user_info.name }}">
+                        {% endif %}
+                    </a>
+                </div>
+                {% endif %}
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
@@ -66,7 +88,7 @@
                 </ul>
                 
                 {% if current_user_info %}
-                <div class="navbar-text ms-lg-3">
+                <div class="navbar-text ms-lg-3 d-none d-lg-block">
                     <a href="{{ url_for('accounts') }}" class="text-decoration-none d-flex align-items-center">
                         {% if current_youtube_channel %}
                             <img src="{{ current_youtube_channel.snippet.thumbnails.default.url }}" 
@@ -74,14 +96,14 @@
                                  class="rounded-circle me-2" 
                                  width="32" height="32"
                                  title="{{ current_youtube_channel.snippet.title }}">
-                            <span class="text-light d-none d-md-inline">{{ current_youtube_channel.snippet.title }}</span>
+                            <span class="text-light">{{ current_youtube_channel.snippet.title }}</span>
                         {% else %}
                             <img src="{{ current_user_info.picture }}" 
                                  alt="{{ current_user_info.name }}" 
                                  class="rounded-circle me-2" 
                                  width="32" height="32"
                                  title="{{ current_user_info.name }}">
-                            <span class="text-light d-none d-md-inline">{{ current_user_info.name }}</span>
+                            <span class="text-light">{{ current_user_info.name }}</span>
                         {% endif %}
                     </a>
                 </div>
@@ -127,28 +149,36 @@
                 
                 <div class="col-md-4 mb-3">
                     <h6 class="text-light mb-3">Quick Links</h6>
-                    <ul class="list-unstyled">
-                        <li class="mb-2">
-                            <a href="{{ url_for('about') }}" class="text-muted text-decoration-none">
-                                <i class="fas fa-info-circle me-1"></i>About
-                            </a>
-                        </li>
-                        <li class="mb-2">
-                            <a href="{{ url_for('faq') }}" class="text-muted text-decoration-none">
-                                <i class="fas fa-question-circle me-1"></i>FAQ
-                            </a>
-                        </li>
-                        <li class="mb-2">
-                            <a href="{{ url_for('contact') }}" class="text-muted text-decoration-none">
-                                <i class="fas fa-envelope me-1"></i>Contact
-                            </a>
-                        </li>
-                        <li class="mb-2">
-                            <a href="{{ url_for('platforms') }}" class="text-muted text-decoration-none">
-                                <i class="fas fa-list me-1"></i>Supported Platforms
-                            </a>
-                        </li>
-                    </ul>
+                    <div class="row">
+                        <div class="col-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <a href="{{ url_for('about') }}" class="text-muted text-decoration-none">
+                                        <i class="fas fa-info-circle me-1"></i>About
+                                    </a>
+                                </li>
+                                <li class="mb-2">
+                                    <a href="{{ url_for('faq') }}" class="text-muted text-decoration-none">
+                                        <i class="fas fa-question-circle me-1"></i>FAQ
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <a href="{{ url_for('contact') }}" class="text-muted text-decoration-none">
+                                        <i class="fas fa-envelope me-1"></i>Contact
+                                    </a>
+                                </li>
+                                <li class="mb-2">
+                                    <a href="{{ url_for('platforms') }}" class="text-muted text-decoration-none">
+                                        <i class="fas fa-list me-1"></i>Platforms
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="col-md-4 mb-3">
