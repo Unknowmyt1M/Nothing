@@ -100,25 +100,27 @@ def get_platform_config(platform):
             'format': 'best[height>=720][height<=1080][ext=mp4]/best[height>=720][ext=mp4]/best[height>=720]/best[ext=mp4]/best',
             'writesubtitles': True,
             'writeautomaticsub': True,
-            'cookiefile': 'cookies/cookies.txt',  # YouTube authentication cookies - tested working
+            'cookiefile': 'cookies/youtube.txt',  # YouTube authentication cookies - platform specific
         },
         'instagram': {
             **base_config,
             'format': 'best[height>=720][height<=1080][ext=mp4]/best[height>=720][ext=mp4]/best[height>=720]/best[ext=mp4]/best',
-            'cookiefile': 'cookies/instagram_cookies.txt',  # Instagram authentication cookies
+            'cookiefile': 'cookies/insta.txt',  # Instagram authentication cookies
         },
         'facebook': {
             **base_config,
             'format': 'best[height>=720][height<=1080][ext=mp4]/best[height>=720][ext=mp4]/best[height>=720]/best[ext=mp4]/best',
-            'cookiefile': 'cookies/instagram_cookies.txt',  # Use Instagram cookies for Facebook as fallback
+            'cookiefile': 'cookies/facebook.txt',  # Facebook authentication cookies
         },
         'twitter': {
             **base_config,
             'format': 'best[height>=720][height<=1080][ext=mp4]/best[height>=720][ext=mp4]/best[height>=720]/best[ext=mp4]/best',
+            'cookiefile': 'cookies/x.txt',  # Twitter/X authentication cookies
         },
         'dailymotion': {
             **base_config,
             'format': 'best[height>=720][height<=1080][ext=mp4]/best[height>=720][ext=mp4]/best[height>=720]/best[ext=mp4]/best',
+            'cookiefile': 'cookies/dailymotion.txt',  # Dailymotion authentication cookies
         },
         'vimeo': {
             **base_config,
@@ -136,7 +138,7 @@ def get_platform_config(platform):
         'tiktok': {
             **base_config,
             'format': 'best[height>=720][height<=1080][ext=mp4]/best[height>=720][ext=mp4]/best[height>=720]/best[ext=mp4]/best',
-            'cookiefile': 'cookies/instagram_cookies.txt',  # Use Instagram cookies for TikTok as fallback
+            'cookiefile': 'cookies/insta.txt',  # Use Instagram cookies for TikTok as fallback
         },
         'snapchat': {
             **base_config,
@@ -145,6 +147,7 @@ def get_platform_config(platform):
         'twitch': {
             **base_config,
             'format': 'best[height>=720][height<=1080][ext=mp4]/best[height>=720][ext=mp4]/best[height>=720]/best[ext=mp4]/best',
+            'cookiefile': 'cookies/twitch.txt',  # Twitch authentication cookies
         },
         'rumble': {
             **base_config,
@@ -159,6 +162,7 @@ def get_platform_config(platform):
             'http_chunk_size': 10485760,  # 10MB chunks for better stability
             'hls_use_mpegts': False,
             'extract_flat': False,
+            'cookiefile': 'cookies/rumble.txt',  # Rumble authentication cookies
         },
         'direct_url': {
             **base_config,
@@ -240,15 +244,23 @@ def get_available_formats_list(url):
         
         # Add cookies for specific platforms
         if platform == 'youtube':
-            list_config['cookiefile'] = 'cookies/cookies.txt'
+            list_config['cookiefile'] = 'cookies/youtube.txt'
         elif platform == 'instagram':
-            list_config['cookiefile'] = 'cookies/instagram_cookies.txt'
-        elif platform == 'vimeo':
-            list_config['cookiefile'] = 'cookies/vimeo_cookies.txt'
+            list_config['cookiefile'] = 'cookies/insta.txt'
         elif platform == 'facebook':
-            list_config['cookiefile'] = 'cookies/instagram_cookies.txt'  # Use Instagram cookies as fallback
+            list_config['cookiefile'] = 'cookies/facebook.txt'
+        elif platform == 'twitter':
+            list_config['cookiefile'] = 'cookies/x.txt'
+        elif platform == 'vimeo':
+            list_config['cookiefile'] = 'cookies/vimeo.txt'
+        elif platform == 'dailymotion':
+            list_config['cookiefile'] = 'cookies/dailymotion.txt'
+        elif platform == 'twitch':
+            list_config['cookiefile'] = 'cookies/twitch.txt'
+        elif platform == 'rumble':
+            list_config['cookiefile'] = 'cookies/rumble.txt'
         elif platform == 'tiktok':
-            list_config['cookiefile'] = 'cookies/instagram_cookies.txt'  # Use Instagram cookies as fallback
+            list_config['cookiefile'] = 'cookies/insta.txt'  # TikTok uses Instagram cookies as fallback
         
         with yt_dlp.YoutubeDL(list_config) as ydl:
             info = ydl.extract_info(url, download=False)
@@ -316,11 +328,23 @@ def extract_platform_metadata(url, platform=None):
     
     # Add cookies for authentication
     if platform == 'youtube':
-        config['cookiefile'] = 'cookies/cookies.txt'
+        config['cookiefile'] = 'cookies/youtube.txt'
     elif platform == 'instagram':
-        config['cookiefile'] = 'cookies/instagram_cookies.txt'
+        config['cookiefile'] = 'cookies/insta.txt'
+    elif platform == 'facebook':
+        config['cookiefile'] = 'cookies/facebook.txt'
+    elif platform == 'twitter':
+        config['cookiefile'] = 'cookies/x.txt'
     elif platform == 'vimeo':
-        config['cookiefile'] = 'cookies/vimeo_cookies.txt'
+        config['cookiefile'] = 'cookies/vimeo.txt'
+    elif platform == 'dailymotion':
+        config['cookiefile'] = 'cookies/dailymotion.txt'
+    elif platform == 'twitch':
+        config['cookiefile'] = 'cookies/twitch.txt'
+    elif platform == 'rumble':
+        config['cookiefile'] = 'cookies/rumble.txt'
+    elif platform == 'tiktok':
+        config['cookiefile'] = 'cookies/insta.txt'  # TikTok uses Instagram cookies as fallback
     
     try:
         with yt_dlp.YoutubeDL(config) as ydl:
