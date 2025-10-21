@@ -54,3 +54,4 @@ requests-toolbelt
 trafilatura
 werkzeug
 yt-dlp
+motor
