@@ -1,0 +1,20 @@
+# Netscape HTTP Cookie File
+# http://curl.haxx.se/rfc/cookie_spec.html
+# This is a generated file!  Do not edit.
+
+.twitch.tv	TRUE	/	TRUE	1793768590	unique_id	ZvXV2hLapfvr4QBygSnQie3SMAYUCgUr
+.twitch.tv	TRUE	/	TRUE	1793768590	unique_id_durable	ZvXV2hLapfvr4QBygSnQie3SMAYUCgUr
+.twitch.tv	TRUE	/	FALSE	1793250190	twitch.lohp.countryCode	IN
+.twitch.tv	TRUE	/	TRUE	1759555858	referrer_url	https://www.google.com/
+.twitch.tv	TRUE	/	TRUE	1793768458	experiment_overrides	{%22experiments%22:{}%2C%22disabled%22:[]}
+.twitch.tv	TRUE	/	TRUE	0	spare_key	eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3Bhc3Nwb3J0LnR3aXRjaC50diIsInN1YiI6IltcIjEzNzQ5NTAwMzBcIl0iLCJhdWQiOiJicnV0ZS1mb3JjZS1wcm90ZWN0aW9uIiwiZXhwIjoxNzc1MTA2MTg3LCJpYXQiOjE3NTk1NTQxODcsIm5vbmNlIjoiTWZNOGlld1NnLXFVc19zNExwT20xS0FsWUVQR3dPWXZkSEZIajBtMFA0ST0ifQ%3D%3D.AQWrH1Y93mlTnzL8PYx13nkLLOvWca7brP7JpLZmNHynj3sXIUCVwd06HnPW0kEV29OPuQR_N5Jdd2Gck8Pt2w%3D%3D
+.twitch.tv	TRUE	/	TRUE	1791003788	persistent	1374950030%3A%3A7m4k1tvfaagnwndelf037y7m96tw28
+.twitch.tv	TRUE	/	TRUE	1759557788	sudo	eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMzc0OTUwMDMwIiwiYXVkIjpbInN1ZG8iXSwiZXhwIjoxNzU5NTU3Nzg3LCJpYXQiOjE3NTk1NTQxODd9.QHVaxNgBM7Zm8hRIhZsKiHjXVkBQRkX8nyEkeBb3nP6WvQMWEm-uNBDP5bQH1dafECe1uM-O4pMUPSxEjZI23g==
+.twitch.tv	TRUE	/	TRUE	1760158988	bits_sudo	eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMzc0OTUwMDMwIiwiYXVkIjpbInN1ZG8iLCJiaXRzIl0sImV4cCI6MTc2MDE1ODk4NywiaWF0IjoxNzU5NTU0MTg3fQ==.s_zptMVCJU61g-5_HzGelRhsVVcotypwj3v4mBYxRK1_b2-njkkRjKU_HVXOBqmAVqVB-u2_SUHIU66Qa-8MLw==
+.twitch.tv	TRUE	/	TRUE	1793768598	login	unknownyt1m
+.twitch.tv	TRUE	/	FALSE	1791003788	name	unknownyt1m
+.twitch.tv	TRUE	/	FALSE	1791003788	last_login	2025-10-04T05:03:07Z
+.twitch.tv	TRUE	/	TRUE	1791003788	api_token	5606420f6514d56965b2a5b5bdd065b4
+.twitch.tv	TRUE	/	TRUE	1793768598	twilight-user	{%22authToken%22:%22grtarz70dwocyiaoddbjkik4dzac2y%22%2C%22displayName%22:%22unknownyt1m%22%2C%22id%22:%221374950030%22%2C%22login%22:%22unknownyt1m%22%2C%22roles%22:{%22isStaff%22:false}%2C%22version%22:2}
+.twitch.tv	TRUE	/	TRUE	1793768598	auth-token	grtarz70dwocyiaoddbjkik4dzac2y
+.twitch.tv	TRUE	/	TRUE	0	server_session_id	5eb2371a46914a4ca2c693a531b20ee5

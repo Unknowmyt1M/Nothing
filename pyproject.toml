@@ -1,0 +1,18 @@
+[project]
+name = "UpDownVid"
+version = "2.0.0"
+description = "Unified video downloader & uploader platform"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.27.0",
+    "sqlalchemy>=2.0.0",
+    "yt-dlp>=2026.7.4",
+    "python-dotenv>=1.1.1",
+    "requests>=2.32.4",
+    "google-api-python-client>=2.177.0",
+    "google-auth>=2.25.0",
+    "passlib[bcrypt]>=1.7.0",
+    "python-jose[cryptography]>=3.5.0",
+    "python-multipart>=0.0.32",
+]
