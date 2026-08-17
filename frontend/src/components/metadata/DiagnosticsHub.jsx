@@ -91,7 +91,7 @@ export default function DiagnosticsHub() {
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: '30px', alignItems: 'start' }}>
+      <div className="diagnostics-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: '30px', alignItems: 'start' }}>
         
         {/* Left Column: Cookie status & instructions */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>

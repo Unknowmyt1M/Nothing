@@ -39,6 +39,7 @@ export default function GoogleLinkCard({
               <img 
                 src={authStatus.user?.picture || 'https://www.gravatar.com/avatar?d=mp'} 
                 alt="Profile Avatar"
+                onError={(e) => { e.target.src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><rect width="60" height="60" rx="30" fill="%2312101f"/><text x="30" y="38" text-anchor="middle" fill="%2300f2fe" font-size="24" font-family="sans-serif">U</text></svg>'); }}
                 style={{ width: '60px', height: '60px', borderRadius: '50%', border: '2px solid var(--color-cyan)', boxShadow: 'var(--neon-shadow-cyan)' }}
               />
             </motion.div>

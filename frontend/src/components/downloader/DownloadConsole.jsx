@@ -9,7 +9,9 @@ export default function DownloadConsole({
   selectedQuality,
   setSelectedQuality,
   downloadProgress,
-  handleDownload
+  handleDownload,
+  onCancel,
+  downloadId,
 }) {
   return (
     <div className="glass-panel" style={{ padding: '24px', border: '1px solid rgba(0, 242, 254, 0.15)', background: 'rgba(0, 242, 254, 0.02)' }}>
@@ -18,7 +20,7 @@ export default function DownloadConsole({
       </h4>
       
       {!downloading && !downloaded ? (
-        <div style={{ display: 'flex', gap: '15px' }}>
+        <div className="download-console-row">
           <select 
             value={selectedQuality}
             onChange={(e) => setSelectedQuality(e.target.value)}
@@ -66,8 +68,40 @@ export default function DownloadConsole({
               }}
             />
           </div>
-          <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', textAlign: 'right' }}>
-            {downloadProgress?.downloaded} / {downloadProgress?.total} ({Math.round(downloadProgress?.progress || 0)}%)
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>
+              {downloadProgress?.downloaded} / {downloadProgress?.total} ({Math.round(downloadProgress?.progress || 0)}%)
+            </div>
+            {onCancel && downloadId && (
+              <button
+                onClick={onCancel}
+                style={{
+                  background: 'rgba(239, 68, 68, 0.15)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  color: '#ef4444',
+                  padding: '5px 12px',
+                  borderRadius: '6px',
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(239, 68, 68, 0.25)';
+                  e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)';
+                  e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                }}
+              >
+                <i className="fa-solid fa-xmark" style={{ fontSize: '10px' }}></i>
+                Cancel
+              </button>
+            )}
           </div>
         </div>
       ) : (

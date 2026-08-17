@@ -1,28 +1,29 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Toast from '@/components/Toast';
 import UrlInput from './UrlInput';
 import MetadataCard from './MetadataCard';
 import DownloadConsole from './DownloadConsole';
 import YoutubeUploader from './YoutubeUploader';
+import ErrorDisplay from './ErrorDisplay';
 
 export default function ExtractionPortal() {
   const [url, setUrl] = useState('');
   const [platformInfo, setPlatformInfo] = useState({ platform: 'unknown', display_name: '', supported: false });
   const [extracting, setExtracting] = useState(false);
   const [metadata, setMetadata] = useState(null);
-  
+
   // Quality options
   const [qualities, setQualities] = useState([]);
   const [selectedQuality, setSelectedQuality] = useState('');
   const [fetchingQualities, setFetchingQualities] = useState(false);
-  
+
   // Download states
   const [downloading, setDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(null);
   const [downloadId, setDownloadId] = useState(null);
   const [downloaded, setDownloaded] = useState(false);
-  
+
   // Upload states
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(null);
@@ -30,10 +31,13 @@ export default function ExtractionPortal() {
   const [uploaded, setUploaded] = useState(false);
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [privacy, setPrivacy] = useState('public');
-  
+
+  // Error state — structured error object from backend
+  const [error, setError] = useState(null);
+
   // Toast notifications
   const [toast, setToast] = useState({ message: '', type: 'info' });
-  
+
   const downloadEsRef = useRef(null);
   const uploadEsRef = useRef(null);
 
@@ -45,7 +49,7 @@ export default function ExtractionPortal() {
       }, 0);
       return () => clearTimeout(timer);
     }
-    
+
     const timeout = setTimeout(() => {
       fetch('/api/downloader/detect_platform', {
         method: 'POST',
@@ -56,11 +60,13 @@ export default function ExtractionPortal() {
       .then((data) => {
         if (!data.error) {
           setPlatformInfo(data);
+        } else {
+          setPlatformInfo({ platform: 'unknown', display_name: '', supported: false });
         }
       })
       .catch((err) => console.error('Platform check failed:', err));
-    }, 400); // Debounce API requests
-    
+    }, 400);
+
     return () => clearTimeout(timeout);
   }, [url]);
 
@@ -74,23 +80,38 @@ export default function ExtractionPortal() {
 
   const triggerToast = (message, type = 'info') => {
     setToast({ message, type });
-    // Auto hide after 4 seconds
     setTimeout(() => {
       setToast({ message: '', type: 'info' });
-    }, 4000);
+    }, type === 'error' ? 6000 : 4000);
   };
 
-  const handleExtract = (e) => {
-    e.preventDefault();
+  // Parse structured error from backend response
+  const parseError = (data) => {
+    if (data.error === true || data.error_code) {
+      return {
+        code: data.code || data.error_code || 'UNKNOWN_ERROR',
+        title: data.title || 'Something went wrong',
+        message: data.message || 'An unexpected error occurred.',
+        suggestion: data.suggestion || '',
+        retryable: data.retryable !== false,
+        details: data.details || '',
+      };
+    }
+    return null;
+  };
+
+  const handleExtract = useCallback((e) => {
+    if (e) e.preventDefault();
     if (!url.trim()) return;
-    
+
     setExtracting(true);
     setMetadata(null);
     setQualities([]);
     setSelectedQuality('');
     setDownloaded(false);
     setUploaded(false);
-    
+    setError(null);
+
     fetch('/api/downloader/extract_metadata', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -98,11 +119,15 @@ export default function ExtractionPortal() {
     })
     .then((res) => res.json())
     .then((data) => {
-      if (data.error) throw new Error(data.error);
+      const structuredErr = parseError(data);
+      if (structuredErr) {
+        setError(structuredErr);
+        setExtracting(false);
+        return;
+      }
       setMetadata(data);
       triggerToast('Metadata extracted successfully!', 'success');
-      
-      // Fetch available download qualities
+
       setFetchingQualities(true);
       fetch('/api/downloader/get_video_qualities', {
         method: 'POST',
@@ -119,28 +144,32 @@ export default function ExtractionPortal() {
         }
         setFetchingQualities(false);
       })
-      .catch((err) => {
-        console.error('Error fetching qualities:', err);
-        setFetchingQualities(false);
-      });
+      .catch(() => setFetchingQualities(false));
     })
     .catch((err) => {
-      triggerToast(err.message, 'error');
+      setError({
+        code: 'NETWORK_ERROR',
+        title: 'Connection problem',
+        message: err.message || 'Could not reach the server.',
+        suggestion: 'Check your internet connection and try again.',
+        retryable: true,
+      });
     })
     .finally(() => {
       setExtracting(false);
     });
-  };
+  }, [url]);
 
-  const handleDownload = () => {
+  const handleDownload = useCallback(() => {
     if (!selectedQuality) {
       triggerToast('Please select a quality format', 'error');
       return;
     }
-    
+
     setDownloading(true);
     setDownloadProgress({ progress: 0, status: 'Starting download...' });
-    
+    setError(null);
+
     fetch('/api/downloader/download_video', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -148,50 +177,83 @@ export default function ExtractionPortal() {
     })
     .then((res) => res.json())
     .then((data) => {
-      if (data.error) throw new Error(data.error);
-      
+      const structuredErr = parseError(data);
+      if (structuredErr) {
+        setError(structuredErr);
+        setDownloading(false);
+        return;
+      }
+
       const dlId = data.download_id;
       setDownloadId(dlId);
-      
-      // Subscribe to Server-Sent Events (SSE) for progress streaming (updated to port 3000)
+
       if (downloadEsRef.current) downloadEsRef.current.close();
-      
       const backendBaseUrl = typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:3000` : 'http://localhost:3000';
       const es = new EventSource(`${backendBaseUrl}/api/downloader/progress/${dlId}`);
       downloadEsRef.current = es;
-      
+
       es.onmessage = (event) => {
         const progressData = JSON.parse(event.data);
         setDownloadProgress(progressData);
-        
+
         if (progressData.status === 'completed') {
           es.close();
           setDownloading(false);
           setDownloaded(true);
-          triggerToast('Video downloaded to local server successfully!', 'success');
+          triggerToast('Video downloaded to local server!', 'success');
         } else if (progressData.status === 'error') {
           es.close();
           setDownloading(false);
-          triggerToast(`Download failed: ${progressData.error}`, 'error');
+          setError({
+            code: progressData.error_code || 'DOWNLOAD_ERROR',
+            title: 'Download failed',
+            message: progressData.error || 'An error occurred during download.',
+            suggestion: progressData.error_suggestion || 'Try again or select a different quality.',
+            retryable: true,
+            details: '',
+          });
+        } else if (progressData.status === 'cancelled') {
+          es.close();
+          setDownloading(false);
+          triggerToast('Download cancelled.', 'info');
         }
       };
-      
+
       es.onerror = () => {
         es.close();
         setDownloading(false);
-        triggerToast('Lost connection to progress stream', 'error');
+        setError({
+          code: 'NETWORK_ERROR',
+          title: 'Lost connection',
+          message: 'Lost connection to the progress stream.',
+          suggestion: 'The download may still be running. Try refreshing.',
+          retryable: true,
+        });
       };
     })
     .catch((err) => {
       setDownloading(false);
-      triggerToast(err.message, 'error');
+      setError({
+        code: 'NETWORK_ERROR',
+        title: 'Connection problem',
+        message: err.message || 'Could not reach the server.',
+        retryable: true,
+      });
     });
-  };
+  }, [url, selectedQuality]);
+
+  const handleCancelDownload = useCallback(() => {
+    if (!downloadId) return;
+    const backendBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
+    fetch(`${backendBaseUrl}/api/downloader/cancel_download/${downloadId}`, { method: 'POST' })
+      .then(() => triggerToast('Cancel request sent', 'info'))
+      .catch(() => triggerToast('Could not cancel download', 'error'));
+  }, [downloadId]);
 
   const handleUpload = () => {
     setUploading(true);
     setUploadProgress({ progress: 50, status: 'Preparing upload...' });
-    
+
     const bodyData = {
       url,
       title: metadata.title,
@@ -199,7 +261,7 @@ export default function ExtractionPortal() {
       tags: metadata.tags.join(','),
       privacy
     };
-    
+
     fetch('/api/downloader/upload_video', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -207,21 +269,25 @@ export default function ExtractionPortal() {
     })
     .then((res) => res.json())
     .then((data) => {
-      if (data.error) throw new Error(data.error);
-      
+      const structuredErr = parseError(data);
+      if (structuredErr) {
+        setError(structuredErr);
+        setUploading(false);
+        return;
+      }
+
       const upId = data.upload_id;
       setUploadId(upId);
-      
+
       if (uploadEsRef.current) uploadEsRef.current.close();
-      
-      const backendBaseUrl = typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:3000` : 'http://localhost:3000';
+      const backendBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
       const es = new EventSource(`${backendBaseUrl}/api/downloader/upload_progress/${upId}`);
       uploadEsRef.current = es;
-      
+
       es.onmessage = (event) => {
         const progressData = JSON.parse(event.data);
         setUploadProgress(progressData);
-        
+
         if (progressData.status === 'completed') {
           es.close();
           setUploading(false);
@@ -231,10 +297,16 @@ export default function ExtractionPortal() {
         } else if (progressData.status === 'error') {
           es.close();
           setUploading(false);
-          triggerToast(`Upload failed: ${progressData.error}`, 'error');
+          setError({
+            code: progressData.error_code || 'DOWNLOAD_ERROR',
+            title: 'Upload failed',
+            message: progressData.error || 'An error occurred during upload.',
+            suggestion: 'Check your YouTube connection and try again.',
+            retryable: true,
+          });
         }
       };
-      
+
       es.onerror = () => {
         es.close();
         setUploading(false);
@@ -247,11 +319,13 @@ export default function ExtractionPortal() {
     });
   };
 
+  const handleDismissError = () => setError(null);
+
   return (
-    <div className="animate-fade-in" style={{ maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
+    <div className="animate-fade-in extraction-portal">
       {/* Title */}
       <div style={{ marginBottom: '35px' }}>
-        <motion.h2 
+        <motion.h2
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           style={{ fontSize: '32px', fontWeight: '800', background: 'linear-gradient(to right, #00f2fe, #ff007f)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: '8px' }}
@@ -264,7 +338,7 @@ export default function ExtractionPortal() {
       </div>
 
       {/* Input panel */}
-      <UrlInput 
+      <UrlInput
         url={url}
         setUrl={setUrl}
         platformInfo={platformInfo}
@@ -272,16 +346,28 @@ export default function ExtractionPortal() {
         handleExtract={handleExtract}
       />
 
+      {/* Structured error display */}
+      <AnimatePresence>
+        {error && (
+          <div className="error-display-container">
+            <ErrorDisplay
+              error={error}
+              onRetry={error.retryable ? (error.code?.includes('METADATA') || error.code === 'EXTRACTION_ERROR' ? handleExtract : handleDownload) : undefined}
+              onDismiss={handleDismissError}
+            />
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Metadata card with actions console */}
       <AnimatePresence>
         {metadata && (
-          <MetadataCard 
-            metadata={metadata} 
-            setMetadata={setMetadata} 
+          <MetadataCard
+            metadata={metadata}
+            setMetadata={setMetadata}
             triggerToast={triggerToast}
           >
-            {/* Download Console */}
-            <DownloadConsole 
+            <DownloadConsole
               downloading={downloading}
               downloaded={downloaded}
               fetchingQualities={fetchingQualities}
@@ -290,10 +376,11 @@ export default function ExtractionPortal() {
               setSelectedQuality={setSelectedQuality}
               downloadProgress={downloadProgress}
               handleDownload={handleDownload}
+              onCancel={handleCancelDownload}
+              downloadId={downloadId}
             />
 
-            {/* YouTube Uploader */}
-            <YoutubeUploader 
+            <YoutubeUploader
               downloaded={downloaded}
               uploading={uploading}
               uploaded={uploaded}
@@ -308,10 +395,10 @@ export default function ExtractionPortal() {
       </AnimatePresence>
 
       {/* Toast notifications */}
-      <Toast 
-        message={toast.message} 
-        type={toast.type} 
-        onClose={() => setToast({ message: '', type: 'info' })} 
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast({ message: '', type: 'info' })}
       />
     </div>
   );

@@ -52,6 +52,7 @@ export default function MonitoredFeedsList({
                   <img
                     src={channel.logo_url}
                     alt="Channel logo"
+                    onError={(e) => { e.target.src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" rx="20" fill="%2312101f"/><text x="20" y="26" text-anchor="middle" fill="%23ff007f" font-size="16" font-family="sans-serif">▶</text></svg>'); }}
                     style={{ width: '40px', height: '40px', borderRadius: '50%' }}
                   />
                   <div style={{ flex: 1, overflow: 'hidden' }}>

@@ -77,12 +77,7 @@ export default function AutomationHub() {
     };
   }, []);
 
-  // Auto-scroll terminal to bottom on new logs
-  useEffect(() => {
-    if (terminalEndRef.current) {
-      terminalEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [logs]);
+
 
   // Handle Channel analysis
   const handleAnalyze = async (e) => {
@@ -226,7 +221,7 @@ export default function AutomationHub() {
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '30px', alignItems: 'start' }}>
+      <div className="automation-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '30px', alignItems: 'start' }}>
         
         {/* Left Side: Service Switch, Channel additions, and Monitored Lists */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>

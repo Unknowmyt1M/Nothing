@@ -12,8 +12,8 @@ export default function MetadataCard({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 30, scale: 0.97 }}
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-      className="glass-panel" 
-      style={{ padding: '35px', display: 'grid', gridTemplateColumns: '1fr 1.8fr', gap: '35px' }}
+      className="glass-panel metadata-grid"
+      style={{ padding: '35px' }}
     >
       {/* Left Column: Thumbnail and stats */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>

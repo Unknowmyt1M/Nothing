@@ -27,9 +27,9 @@ export default function UrlInput({
   return (
     <div className={`glass-panel scanner-container ${extracting ? 'scanning' : ''}`} style={{ padding: '30px', marginBottom: '30px', position: 'relative' }}>
       {extracting && <div className="scanner-laser"></div>}
-      <form onSubmit={handleExtract} style={{ display: 'flex', gap: '15px' }}>
-        <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
-          <span style={{ position: 'absolute', left: '16px', color: 'var(--color-cyan)', fontSize: '18px' }}>
+      <form onSubmit={handleExtract} className="url-form">
+        <div className="url-form-input">
+          <span style={{ position: 'absolute', left: '16px', color: 'var(--color-cyan)', fontSize: '18px', zIndex: 1 }}>
             <i className={getPlatformIcon(platformInfo.platform)}></i>
           </span>
           <input 
@@ -51,7 +51,7 @@ export default function UrlInput({
         <GlassButton 
           type="submit" 
           disabled={extracting}
-          className="border-cyan-500/30 text-white font-bold tracking-widest text-[12px] hover:border-cyan-400 min-w-[150px] !py-[13px]"
+          className="url-form-btn border-cyan-500/30 text-white font-bold tracking-widest text-[12px] hover:border-cyan-400 !py-[13px]"
         >
           {extracting ? <i className="fa-solid fa-circle-notch fa-spin mr-2"></i> : 'EXTRACT'}
         </GlassButton>

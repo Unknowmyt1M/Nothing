@@ -17,7 +17,9 @@ from backend.config import (
     CORS_ORIGINS,
     FRONTEND_URL,
 )
+from backend.errors import AppError
 from backend.database.json_db import database_init
+from backend.services.downloader_service import start_cleanup_thread
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +32,10 @@ async def lifespan(app: FastAPI):
         database_init()
     except Exception as e:  # pragma: no cover - defensive
         logger.critical("Failed to initialize database: %s", e)
+
+    # 2. Start background cleanup thread
+    start_cleanup_thread()
+
     yield
     logger.info("Backend shutdown complete")
 
@@ -65,11 +71,27 @@ def create_app() -> FastAPI:
     from backend.api.downloader_routes import router as downloader_router
     from backend.api.automation_routes import router as automation_router
     from backend.api.debug_routes import router as debug_router
+    from backend.api.analytics_routes import router as analytics_router
 
     app.include_router(auth_router, prefix="/api")
     app.include_router(downloader_router, prefix="/api")
     app.include_router(automation_router, prefix="/api")
     app.include_router(debug_router, prefix="/api")
+    app.include_router(analytics_router, prefix="/api")
+
+    # Global handler for structured errors
+    @app.exception_handler(AppError)
+    async def app_error_handler(request: Request, exc: AppError):
+        return JSONResponse(exc.to_dict(), status_code=exc.status_code)
+
+    @app.exception_handler(Exception)
+    async def generic_error_handler(request: Request, exc: Exception):
+        logger.error("Unhandled error: %s", exc, exc_info=True)
+        return JSONResponse(
+            {"error": True, "code": "UNKNOWN_ERROR", "title": "Something went wrong",
+             "message": "An unexpected error occurred.", "retryable": True},
+            status_code=500,
+        )
 
     @app.get("/")
     async def index():

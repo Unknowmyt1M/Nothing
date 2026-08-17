@@ -162,3 +162,23 @@ cython_debug/
 # Google OAuth secrets & Local DB
 client_secret.json
 db/
+
+# Frontend
+frontend/.env.local
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# Downloaded files
+downloads/
+uploads/
+cookies/*.txt
+
+# Log files
+*.log
+
+# Platform test results
+platform_test_results.json
+
+# Node
+node_modules/

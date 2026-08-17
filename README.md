@@ -1,234 +1,368 @@
+<div align="center">
 
-# UpDownVid - Multi-Platform Video Downloader
+# ⚡ Nothing
 
-> Fast, simple, and free video downloader supporting 12+ platforms. Download videos from YouTube, Instagram, Facebook, TikTok, and more.
+### Multi-Platform Video Downloader & YouTube Automation Suite
 
-## ✨ Features
+*Download from 17 platforms. Upload to YouTube. Monitor channels. Analyze performance. All from one dashboard.*
 
-- 🎬 **12+ Platforms** - YouTube, Instagram, Facebook, Twitter/X, TikTok, Vimeo, Reddit, Twitch, Rumble, Dailymotion, Pinterest, Snapchat
-- 📺 **High Quality** - Minimum 720p, up to 1080p HD downloads
-- 🎯 **Smart Metadata** - Automatic title, description, hashtag extraction
-- 🤖 **YouTube Automation** - Monitor channels and auto-upload new videos
-- 🔒 **Privacy-First** - No analytics, no tracking, no permanent storage
-- 🌐 **Open Source** - Built with FastAPI, yt-dlp, Next.js
+<br/>
 
-## 🚀 Quick Start on Replit
+[![License: MIT](https://img.shields.io/badge/License-MIT-00f2fe?style=for-the-badge)](LICENSE)
+[![Python 3.13](https://img.shields.io/badge/Python-3.13-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Next.js](https://img.shields.io/badge/Next.js-16+-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
+[![GitHub stars](https://img.shields.io/github/stars/Unknowmyt1M/Nothing?style=for-the-badge&color=ff007f)](https://github.com/Unknowmyt1M/Nothing/stargazers)
 
-### 1. Fork/Import Repository
+</div>
 
-1. Click **Fork** or import this repository into Replit
-2. Wait for the environment to build
+---
 
-### 2. Configure Secrets
+## Overview
 
-Open **Secrets** (🔒 icon in left sidebar) and add these required keys:
+**Nothing** is a self-hosted media automation platform that combines video downloading, YouTube channel management, and analytics into a single futuristic dashboard. Built for creators who want full control over their content pipeline.
 
-```env
-# Required
-SESSION_SECRET=your-random-secret-key-here
-FLASK_SECRET_KEY=another-random-secret-key
-GOOGLE_CLIENT_ID=your-google-oauth-client-id
-GOOGLE_CLIENT_SECRET=your-google-oauth-secret
-GOOGLE_REDIRECT_URI=https://your-repl-name.repl.co/google_login/callback
-
-# Optional but recommended
-YOUTUBE_API_KEY=your-youtube-api-key
-CONTACT_EMAIL=support@yourdomain.com
-COPYRIGHT_EMAIL=copyright@yourdomain.com
+```
+ Download        Process         Upload         Monitor         Analyze
+    │               │               │               │               │
+    ▼               ▼               ▼               ▼               ▼
+┌────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
+│  URL   │───▶│ Metadata │───▶│ YouTube  │───▶│ Channel  │───▶│ Dashboard│
+│  Input │    │ Extract  │    │ Uploader │    │ Monitor  │    │  & CSV   │
+└────────┘    └──────────┘    └──────────┘    └──────────┘    └──────────┘
 ```
 
-**How to get credentials:**
-- **Google OAuth:** [Google Cloud Console](https://console.cloud.google.com/) → Create OAuth 2.0 Client
-- **YouTube API:** [Google Cloud Console](https://console.cloud.google.com/) → Enable YouTube Data API v3
-- **Random secrets:** Use `openssl rand -hex 32` or online generator
+---
 
-### 3. Start the Application
+## Features
 
-Click the **Run** button! The app will:
-1. Auto-install dependencies from `requirements.txt`
-2. Start on port 5000
-3. Open in a new browser tab
+<table>
+<tr>
+<td width="50%">
 
-Your app is now live at: `https://your-repl-name.repl.co`
+### Download Engine
+- **17 platforms** — YouTube, Instagram, Facebook, X/Twitter, TikTok, Vimeo, Reddit, Twitch, Rumble, and more
+- **Quality selection** — 144p to 4K with audio merge
+- **Smart metadata** — Auto-extract titles, descriptions, hashtags
+- **Cancellation** — Cancel mid-download with cleanup
+- **Size safety** — 4GB file size limit with warnings
+- **Error recovery** — 23 classified error codes with smart retry
 
-## 💻 Local Development
+</td>
+<td width="50%">
+
+### YouTube Automation
+- **Channel monitoring** — RSS feed polling with configurable intervals
+- **Auto-upload** — Push new videos to your YouTube channel automatically
+- **Metadata sync** — Titles, descriptions, tags transfer automatically
+- **Analytics dashboard** — Views, subscribers, revenue, traffic sources
+- **Export** — CSV and JSON export of all analytics data
+- **Health scoring** — Channel health score with actionable insights
+
+</td>
+</tr>
+</table>
+
+---
+
+## Tech Stack
+
+<div align="center">
+
+| Layer | Technology | Purpose |
+|:------|:-----------|:--------|
+| **Frontend** | ![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=next.js&logoColor=white) ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white) ![Tailwind](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white) | Dashboard UI, SSE streaming |
+| **Backend** | ![Python](https://img.shields.io/badge/Python-3.13-3776AB?logo=python&logoColor=white) ![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?logo=fastapi&logoColor=white) | REST API, background workers |
+| **Download** | ![yt-dlp](https://img.shields.io/badge/yt--dlp-latest-FF1D00) ![FFmpeg](https://img.shields.io/badge/FFmpeg-7.x-007808?logo=ffmpeg&logoColor=white) | Video extraction, audio merge |
+| **Database** | ![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3FCF8E?logo=supabase&logoColor=white) ![JSON](https://img.shields.io/badge/JSON_DB-Local-FFA500) | User data, settings, logs |
+| **Auth** | ![Google OAuth](https://img.shields.io/badge/Google_OAuth_2.0-4285F4?logo=google&logoColor=white) ![Supabase Auth](https://img.shields.io/badge/Supabase_Auth-JWT-3FCF8E?logo=supabase&logoColor=white) | YouTube API token management |
+
+</div>
+
+---
+
+## Quick Start
 
 ### Prerequisites
-- Python 3.11+
-- pip
-- FFmpeg
 
-### Installation Steps
+- **Python 3.13+** & **Node.js 18+**
+- **FFmpeg** (on PATH or auto-discovered)
+- **Google Cloud** project with YouTube Data API v3 enabled
+
+### 1. Clone & Configure
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/updownvid.git
-cd updownvid
+git clone https://github.com/Unknowmyt1M/Nothing.git
+cd Nothing
 
 # Copy environment template
 cp .env.example .env
 
-# Edit .env with your credentials
-nano .env  # or use your favorite editor
+# Edit with your credentials
+```
 
-# Run the application (auto-installs dependencies)
+### 2. Start
+
+```bash
 python main.py
 ```
 
-Visit:
-- **Frontend Dashboard:** `http://localhost:5000`
-- **Backend API:** `http://localhost:3000/healthz`
+This automatically starts both servers:
 
-### Manual Installation (Alternative)
+| Service | URL | Description |
+|:--------|:----|:------------|
+| **Frontend** | `http://localhost:5000` | Dashboard UI |
+| **Backend API** | `http://localhost:3000` | REST API |
+| **API Docs** | `http://localhost:3000/docs` | OpenAPI/Swagger |
 
-```bash
-# Install dependencies manually
-pip install -r requirements.txt
+### 3. Connect Google
 
-# Run with the unified launcher (starts FastAPI backend + Next.js frontend)
-python main.py
-```
-
-## 🌐 Deployment on Replit
-
-### Autoscale Deployment (Recommended)
-
-1. Click **Deploy** in the top-right
-2. Choose **Autoscale Deployment**
-3. Configure:
-   - **Machine:** 1 vCPU, 2 GiB RAM (default)
-   - **Max machines:** 3 (adjust as needed)
-   - **Domain:** Choose your custom domain
-   - **Run command:** `python run.py` (or use default)
-4. Click **Deploy**
-
-Your app will be live with automatic scaling!
-
-### Environment Variables for Production
-
-Add these in Replit Secrets for production:
-
-```env
-DEBUG=False
-FRONTEND_URL=https://yourdomain.com
-BACKEND_URL=https://yourdomain.com
-ENABLE_CONTACT_FORM=true
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=your-app-password
-```
-
-## 🔧 Configuration
-
-### `.env` File Structure
-
-See `.env.example` for all available options:
-
-```env
-# Server
-PORT=5000
-DEBUG=False
-
-# Security (REQUIRED)
-SESSION_SECRET=change-me
-FLASK_SECRET_KEY=change-me
-
-# Google OAuth (REQUIRED for YouTube upload)
-GOOGLE_CLIENT_ID=...
-GOOGLE_CLIENT_SECRET=...
-GOOGLE_REDIRECT_URI=...
-
-# Optional Features
-YOUTUBE_API_KEY=...
-ENABLE_AUTOMATION=true
-ENABLE_CONTACT_FORM=true
-MAX_FILE_SIZE_MB=500
-```
-
-### Supported Platforms Configuration
-
-Edit `multi_platform_downloader.py` to customize:
-- Video quality preferences
-- Download formats
-- Platform-specific settings
-- Cookie authentication
-
-## 📚 Documentation
-
-- **[About](/about)** - Project story and mission
-- **[FAQ](/faq)** - Common questions and troubleshooting
-- **[Terms of Service](/tos)** - Usage rules and policies
-- **[Privacy Policy](/privacy)** - Data handling and privacy
-- **[Copyright/DMCA](/copyright)** - Takedown process
-- **[Contact](/contact)** - Get help and support
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**Import errors on startup:**
-```bash
-# Reinstall dependencies
-pip install -r requirements.txt --force-reinstall
-```
-
-**OAuth redirect mismatch:**
-- Update `GOOGLE_REDIRECT_URI` in `.env` to match your domain
-- Add the URI in Google Cloud Console → OAuth consent screen
-
-**Download fails:**
-- Check if platform is supported: `/platforms`
-- Verify URL is public and accessible
-- Some platforms may require cookies (check `/faq`)
-
-**Contact form not working:**
-- Set `ENABLE_CONTACT_FORM=true` in `.env`
-- Configure SMTP settings (Gmail App Password recommended)
-
-### Getting Help
-
-- **Email:** support@updownvid.com
-- **GitHub Issues:** [Report bugs](https://github.com/yourusername/updownvid/issues)
-- **Discord:** [Community support](https://discord.gg/updownvid)
-
-## 🤝 Contributing
-
-We welcome contributions! Here's how:
-
-1. **Fork** the repository
-2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
-3. **Commit** changes: `git commit -m 'Add amazing feature'`
-4. **Push** to branch: `git push origin feature/amazing-feature`
-5. **Open** a Pull Request
-
-### Development Guidelines
-
-- Follow PEP 8 style guide for Python
-- Add tests for new features
-- Update documentation
-- Keep commits atomic and descriptive
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
-## 🙏 Acknowledgments
-
-- **yt-dlp** - Powerful video downloader library
-- **FastAPI** - Modern Python web framework
-- **Next.js + Tailwind** - Frontend framework
-- **Replit** - Development and hosting platform
-
-## 📞 Contact & Support
-
-- **Website:** [updownvid.com](https://updownvid.com)
-- **Email:** support@updownvid.com
-- **GitHub:** [github.com/yourusername/updownvid](https://github.com/yourusername/updownvid)
-- **Discord:** [discord.gg/updownvid](https://discord.gg/updownvid)
+Navigate to **Integrations** → click **Sync Google Account** → sign in with Google.
 
 ---
 
-**Built with ❤️ by the UpDownVid Team**
+## Supported Platforms
 
-*Making online content accessible for everyone.*
+| Platform | Download | Upload | Auto-Monitor |
+|:---------|:--------:|:------:|:------------:|
+| YouTube | `✅` | `✅` | `✅` |
+| Instagram | `✅` | `—` | `✅` |
+| Facebook | `✅` | `—` | `✅` |
+| X / Twitter | `✅` | `—` | `✅` |
+| TikTok | `✅` | `—` | `✅` |
+| Vimeo | `✅` | `—` | `—` |
+| Reddit | `✅` | `—` | `✅` |
+| Twitch | `✅` | `—` | `✅` |
+| Rumble | `✅` | `—` | `✅` |
+| Direct URL | `✅` | `—` | `—` |
+
+---
+
+## Architecture
+
+```mermaid
+graph TB
+    subgraph Frontend ["Frontend — Next.js :5000"]
+        UI[Dashboard UI]
+        SSE[SSE Streams]
+        AUTH_F[Supabase Auth]
+    end
+
+    subgraph Backend ["Backend — FastAPI :3000"]
+        API[REST API]
+        DL[Download Worker]
+        UP[Upload Worker]
+        MON[Monitor Worker]
+        ANALYTICS[Analytics Service]
+        AUTH_B[Auth Service]
+    end
+
+    subgraph External ["External Services"]
+        YT[yt-dlp + FFmpeg]
+        GAPI[Google APIs]
+        SB[(Supabase)]
+    end
+
+    UI --> API
+    SSE --> API
+    AUTH_F --> SB
+    API --> DL
+    API --> UP
+    API --> MON
+    API --> ANALYTICS
+    API --> AUTH_B
+    DL --> YT
+    UP --> GAPI
+    MON --> GAPI
+    ANALYTICS --> GAPI
+    AUTH_B --> SB
+```
+
+---
+
+## Project Structure
+
+```
+Nothing/
+├── backend/
+│   ├── api/                    # FastAPI route handlers
+│   │   ├── analytics_routes.py # YouTube Analytics API endpoints
+│   │   ├── auth_routes.py      # OAuth + Supabase auth flows
+│   │   ├── automation_routes.py # Channel monitor + auto-upload
+│   │   └── downloader_routes.py # Download + extraction API
+│   ├── database/
+│   │   ├── json_db.py          # Local JSON file storage
+│   │   └── supabase_client.py  # Supabase REST API client
+│   ├── platforms/              # Platform-specific extractors
+│   │   ├── youtube.py          # YouTube URL validation
+│   │   ├── instagram.py        # Instagram extraction
+│   │   └── base.py             # yt-dlp wrapper
+│   ├── services/
+│   │   ├── automation_service.py   # Background monitor worker
+│   │   ├── downloader_service.py   # Download orchestration
+│   │   ├── uploader_service.py     # YouTube upload pipeline
+│   │   └── youtube_analytics.py    # Analytics API v2 client
+│   ├── errors.py               # 23 classified error codes
+│   ├── config.py               # Environment configuration
+│   └── app.py                  # FastAPI app factory
+├── frontend/
+│   └── src/
+│       ├── app/                # Next.js App Router pages
+│       │   ├── analytics/      # YouTube Analytics dashboard
+│       │   ├── automation/     # Channel monitor UI
+│       │   ├── metadata/       # Diagnostics hub
+│       │   └── platforms/      # Platform reference
+│       ├── components/
+│       │   ├── analytics/      # 13 analytics components
+│       │   ├── automation/     # Monitor + feed management
+│       │   ├── downloader/     # URL input, extraction, errors
+│       │   └── accounts/       # Google OAuth + settings
+│       └── lib/
+│           └── supabaseClient.js
+├── cookies/                    # Platform auth cookies
+├── downloads/                  # Output directory
+└── main.py                     # Unified entry point
+```
+
+---
+
+## Configuration
+
+All configuration is via environment variables. Copy `.env.example` to `.env`:
+
+<details>
+<summary><strong>Environment Variables Reference</strong></summary>
+
+```env
+# ── Server ──────────────────────────
+PORT=3000
+HOST=0.0.0.0
+DEBUG=False
+FRONTEND_URL=http://localhost:5000
+
+# ── Security ────────────────────────
+SESSION_SECRET=<random-64-char-hex>
+
+# ── Google OAuth ────────────────────
+GOOGLE_CLIENT_ID=<your-client-id>
+GOOGLE_CLIENT_SECRET=<your-client-secret>
+GOOGLE_REDIRECT_URI=http://localhost:3000/api/auth/callback
+
+# ── Supabase ────────────────────────
+SUPABASE_URL=https://<project-ref>.supabase.co
+SUPABASE_ANON_KEY=<anon-key>
+SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
+
+# ── Frontend (NEXT_PUBLIC_*) ────────
+NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
+
+# ── Safety ──────────────────────────
+MAX_FILE_SIZE_MB=4096
+```
+
+</details>
+
+---
+
+## API Endpoints
+
+<details>
+<summary><strong>Core API Routes</strong></summary>
+
+| Method | Endpoint | Description |
+|:-------|:---------|:------------|
+| `POST` | `/api/extract` | Extract video metadata from URL |
+| `POST` | `/api/download` | Start a download job |
+| `GET` | `/api/download/{id}/progress` | SSE progress stream |
+| `POST` | `/api/download/{id}/cancel` | Cancel active download |
+| `GET` | `/api/platforms` | List supported platforms |
+
+</details>
+
+<details>
+<summary><strong>Auth & Account Routes</strong></summary>
+
+| Method | Endpoint | Description |
+|:-------|:---------|:------------|
+| `GET` | `/api/auth/status` | Check authentication state |
+| `POST` | `/api/auth/supabase_callback` | Supabase OAuth callback |
+| `POST` | `/api/auth/supabase_sync` | Sync Supabase session |
+| `GET` | `/api/auth/logout` | Clear session |
+
+</details>
+
+<details>
+<summary><strong>Automation & Analytics Routes</strong></summary>
+
+| Method | Endpoint | Description |
+|:-------|:---------|:------------|
+| `GET` | `/api/automation/get_settings` | Get automation config |
+| `POST` | `/api/automation/save_settings` | Save API key + interval |
+| `GET` | `/api/automation/get_channels` | List monitored channels |
+| `POST` | `/api/automation/add_channel` | Add channel to monitor |
+| `GET` | `/api/automation/status` | Worker status + logs |
+| `POST` | `/api/automation/start` | Start monitor worker |
+| `POST` | `/api/automation/stop` | Stop monitor worker |
+| `GET` | `/api/analytics/overview` | YouTube channel overview |
+| `GET` | `/api/analytics/videos` | Top performing videos |
+| `GET` | `/api/analytics/traffic` | Traffic source breakdown |
+| `GET` | `/api/analytics/audience` | Audience demographics |
+| `GET` | `/api/analytics/export` | Export data as CSV/JSON |
+
+</details>
+
+---
+
+## Error Handling
+
+The system classifies all errors into **23 structured codes** for clear user feedback:
+
+| Code | Error | Description |
+|:-----|:------|:------------|
+| `NETWORK_TIMEOUT` | Connection timed out | Slow or no internet |
+| `VIDEO_UNAVAILABLE` | Video is private/removed | Content not accessible |
+| `GEO_RESTRICTED` | Geo-blocked content | Region restriction |
+| `RATE_LIMITED` | Too many requests | Platform throttle |
+| `LOGIN_REQUIRED` | Authentication needed | Private content |
+| `BOT_CHECK` | Bot detection triggered | Anti-scraping block |
+| `YOUTUBE_AUTH_EXPIRED` | Token expired | Re-auth required |
+| `UNSUPPORTED_URL_TYPE` | Unknown URL format | Platform not supported |
+
+> Full error reference in `backend/errors.py`
+
+---
+
+## Contributing
+
+Contributions are welcome. The project follows standard fork-branch-PR workflow:
+
+```bash
+# Fork the repo, then:
+git checkout -b feature/my-feature
+git commit -m "feat: add new platform extractor"
+git push origin feature/my-feature
+# Open a Pull Request
+```
+
+**Guidelines:**
+- Python code follows PEP 8
+- Frontend uses functional components with hooks
+- Add tests for new platform extractors
+- Update `supported platforms` table in README
+
+---
+
+## License
+
+This project is licensed under the **MIT License** — see [LICENSE](LICENSE) for details.
+
+---
+
+<div align="center">
+
+**Built with Python, FastAPI, Next.js, yt-dlp, and Supabase**
+
+*Full control over your content pipeline.*
+
+</div>

@@ -2,10 +2,64 @@ import os
 import re
 import json
 import logging
+import glob
 import subprocess
 
+
+def find_ffmpeg_bin_dir():
+    """Locate an ffmpeg binary directory across common install locations."""
+    candidates = []
+    try:
+        which = subprocess.run(['where', 'ffmpeg'], capture_output=True, text=True, timeout=5)
+        if which.returncode == 0 and which.stdout.strip():
+            candidates.append(os.path.dirname(which.stdout.strip().splitlines()[0]))
+    except Exception:
+        pass
+    winget_roots = [
+        os.path.expandvars(r'%LOCALAPPDATA%\Microsoft\WinGet\Packages'),
+    ]
+    for root in winget_roots:
+        if not os.path.isdir(root):
+            continue
+        for ffmpeg_dir in glob.glob(os.path.join(root, '*ffmpeg*')):
+            bin_dir = os.path.join(ffmpeg_dir, 'bin')
+            if os.path.isfile(os.path.join(bin_dir, 'ffmpeg.exe')) or os.path.isfile(os.path.join(bin_dir, 'ffmpeg')):
+                candidates.append(bin_dir)
+    common = [
+        r'C:\ffmpeg\bin',
+        r'C:\Program Files\ffmpeg\bin',
+    ]
+    for p in common:
+        if os.path.isfile(os.path.join(p, 'ffmpeg.exe')) or os.path.isfile(os.path.join(p, 'ffmpeg')):
+            candidates.append(p)
+    for p in candidates:
+        if p and os.path.isfile(os.path.join(p, 'ffmpeg.exe')):
+            return p
+    return None
+
+
+FFMPEG_BIN_DIR = find_ffmpeg_bin_dir()
+if FFMPEG_BIN_DIR:
+    logging.info("ffmpeg found at: %s", FFMPEG_BIN_DIR)
+
+# Enable Node as a JS runtime for yt-dlp when available (helps YouTube extraction)
+def find_node_executable():
+    try:
+        which = subprocess.run(['where', 'node'], capture_output=True, text=True, timeout=5)
+        if which.returncode == 0 and which.stdout.strip():
+            return which.stdout.strip().splitlines()[0].strip()
+    except Exception:
+        pass
+    return None
+
+
+JS_RUNTIMES = {}
+_node = find_node_executable()
+if _node:
+    JS_RUNTIMES['node'] = {'path': _node}
+
 BASE_CONFIG = {
-    'format': 'best[height>=1440][ext=mp4]/best[height>=1080][ext=mp4]/best[height>=720][ext=mp4]/best[ext=mp4]/best',
+    'format': 'bestvideo+bestaudio/best',
     'outtmpl': 'downloads/%(title)s.%(ext)s',
     'writeinfojson': True,
     'writedescription': True,
@@ -24,6 +78,10 @@ BASE_CONFIG = {
     'merge_output_format': 'mp4',
     'noplaylist': True,
 }
+if FFMPEG_BIN_DIR:
+    BASE_CONFIG['ffmpeg_location'] = FFMPEG_BIN_DIR
+if JS_RUNTIMES:
+    BASE_CONFIG['js_runtimes'] = JS_RUNTIMES
 
 def format_bytes(bytes_value):
     """Format bytes to human readable string"""

@@ -47,6 +47,11 @@ GOOGLE_REDIRECT_URI = os.environ.get(
 # YouTube API key (used for channel automation + channel info)
 YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY", "")
 
+# Supabase configuration
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
+SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY", "")
+SUPABASE_SERVICE_ROLE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
+
 # Download / upload limits
 MAX_UPLOAD_SIZE = int(os.environ.get("MAX_UPLOAD_SIZE", "20971520"))  # 20MB for direct URL downloads
 DOWNLOAD_DIR = os.environ.get("DOWNLOAD_DIR", "downloads")
@@ -64,6 +69,7 @@ __all__ = [
     "SESSION_SECRET", "CORS_ORIGINS",
     "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "GOOGLE_REDIRECT_URI",
     "YOUTUBE_API_KEY",
+    "SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY",
     "MAX_UPLOAD_SIZE", "DOWNLOAD_DIR", "COOKIES_DIR",
     "SSE_HEARTBEAT_INTERVAL", "SSE_POLL_INTERVAL", "IS_PRODUCTION",
 ]

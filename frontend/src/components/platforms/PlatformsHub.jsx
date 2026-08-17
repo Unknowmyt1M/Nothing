@@ -107,7 +107,7 @@ export default function PlatformsHub() {
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '30px', alignItems: 'start' }}>
+      <div className="platforms-grid" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '30px', alignItems: 'start' }}>
         
         {/* Left Column: Platforms List & Search */}
         <SupportedPlatformsGrid 

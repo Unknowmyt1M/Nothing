@@ -9,17 +9,18 @@ from datetime import datetime
 from backend.database.json_db import (
     get_user_tokens,
     store_user_tokens as store_tokens_db,
-    get_user_settings,
-    get_user_channels,
-    save_user_channels,
-    get_automation_logs,
-    save_automation_logs
+    get_user_settings as json_get_settings,
+    get_user_channels as json_get_channels,
+    save_user_channels as json_save_channels,
+    get_automation_logs as json_get_logs,
+    save_automation_logs as json_save_logs,
 )
+from backend.database.supabase_client import supabase
 from backend.platforms import (
     download_from_platform,
     get_platform_from_url
 )
-from backend.platforms import extract_platform_metadata # For parsing video details
+from backend.platforms import extract_platform_metadata
 from backend.services.auth_service import get_user_info, refresh_access_token
 from backend.services.uploader_service import upload_to_youtube
 
@@ -41,42 +42,143 @@ def store_user_tokens(user_email_dir, access_token, refresh_token):
         logging.error(f"Error storing user tokens: {e}")
 
 def add_automation_log(user_id, log_type, message, flush=False):
-    """Add a new log message to the automation logs synchronously"""
+    """Add a new log message to the automation logs. Writes to Supabase when configured, falls back to JSON."""
     try:
-        logs_data = get_automation_logs(user_id)
         now = datetime.now()
         formatted_time = now.strftime("%H:%M:%S")
-        
+        full_message = f"[{formatted_time}] {message}"
+
+        if supabase.is_configured:
+            try:
+                supabase.insert("automation_logs", {
+                    "user_id": user_id,
+                    "level": log_type,
+                    "message": full_message,
+                })
+                return
+            except Exception as e:
+                logging.warning("Supabase log write failed, using JSON: %s", e)
+
+        logs_data = json_get_logs(user_id)
         log_entry = {
             'timestamp': time.time() * 1000,
             'type': log_type,
-            'message': f"[{formatted_time}] {message}"
+            'message': full_message,
         }
-        
-        # If flush is True, replace the last message if it's a countdown
         if flush and logs_data.get('logs') and '⏳ Cooldown:' in logs_data['logs'][-1].get('message', ''):
             logs_data['logs'][-1] = log_entry
         else:
             if 'logs' not in logs_data:
                 logs_data['logs'] = []
             logs_data['logs'].append(log_entry)
-            
-        # Limit to last 1000 logs
         if len(logs_data['logs']) > 1000:
             logs_data['logs'] = logs_data['logs'][-1000:]
-            
-        save_automation_logs(user_id, logs_data)
+        json_save_logs(user_id, logs_data)
     except Exception as e:
         logging.error(f"Error writing automation log: {e}")
 
+
 def set_automation_service_status(user_id, status):
-    """Update background service active status"""
+    """Update background service active status. Writes to Supabase when configured."""
+    if supabase.is_configured:
+        try:
+            existing = supabase.select(
+                "automation_status",
+                filters={"user_id": f"eq.{user_id}"},
+                limit=1,
+            )
+            if existing:
+                supabase.update("automation_status", {"is_active": status}, {"user_id": f"eq.{user_id}"})
+            else:
+                supabase.insert("automation_status", {"user_id": user_id, "is_active": status})
+            return
+        except Exception as e:
+            logging.warning("Supabase status write failed, using JSON: %s", e)
     try:
-        logs_data = get_automation_logs(user_id)
+        logs_data = json_get_logs(user_id)
         logs_data['service_status'] = status
-        save_automation_logs(user_id, logs_data)
+        json_save_logs(user_id, logs_data)
     except Exception as e:
         logging.error(f"Error setting automation service status: {e}")
+
+
+def get_automation_service_status(user_id):
+    """Read current service status. Checks Supabase first, falls back to JSON."""
+    if supabase.is_configured:
+        try:
+            results = supabase.select(
+                "automation_status",
+                filters={"user_id": f"eq.{user_id}"},
+                limit=1,
+            )
+            if results:
+                return bool(results[0].get("is_active", False))
+        except Exception:
+            pass
+    try:
+        logs_data = json_get_logs(user_id)
+        return bool(logs_data.get("service_status", False))
+    except Exception:
+        return False
+
+
+def get_automation_settings(user_id):
+    """Read settings. Checks Supabase first, falls back to JSON."""
+    if supabase.is_configured:
+        try:
+            results = supabase.select(
+                "user_settings",
+                filters={"user_id": f"eq.{user_id}"},
+                limit=1,
+            )
+            if results:
+                return results[0]
+        except Exception:
+            pass
+    return json_get_settings(user_id)
+
+
+def get_automation_channels(user_id):
+    """Read monitored channels. Checks Supabase first, falls back to JSON."""
+    if supabase.is_configured:
+        try:
+            results = supabase.select(
+                "monitored_channels",
+                filters={"user_id": f"eq.{user_id}", "is_active": "eq.true"},
+            )
+            channels = []
+            for ch in results:
+                channels.append({
+                    "channel_id": ch.get("channel_id", ""),
+                    "name": ch.get("channel_name", ""),
+                    "logo_url": ch.get("channel_thumbnail", ""),
+                    "monitor_interval": 300,
+                    "quality": "1080p",
+                    "total_videos": ch.get("video_count", 0),
+                    "last_video_count": ch.get("video_count", 0),
+                    "last_checked": None,
+                    "_db_id": ch.get("id"),
+                })
+            return {"channels": channels}
+        except Exception:
+            pass
+    return json_get_channels(user_id)
+
+
+def save_automation_channels(user_id, channels_data):
+    """Save channel updates. Writes to Supabase when configured."""
+    if supabase.is_configured:
+        try:
+            for ch in channels_data.get("channels", []):
+                db_id = ch.get("_db_id")
+                if db_id:
+                    supabase.update("monitored_channels", {
+                        "video_count": ch.get("last_video_count", 0),
+                    }, {"id": f"eq.{db_id}"})
+            return
+        except Exception as e:
+            logging.warning("Supabase channel save failed: %s", e)
+    json_save_channels(user_id, channels_data)
 
 def check_channel_video_count_rss(channel_id):
     """Check total recent video entries in channel RSS feed"""
@@ -178,16 +280,14 @@ def automation_monitor_worker(user_id):
         add_automation_log(user_id, 'success', '🚀 Started Monitoring Service')
         
         while True:
-            # Check database for active status check
-            logs_data = get_automation_logs(user_id)
-            if not logs_data.get('service_status', False):
+            if not get_automation_service_status(user_id):
                 break
                 
-            settings = get_user_settings(user_id)
+            settings = get_automation_settings(user_id)
             api_key = settings.get('api_key')
             monitor_interval = settings.get('monitor_interval', 300)
             
-            channels_data = get_user_channels(user_id)
+            channels_data = get_automation_channels(user_id)
             channels = channels_data.get('channels', [])
             
             if not channels:
@@ -202,9 +302,7 @@ def automation_monitor_worker(user_id):
             new_videos_found = []
             
             for i, channel in enumerate(channels):
-                # Verify status check in-between channel queries
-                current_status = get_automation_logs(user_id)
-                if not current_status.get('service_status', False):
+                if not get_automation_service_status(user_id):
                     break
                     
                 channel_name = channel.get('name', 'Unknown')
@@ -228,7 +326,6 @@ def automation_monitor_worker(user_id):
                         channels[i]['last_video_count'] = current_video_count
                         channels[i]['last_checked'] = time.time()
                         
-                        # Fetch new videos details
                         try:
                             from backend.services.auth_service import get_channel_latest_videos_api_v3
                             latest_videos = get_channel_latest_videos_api_v3(channel_id, api_key, new_videos_count)
@@ -256,11 +353,8 @@ def automation_monitor_worker(user_id):
             if total_new_videos > 0:
                 add_automation_log(user_id, 'info', f"📊 Found {total_new_videos} new video(s) for processing.")
                 
-            # Process video list
             for idx, video in enumerate(new_videos_found):
-                # Double-check stop condition
-                current_status = get_automation_logs(user_id)
-                if not current_status.get('service_status', False):
+                if not get_automation_service_status(user_id):
                     break
                     
                 video_title = video['title']
@@ -271,17 +365,13 @@ def automation_monitor_worker(user_id):
                 except Exception as pe:
                     add_automation_log(user_id, 'error', f"❌ Failed processing video: {pe}")
                     
-            # Save final channel updates
-            save_user_channels(user_id, channels_data)
+            save_automation_channels(user_id, channels_data)
             
-            # Cooldown wait timer with countdown log streams
             remaining = monitor_interval
             add_automation_log(user_id, 'info', f"⏰ STARTING COOLDOWN: {monitor_interval} seconds")
             
             while remaining > 0:
-                # Double-check status flag every second
-                current_status = get_automation_logs(user_id)
-                if not current_status.get('service_status', False):
+                if not get_automation_service_status(user_id):
                     break
                     
                 mins = remaining // 60
@@ -292,9 +382,7 @@ def automation_monitor_worker(user_id):
                 time.sleep(1)
                 remaining -= 1
                 
-            # Loop check status exit
-            current_status = get_automation_logs(user_id)
-            if not current_status.get('service_status', False):
+            if not get_automation_service_status(user_id):
                 break
                 
     except Exception as e:

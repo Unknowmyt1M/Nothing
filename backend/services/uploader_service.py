@@ -4,6 +4,7 @@ import logging
 import requests
 import time
 import threading
+import asyncio
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from backend.database.json_db import add_to_history
@@ -227,8 +228,8 @@ def get_upload_progress(upload_id):
     """Retrieve current upload progress data"""
     return upload_progress_data.get(upload_id)
 
-def generate_upload_sse_stream(upload_id):
-    """Generate Server-Sent Events (SSE) stream for upload progress"""
+async def generate_upload_sse_stream(upload_id):
+    """Generate Server-Sent Events (SSE) stream for upload progress (non-blocking)."""
     while True:
         data = get_upload_progress(upload_id)
         if not data:
@@ -240,7 +241,7 @@ def generate_upload_sse_stream(upload_id):
         if data.get('status') in ['completed', 'error', 'cancelled']:
             break
             
-        time.sleep(0.5)
+        await asyncio.sleep(0.5)
 
 def cleanup_video_file(video_file):
     """Clean up downloaded video file"""

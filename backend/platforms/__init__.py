@@ -3,6 +3,12 @@ import importlib
 import logging
 import yt_dlp
 import time
+from backend.errors import (
+    AppError,
+    extraction_error,
+    content_unavailable,
+    parse_ytdl_error,
+)
 from backend.platforms.base import (
     BASE_CONFIG,
     is_direct_download_url,
@@ -14,6 +20,8 @@ from backend.platforms.base import (
     clean_description_from_technical_details,
     extract_tags_from_text
 )
+
+logger = logging.getLogger(__name__)
 
 # Registry mapping platform identifiers to their modules
 PLATFORM_MODULES = {
@@ -48,7 +56,8 @@ def get_platform_module(platform):
 
 def get_platform_from_url(url):
     """Detect platform from URL"""
-    url_lower = url.lower()
+    from urllib.parse import urlparse
+    hostname = (urlparse(url if '://' in url else 'http://' + url).hostname or '').lower()
     
     exact_domains = {
         'youtube': ['youtube.com', 'youtu.be', 'm.youtube.com'],
@@ -72,10 +81,11 @@ def get_platform_from_url(url):
         'smoothpre': ['smoothpre.com']
     }
     
-    # First check exact domain matches
+    # First check exact domain matches (proper hostname boundary, not substring)
     for platform, domains in exact_domains.items():
-        if any(domain in url_lower for domain in domains):
-            return platform
+        for domain in domains:
+            if hostname == domain or hostname.endswith('.' + domain):
+                return platform
             
     # Then check for direct download URLs using HTTP headers
     if is_direct_download_url(url):
@@ -87,8 +97,15 @@ def get_platform_config(platform):
     """Retrieve custom yt-dlp config for the given platform"""
     module = get_platform_module(platform)
     if module and hasattr(module, 'get_config'):
-        return module.get_config()
-    return BASE_CONFIG
+        config = dict(module.get_config())
+    else:
+        config = dict(BASE_CONFIG)
+    # Ensure runtime tooling (ffmpeg, JS runtime) applies to every platform
+    if BASE_CONFIG.get('ffmpeg_location'):
+        config.setdefault('ffmpeg_location', BASE_CONFIG['ffmpeg_location'])
+    if BASE_CONFIG.get('js_runtimes'):
+        config.setdefault('js_runtimes', BASE_CONFIG['js_runtimes'])
+    return config
 
 def get_supported_platforms():
     """Return a list of all supported platforms"""
@@ -129,6 +146,12 @@ def get_available_formats_list(url):
     """Retrieve list of available video formats for a URL"""
     try:
         platform = get_platform_from_url(url)
+        
+        # Validate YouTube URLs before listing formats
+        if platform == 'youtube':
+            from backend.platforms.youtube import validate_youtube_url
+            validate_youtube_url(url)
+        
         config = get_platform_config(platform)
         
         list_opts = {
@@ -137,7 +160,15 @@ def get_available_formats_list(url):
             'skip_download': True,
             'no_check_certificate': True,
             'noplaylist': True,
+            'retries': 3,
+            'socket_timeout': 15,
         }
+        
+        # Merge runtime tooling (ffmpeg, JS runtime) so format extraction is complete
+        if BASE_CONFIG.get('ffmpeg_location'):
+            list_opts['ffmpeg_location'] = BASE_CONFIG['ffmpeg_location']
+        if BASE_CONFIG.get('js_runtimes'):
+            list_opts['js_runtimes'] = BASE_CONFIG['js_runtimes']
         
         # Merge cookies config if present
         if 'cookiefile' in config:
@@ -155,7 +186,7 @@ def get_available_formats_list(url):
                 return formats
         return []
     except Exception as e:
-        logging.error(f"Error fetching formats list: {e}")
+        logger.error("Error fetching formats list: %s", e)
         return []
 
 def get_best_available_format(url):
@@ -179,6 +210,11 @@ def extract_platform_metadata(url, platform=None):
     if not platform:
         platform = get_platform_from_url(url)
         
+    # Pre-extraction URL validation for YouTube
+    if platform == 'youtube':
+        from backend.platforms.youtube import validate_youtube_url
+        validate_youtube_url(url)
+        
     # Delegate direct URLs to direct_url module
     if platform == 'direct_url':
         module = get_platform_module(platform)
@@ -198,6 +234,11 @@ def extract_platform_metadata(url, platform=None):
         'noplaylist': True,
     }
     
+    if BASE_CONFIG.get('ffmpeg_location'):
+        opts['ffmpeg_location'] = BASE_CONFIG['ffmpeg_location']
+    if BASE_CONFIG.get('js_runtimes'):
+        opts['js_runtimes'] = BASE_CONFIG['js_runtimes']
+    
     if 'cookiefile' in config:
         opts['cookiefile'] = config['cookiefile']
         
@@ -208,7 +249,7 @@ def extract_platform_metadata(url, platform=None):
                 
             info = ydl.extract_info(url, download=False)
             if not info:
-                raise Exception("Failed to extract video details")
+                raise extraction_error("yt-dlp returned no video information")
                 
             # Populate standard values
             title = clean_string_for_json(info.get('title', 'No title'))
@@ -268,28 +309,41 @@ def extract_platform_metadata(url, platform=None):
             else:
                 # Default tag extraction fallback
                 metadata['tags'] = extract_tags_from_text(title + ' ' + description)
+            
+            # Post-extraction metadata validation for YouTube
+            if platform == 'youtube':
+                from backend.platforms.youtube import validate_extracted_metadata
+                validate_extracted_metadata(info, url)
                 
             return metadata
             
+    except AppError:
+        raise
     except Exception as e:
-        error_msg = str(e)
-        logging.error(f"Metadata extraction error for {platform}: {error_msg}")
-        if "429" in error_msg or "Too Many Requests" in error_msg:
-            raise Exception("Rate limited by the platform. Please try again later.")
-        raise Exception(f"Failed to extract metadata: {error_msg}")
+        logger.error("Metadata extraction error for %s: %s", platform, e)
+        raise parse_ytdl_error(str(e))
 
 
-def download_from_platform(url, output_path='downloads', platform=None, progress_callback=None):
-    """Download video from platform using custom settings and progress hooks"""
+def download_from_platform(url, output_path='downloads', platform=None, progress_callback=None, quality=None, cancel_event=None):
+    """Download video from platform using custom settings and progress hooks.
+    
+    Args:
+        cancel_event: threading.Event – if set, download is cancelled.
+    """
     if not platform:
         platform = get_platform_from_url(url)
+    
+    # Pre-download URL validation for YouTube
+    if platform == 'youtube':
+        from backend.platforms.youtube import validate_youtube_url
+        validate_youtube_url(url)
         
     os.makedirs(output_path, exist_ok=True)
     
     # Custom downloader for direct url to avoid yt-dlp page download issues (e.g. 403 Forbidden)
     if platform == 'direct_url':
         try:
-            import requests
+            import requests as _requests
             from backend.platforms.direct_url import extract_direct_url_metadata
             
             metadata = extract_direct_url_metadata(url)
@@ -306,7 +360,7 @@ def download_from_platform(url, output_path='downloads', platform=None, progress
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             }
-            response = requests.get(url, stream=True, headers=headers, timeout=60)
+            response = _requests.get(url, stream=True, headers=headers, timeout=60)
             response.raise_for_status()
             
             total_bytes = int(response.headers.get('content-length') or 0)
@@ -315,6 +369,15 @@ def download_from_platform(url, output_path='downloads', platform=None, progress
             start_time = time.time()
             with open(dest_file, 'wb') as f:
                 for chunk in response.iter_content(chunk_size=1024*1024):  # 1MB chunks
+                    if cancel_event and cancel_event.is_set():
+                        # Cleanup partial file
+                        f.close()
+                        try:
+                            os.remove(dest_file)
+                        except OSError:
+                            pass
+                        from backend.errors import download_cancelled
+                        raise download_cancelled()
                     if chunk:
                         f.write(chunk)
                         downloaded_bytes += len(chunk)
@@ -332,16 +395,27 @@ def download_from_platform(url, output_path='downloads', platform=None, progress
                                 'eta': int(eta)
                             })
             return dest_file
+        except AppError:
+            raise
         except Exception as e:
-            logging.error(f"Error downloading direct URL: {e}")
-            raise Exception(f"Download failed: {str(e)}")
+            logger.error("Error downloading direct URL: %s", e)
+            raise parse_ytdl_error(str(e))
 
     config = get_platform_config(platform)
+    
+    # Use the requested quality when provided. Video-only formats (e.g. 137, 134)
+    # get merged with the best audio so the file is not silent.
+    if quality:
+        config['format'] = f"{quality}+bestaudio/best"
+    else:
+        config['format'] = BASE_CONFIG['format']
     
     # Configure output template
     config['outtmpl'] = os.path.join(output_path, '%(title)s.%(ext)s')
     
     def progress_hook(d):
+        if cancel_event and cancel_event.is_set():
+            raise _CancelException()
         if progress_callback and d['status'] == 'downloading':
             progress_callback(d)
             
@@ -350,10 +424,35 @@ def download_from_platform(url, output_path='downloads', platform=None, progress
     try:
         with yt_dlp.YoutubeDL(config) as ydl:
             ydl.download([url])
+            # Get the filename from the last hook call or prepare_filename
+            # No need for a second extract_info call — use the info from the download
             info = ydl.extract_info(url, download=False)
-            filename = ydl.prepare_filename(info)
-            return filename
+            return ydl.prepare_filename(info)
+    except _CancelException:
+        # Cleanup temp files created by yt-dlp
+        _cleanup_partial_files(output_path)
+        from backend.errors import download_cancelled
+        raise download_cancelled()
+    except AppError:
+        raise
     except Exception as e:
-        logging.error(f"Error downloading video: {e}")
-        raise Exception(f"Download failed: {str(e)}")
+        logger.error("Error downloading video: %s", e)
+        raise parse_ytdl_error(str(e))
+
+
+class _CancelException(Exception):
+    """Raised inside yt-dlp progress hooks to abort download."""
+    pass
+
+
+def _cleanup_partial_files(directory: str) -> None:
+    """Remove .part and .ytdl temp files left behind by yt-dlp."""
+    import glob as _glob
+    for pattern in ['*.part', '*.ytdl', '*.temp']:
+        for f in _glob.glob(os.path.join(directory, pattern)):
+            try:
+                os.remove(f)
+                logger.info("Cleaned up partial file: %s", f)
+            except OSError:
+                pass
 

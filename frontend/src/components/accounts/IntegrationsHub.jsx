@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Toast from '@/components/Toast';
 import GoogleLinkCard from './GoogleLinkCard';
 import AdvancedSettingsForm from './AdvancedSettingsForm';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function IntegrationsHub() {
   const router = useRouter();
@@ -30,12 +31,44 @@ export default function IntegrationsHub() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      // 1. Fetch Auth Status
+      // First check Supabase session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session?.access_token) {
+        // Sync with backend
+        try {
+          const syncRes = await fetch('/api/auth/supabase_sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ supabase_access_token: session.access_token }),
+          });
+          const syncData = await syncRes.json();
+          if (syncData.success) {
+            setAuthStatus({
+              authenticated: true,
+              user: syncData.user,
+              youtube_channel: syncData.youtube_channel,
+            });
+            // Fetch settings
+            const settingsRes = await fetch('/api/automation/get_settings');
+            const settingsData = await settingsRes.json();
+            if (!settingsData.error) {
+              setApiKey(settingsData.api_key || '');
+              setMonitorInterval(settingsData.monitor_interval || 300);
+            }
+            setLoading(false);
+            return;
+          }
+        } catch (syncErr) {
+          console.error('Backend sync failed:', syncErr);
+        }
+      }
+
+      // Fallback: check backend session (backward compatibility)
       const authRes = await fetch('/api/auth/status');
       const authData = await authRes.json();
       setAuthStatus(authData);
 
-      // 2. Fetch Settings if authenticated
       if (authData.authenticated) {
         const settingsRes = await fetch('/api/automation/get_settings');
         const settingsData = await settingsRes.json();
@@ -85,14 +118,15 @@ export default function IntegrationsHub() {
   // Handle Google login redirect
   const handleConnect = async () => {
     try {
-      triggerToast('Requesting secure authentication portal...', 'info');
-      const res = await fetch('/api/auth/google_login');
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error(data.error || 'Could not generate OAuth URL');
-      }
+      triggerToast('Redirecting to Google authentication...', 'info');
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          scopes: 'openid email profile https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/yt-analytics.readonly https://www.googleapis.com/auth/yt-analytics-monetary.readonly https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
+          redirectTo: window.location.origin + '/accounts',
+        },
+      });
+      if (error) throw error;
     } catch (err) {
       triggerToast(err.message, 'error');
     }
@@ -101,13 +135,14 @@ export default function IntegrationsHub() {
   // Handle Logout/Disconnect
   const handleDisconnect = async () => {
     try {
+      await supabase.auth.signOut();
       const res = await fetch('/api/auth/logout');
       const data = await res.json();
       if (data.success) {
         setAuthStatus({ authenticated: false, user: null, youtube_channel: null });
         setApiKey('');
         setMonitorInterval(300);
-        triggerToast('Google Account disconnected successfully', 'info');
+        triggerToast('Account disconnected successfully', 'info');
       } else {
         throw new Error(data.message || 'Logout failed');
       }
@@ -150,7 +185,7 @@ export default function IntegrationsHub() {
   };
 
   return (
-    <div className="animate-fade-in" style={{ maxWidth: '900px', margin: '0 auto', width: '100%' }}>
+    <div className="animate-fade-in hub-container" style={{ maxWidth: '900px', margin: '0 auto', width: '100%' }}>
       {/* Title */}
       <div style={{ marginBottom: '35px' }}>
         <motion.h2 

@@ -283,3 +283,286 @@ body::after {
 .platform-badge.direct_url { background: rgba(46, 204, 113, 0.2); border: 1px solid #2ecc71; color: #58d68d; }
 .platform-badge.vimeo { background: rgba(26, 188, 156, 0.2); border: 1px solid #1abc9c; color: #4ae0c0; }
 .platform-badge.rumble { background: rgba(142, 68, 173, 0.2); border: 1px solid #8e44ad; color: #c39bd3; }
+
+/* ============================================================
+   RESPONSIVE / MOBILE
+   ============================================================ */
+
+/* --- Main content area --- */
+.main-content {
+  flex: 1;
+  padding: 40px;
+  margin-left: 280px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Hamburger button (hidden on desktop) --- */
+.sidebar-hamburger {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 300;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  background: rgba(10, 8, 28, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--color-cyan);
+  font-size: 18px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+.sidebar-hamburger:active {
+  transform: scale(0.92);
+}
+
+/* --- Desktop overlay for mobile drawer --- */
+.sidebar-mobile-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 199;
+}
+
+/* --- Toast responsive --- */
+.cyber-toast {
+  left: 20px;
+  right: 20px;
+  max-width: none;
+}
+
+/* ============================================================
+   TABLET (<= 900px)
+   ============================================================ */
+@media (max-width: 900px) {
+  .main-content {
+    padding: 30px 24px;
+  }
+}
+
+/* ============================================================
+   MOBILE (<= 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+  /* Hide desktop sidebar */
+  .sidebar-desktop {
+    display: none !important;
+  }
+
+  /* Show hamburger */
+  .sidebar-hamburger {
+    display: flex;
+  }
+
+  /* Show overlay & drawer */
+  .sidebar-mobile-overlay {
+    display: block;
+  }
+
+  /* Main content: full width, no sidebar margin */
+  .main-content {
+    margin-left: 0;
+    padding: 70px 16px 24px 16px;
+    min-height: 100vh;
+  }
+
+  /* Smaller background orbs */
+  body::before, body::after {
+    width: 250px;
+    height: 250px;
+    filter: blur(100px);
+    opacity: 0.2;
+  }
+
+  /* Glass panels: tighter padding */
+  .glass-panel {
+    border-radius: 12px;
+  }
+
+  /* Inputs: touch-friendly height */
+  .glow-input {
+    min-height: 44px;
+    font-size: 16px !important; /* prevents iOS zoom on focus */
+    padding: 10px 14px;
+  }
+
+  /* Buttons: touch-friendly */
+  .btn-cyber {
+    min-height: 44px;
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+
+  /* Toast: bottom safe area */
+  .cyber-toast {
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    left: 12px;
+    right: 12px;
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+
+  /* Select elements: full width */
+  select.glow-input {
+    width: 100%;
+  }
+
+  /* Hacker terminal: scrollable */
+  .hacker-terminal {
+    font-size: 12px;
+    padding: 14px;
+  }
+}
+
+/* ============================================================
+   SMALL MOBILE (<= 480px)
+   ============================================================ */
+@media (max-width: 480px) {
+  .main-content {
+    padding: 64px 12px 16px 12px;
+  }
+
+  .glass-panel {
+    border-radius: 10px;
+  }
+
+  .btn-cyber {
+    width: 100%;
+    min-height: 48px;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE COMPONENT CLASSES
+   ============================================================ */
+
+/* Extraction portal container */
+.extraction-portal {
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* URL input form row */
+.url-form {
+  display: flex;
+  gap: 15px;
+}
+
+.url-form-input {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.url-form-input .glow-input {
+  width: 100%;
+}
+
+.url-form-btn {
+  min-width: 150px;
+}
+
+/* MetadataCard grid */
+.metadata-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.8fr;
+  gap: 35px;
+}
+
+/* Download console row */
+.download-console-row {
+  display: flex;
+  gap: 15px;
+}
+
+.download-console-row select {
+  flex: 1;
+}
+
+/* Error display container */
+.error-display-container {
+  margin-top: 20px;
+}
+
+/* Responsive overrides at mobile breakpoint */
+@media (max-width: 768px) {
+  .extraction-portal {
+    max-width: 100%;
+  }
+
+  .url-form {
+    flex-direction: column;
+  }
+
+  .url-form-btn {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .metadata-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .download-console-row {
+    flex-direction: column;
+  }
+
+  .download-console-row select {
+    width: 100%;
+  }
+
+  .error-display-container {
+    margin-top: 16px;
+  }
+
+  /* Page-specific grids */
+  .platforms-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+    padding: 20px !important;
+  }
+
+  .diagnostics-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+    padding: 20px !important;
+  }
+
+  .automation-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+    padding: 20px !important;
+  }
+
+  .analytics-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+    padding: 20px !important;
+  }
+
+  .hub-container {
+    padding: 20px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .metadata-grid {
+    padding: 16px;
+    gap: 16px;
+  }
+}
