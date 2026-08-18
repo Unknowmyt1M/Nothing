@@ -15,7 +15,6 @@ COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/ ./backend/
-COPY cookies/ ./cookies/
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/app
