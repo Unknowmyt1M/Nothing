@@ -238,6 +238,10 @@ def extract_platform_metadata(url, platform=None):
             
     config = get_platform_config(platform)
     
+    js_runtimes = BASE_CONFIG.get('js_runtimes', {})
+    ffmpeg_loc = BASE_CONFIG.get('ffmpeg_location')
+    logger.info("yt-dlp extraction for %s | js_runtimes=%s ffmpeg=%s", platform, bool(js_runtimes), ffmpeg_loc)
+
     opts = {
         'quiet': True,
         'no_warnings': True,
@@ -249,10 +253,10 @@ def extract_platform_metadata(url, platform=None):
         'noplaylist': True,
     }
     
-    if BASE_CONFIG.get('ffmpeg_location'):
-        opts['ffmpeg_location'] = BASE_CONFIG['ffmpeg_location']
-    if BASE_CONFIG.get('js_runtimes'):
-        opts['js_runtimes'] = BASE_CONFIG['js_runtimes']
+    if ffmpeg_loc:
+        opts['ffmpeg_location'] = ffmpeg_loc
+    if js_runtimes:
+        opts['js_runtimes'] = js_runtimes
     
     if 'cookiefile' in config:
         opts['cookiefile'] = config['cookiefile']
@@ -264,7 +268,13 @@ def extract_platform_metadata(url, platform=None):
                 
             info = ydl.extract_info(url, download=False)
             if not info:
-                raise extraction_error("yt-dlp returned no video information")
+                logger.error("yt-dlp returned None for %s (js_runtimes=%s)", url, bool(js_runtimes))
+                raise extraction_error(
+                    "yt-dlp returned no video information. "
+                    + ("No JS runtime available — YouTube extraction may require Node.js or Deno."
+                       if not js_runtimes else
+                       "The video may be private, age-restricted, or temporarily unavailable.")
+                )
                 
             # Populate standard values
             title = clean_string_for_json(info.get('title', 'No title'))
