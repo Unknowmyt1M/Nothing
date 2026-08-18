@@ -6,15 +6,31 @@ import glob
 import subprocess
 
 
-def find_ffmpeg_bin_dir():
-    """Locate an ffmpeg binary directory across common install locations."""
-    candidates = []
+def _find_binary(name):
+    """Find a binary on PATH cross-platform (which on Linux/Mac, where on Windows)."""
+    cmd = 'where' if os.name == 'nt' else 'which'
     try:
-        which = subprocess.run(['where', 'ffmpeg'], capture_output=True, text=True, timeout=5)
-        if which.returncode == 0 and which.stdout.strip():
-            candidates.append(os.path.dirname(which.stdout.strip().splitlines()[0]))
+        result = subprocess.run([cmd, name], capture_output=True, text=True, timeout=5)
+        if result.returncode == 0 and result.stdout.strip():
+            return result.stdout.strip().splitlines()[0].strip()
     except Exception:
         pass
+    return None
+
+
+def find_ffmpeg_bin_dir():
+    """Locate an ffmpeg binary directory across common install locations."""
+    # Cross-platform PATH lookup
+    ffmpeg_path = _find_binary('ffmpeg')
+    if ffmpeg_path:
+        ffmpeg_dir = os.path.dirname(ffmpeg_path)
+        return ffmpeg_dir
+
+    if os.name != 'nt':
+        return None
+
+    # Windows-specific fallback paths
+    candidates = []
     winget_roots = [
         os.path.expandvars(r'%LOCALAPPDATA%\Microsoft\WinGet\Packages'),
     ]
@@ -43,20 +59,13 @@ if FFMPEG_BIN_DIR:
     logging.info("ffmpeg found at: %s", FFMPEG_BIN_DIR)
 
 # Enable Node as a JS runtime for yt-dlp when available (helps YouTube extraction)
-def find_node_executable():
-    try:
-        which = subprocess.run(['where', 'node'], capture_output=True, text=True, timeout=5)
-        if which.returncode == 0 and which.stdout.strip():
-            return which.stdout.strip().splitlines()[0].strip()
-    except Exception:
-        pass
-    return None
-
-
 JS_RUNTIMES = {}
-_node = find_node_executable()
+_node = _find_binary('node')
 if _node:
     JS_RUNTIMES['node'] = {'path': _node}
+    logging.info("Node.js found at: %s", _node)
+else:
+    logging.warning("No Node.js runtime found on PATH — YouTube extraction may be limited")
 
 BASE_CONFIG = {
     'format': 'bestvideo+bestaudio/best',
