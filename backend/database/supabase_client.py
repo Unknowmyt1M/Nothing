@@ -104,6 +104,43 @@ class SupabaseClient:
         resp.raise_for_status()
         return resp.json()
 
+    def upload_file(self, bucket: str, path: str, data: bytes, content_type: str = "application/octet-stream") -> bool:
+        """Upload a file to Supabase Storage."""
+        url = f"{self.url}/storage/v1/object/upload/{bucket}/{path}"
+        headers = {
+            "apikey": self.key,
+            "Authorization": f"Bearer {self.key}",
+            "Content-Type": content_type,
+        }
+        resp = requests.post(url, data=data, headers=headers, timeout=30)
+        if resp.status_code in (200, 201, 409):  # 409 = already exists
+            return True
+        logger.warning("Storage upload failed (%s %d): %s", path, resp.status_code, resp.text[:200])
+        return False
+
+    def download_file(self, bucket: str, path: str) -> Optional[bytes]:
+        """Download a file from Supabase Storage. Returns None on failure."""
+        url = f"{self.url}/storage/v1/object/{bucket}/{path}"
+        headers = {"apikey": self.key, "Authorization": f"Bearer {self.key}"}
+        resp = requests.get(url, headers=headers, timeout=15)
+        if resp.status_code == 200:
+            return resp.content
+        return None
+
+    def file_exists(self, bucket: str, path: str) -> bool:
+        """Check if a file exists in Supabase Storage."""
+        url = f"{self.url}/storage/v1/object/info/{bucket}/{path}"
+        headers = {"apikey": self.key, "Authorization": f"Bearer {self.key}"}
+        resp = requests.get(url, headers=headers, timeout=10)
+        return resp.status_code == 200
+
+    def delete_file(self, bucket: str, path: str) -> bool:
+        """Delete a file from Supabase Storage."""
+        url = f"{self.url}/storage/v1/object/{bucket}/{path}"
+        headers = {"apikey": self.key, "Authorization": f"Bearer {self.key}"}
+        resp = requests.delete(url, headers=headers, timeout=15)
+        return resp.status_code in (200, 204, 404)
+
     def rpc(self, function_name: str, params: Optional[Dict] = None) -> Any:
         """Call a Supabase Edge Function / database function via REST."""
         url = f"{self.rest_url}/rpc/{function_name}"

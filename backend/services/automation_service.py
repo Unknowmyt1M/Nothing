@@ -23,6 +23,7 @@ from backend.platforms import (
 from backend.platforms import extract_platform_metadata
 from backend.services.auth_service import get_user_info, refresh_access_token
 from backend.services.uploader_service import upload_to_youtube
+from backend.utils.helpers import get_temp_dir
 
 def get_stored_user_tokens(user_email_dir):
     """Retrieve stored tokens from local DB"""
@@ -232,8 +233,7 @@ def process_video_for_automation(user_id, video_url, video_title, video_metadata
                 raise Exception("Access token expired and no refresh token available")
                 
         platform = get_platform_from_url(video_url)
-        download_path = os.path.join('db', user_id, 'downloads')
-        os.makedirs(download_path, exist_ok=True)
+        download_path = get_temp_dir("auto_downloads")
         
         # Download the file
         downloaded_file = download_from_platform(video_url, download_path, platform)

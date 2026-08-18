@@ -8,33 +8,12 @@ import asyncio
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from backend.database.json_db import add_to_history
-from backend.utils.helpers import format_bytes
+from backend.utils.helpers import format_bytes, get_temp_dir
 from backend.platforms import download_from_platform, get_platform_from_url, is_platform_supported
 from backend.services.auth_service import refresh_access_token
 
 # Global progress storage dictionaries
 upload_progress_data = {}
-
-def get_working_cookies_file(user_dir, user_cookies_file):
-    """Get working cookies file with fallback system"""
-    fallback_cookies = "cookies/fallback_cookies.txt"
-    
-    if os.path.exists(user_cookies_file):
-        try:
-            with open(user_cookies_file, 'r') as f:
-                content = f.read().strip()
-                if len(content) > 100 and 'LOGIN_INFO' in content:
-                    logging.info(f"Using user cookies: {user_cookies_file}")
-                    return user_cookies_file
-        except:
-            pass
-            
-    if os.path.exists(fallback_cookies):
-        logging.info(f"Using fallback cookies: {fallback_cookies}")
-        return fallback_cookies
-        
-    logging.warning("No working cookies found")
-    return None
 
 def upload_to_youtube(video_file, access_token, title, description, tags, privacy, upload_id, progress_data):
     """Upload video file to YouTube"""
@@ -146,7 +125,7 @@ def start_video_upload(url, title, description, tags, privacy, current_access_to
                 raise Exception(f"Platform '{platform}' is not supported yet")
                 
             platform = get_platform_from_url(url)
-            download_path = os.path.join('db', user_email_dir, 'downloads')
+            download_path = get_temp_dir("uploads")
             os.makedirs(download_path, exist_ok=True)
             
             def dl_hook(d):

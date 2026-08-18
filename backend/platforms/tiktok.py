@@ -7,7 +7,6 @@ def get_config():
     return {
         **BASE_CONFIG,
         'format': 'best[height>=720][height<=1080][ext=mp4]/best[height>=720][ext=mp4]/best[height>=720]/best[ext=mp4]/best',
-        'cookiefile': 'cookies/insta.txt',  # uses instagram cookies as fallback
     }
 
 def post_process_metadata(info, metadata):

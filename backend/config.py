@@ -54,8 +54,6 @@ SUPABASE_SERVICE_ROLE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
 
 # Download / upload limits
 MAX_UPLOAD_SIZE = int(os.environ.get("MAX_UPLOAD_SIZE", "20971520"))  # 20MB for direct URL downloads
-DOWNLOAD_DIR = os.environ.get("DOWNLOAD_DIR", "downloads")
-COOKIES_DIR = os.environ.get("COOKIES_DIR", "cookies")
 
 # SSE configuration
 SSE_HEARTBEAT_INTERVAL = int(os.environ.get("SSE_HEARTBEAT_INTERVAL", "15"))  # seconds
@@ -70,6 +68,6 @@ __all__ = [
     "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "GOOGLE_REDIRECT_URI",
     "YOUTUBE_API_KEY",
     "SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY",
-    "MAX_UPLOAD_SIZE", "DOWNLOAD_DIR", "COOKIES_DIR",
+    "MAX_UPLOAD_SIZE",
     "SSE_HEARTBEAT_INTERVAL", "SSE_POLL_INTERVAL", "IS_PRODUCTION",
 ]

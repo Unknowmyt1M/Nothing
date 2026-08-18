@@ -129,7 +129,6 @@ def get_config():
         'format': 'best[height>=720][height<=1080][ext=mp4]/best[height>=720][ext=mp4]/best[height>=720]/best[ext=mp4]/best',
         'writesubtitles': True,
         'writeautomaticsub': True,
-        'cookiefile': 'cookies/youtube.txt',
     }
 
 def post_process_metadata(info, metadata):

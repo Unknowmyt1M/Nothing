@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import Toast from '@/components/Toast';
 import GoogleLinkCard from './GoogleLinkCard';
 import AdvancedSettingsForm from './AdvancedSettingsForm';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase, isConfigured } from '@/lib/supabaseClient';
 
 export default function IntegrationsHub() {
   const router = useRouter();
@@ -31,40 +31,37 @@ export default function IntegrationsHub() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      // First check Supabase session
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session?.access_token) {
-        // Sync with backend
-        try {
-          const syncRes = await fetch('/api/auth/supabase_sync', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ supabase_access_token: session.access_token }),
-          });
-          const syncData = await syncRes.json();
-          if (syncData.success) {
-            setAuthStatus({
-              authenticated: true,
-              user: syncData.user,
-              youtube_channel: syncData.youtube_channel,
+      if (isConfigured && supabase) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.access_token) {
+          try {
+            const syncRes = await fetch('/api/auth/supabase_sync', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ supabase_access_token: session.access_token }),
             });
-            // Fetch settings
-            const settingsRes = await fetch('/api/automation/get_settings');
-            const settingsData = await settingsRes.json();
-            if (!settingsData.error) {
-              setApiKey(settingsData.api_key || '');
-              setMonitorInterval(settingsData.monitor_interval || 300);
+            const syncData = await syncRes.json();
+            if (syncData.success) {
+              setAuthStatus({
+                authenticated: true,
+                user: syncData.user,
+                youtube_channel: syncData.youtube_channel,
+              });
+              const settingsRes = await fetch('/api/automation/get_settings');
+              const settingsData = await settingsRes.json();
+              if (!settingsData.error) {
+                setApiKey(settingsData.api_key || '');
+                setMonitorInterval(settingsData.monitor_interval || 300);
+              }
+              setLoading(false);
+              return;
             }
-            setLoading(false);
-            return;
+          } catch (syncErr) {
+            console.error('Backend sync failed:', syncErr);
           }
-        } catch (syncErr) {
-          console.error('Backend sync failed:', syncErr);
         }
       }
 
-      // Fallback: check backend session (backward compatibility)
       const authRes = await fetch('/api/auth/status');
       const authData = await authRes.json();
       setAuthStatus(authData);
@@ -117,6 +114,10 @@ export default function IntegrationsHub() {
 
   // Handle Google login redirect
   const handleConnect = async () => {
+    if (!isConfigured || !supabase) {
+      triggerToast('Supabase is not configured. Add environment variables to continue.', 'error');
+      return;
+    }
     try {
       triggerToast('Redirecting to Google authentication...', 'info');
       const { error } = await supabase.auth.signInWithOAuth({
@@ -135,7 +136,9 @@ export default function IntegrationsHub() {
   // Handle Logout/Disconnect
   const handleDisconnect = async () => {
     try {
-      await supabase.auth.signOut();
+      if (isConfigured && supabase) {
+        await supabase.auth.signOut();
+      }
       const res = await fetch('/api/auth/logout');
       const data = await res.json();
       if (data.success) {

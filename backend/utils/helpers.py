@@ -1,4 +1,25 @@
+import os
 import re
+import tempfile
+
+# In serverless (Vercel, AWS Lambda, etc.) only /tmp is writable.
+_IS_SERVERLESS = bool(os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"))
+_TEMP_DIR = tempfile.gettempdir()
+
+
+def get_temp_dir(subdir: str = "downloads") -> str:
+    """Return a writable directory for temporary files.
+
+    On serverless platforms ``/tmp/<subdir>`` is returned (and created if
+    missing).  On a traditional server the project-local ``downloads/``
+    directory is used instead.
+    """
+    if _IS_SERVERLESS:
+        path = os.path.join(_TEMP_DIR, subdir)
+    else:
+        path = os.path.join(os.getcwd(), subdir)
+    os.makedirs(path, exist_ok=True)
+    return path
 
 def format_bytes(bytes_value):
     """Format bytes to human readable string"""

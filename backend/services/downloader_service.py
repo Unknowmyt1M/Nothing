@@ -26,7 +26,7 @@ from backend.platforms import (
     get_available_formats_list,
     download_from_platform,
 )
-from backend.utils.helpers import format_bytes
+from backend.utils.helpers import format_bytes, get_temp_dir
 
 logger = logging.getLogger(__name__)
 
@@ -145,7 +145,7 @@ def start_video_download(url: str, quality: str) -> str:
                         logger.error("Progress parse error: %s", pe)
 
             filename = download_from_platform(
-                url, "downloads", platform, progress_callback, quality, cancel_event
+                url, get_temp_dir(), platform, progress_callback, quality, cancel_event
             )
             _set_progress(
                 download_id,
@@ -245,7 +245,7 @@ def cleanup_downloads_directory(max_age_seconds: int = None) -> int:
     """Remove downloaded files older than max_age_seconds from the downloads dir."""
     if max_age_seconds is None:
         max_age_seconds = AUTO_CLEANUP_AGE_SECONDS
-    downloads_dir = os.path.join(os.getcwd(), "downloads")
+    downloads_dir = get_temp_dir()
     if not os.path.isdir(downloads_dir):
         return 0
     cutoff = time.time() - max_age_seconds

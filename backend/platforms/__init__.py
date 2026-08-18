@@ -94,7 +94,11 @@ def get_platform_from_url(url):
     return 'unknown'
 
 def get_platform_config(platform):
-    """Retrieve custom yt-dlp config for the given platform"""
+    """Retrieve custom yt-dlp config for the given platform.
+
+    Automatically resolves cookie files from Supabase Storage when available,
+    placing them in /tmp for the duration of the request.
+    """
     module = get_platform_module(platform)
     if module and hasattr(module, 'get_config'):
         config = dict(module.get_config())
@@ -105,6 +109,17 @@ def get_platform_config(platform):
         config.setdefault('ffmpeg_location', BASE_CONFIG['ffmpeg_location'])
     if BASE_CONFIG.get('js_runtimes'):
         config.setdefault('js_runtimes', BASE_CONFIG['js_runtimes'])
+
+    # Resolve cookie file from Supabase Storage if not already set
+    if 'cookiefile' not in config:
+        try:
+            from backend.services.cookie_manager import get_cookie_path
+            cookie_path = get_cookie_path(platform)
+            if cookie_path:
+                config['cookiefile'] = cookie_path
+        except Exception:
+            pass  # cookie manager unavailable — proceed without cookies
+
     return config
 
 def get_supported_platforms():
@@ -431,13 +446,19 @@ def download_from_platform(url, output_path='downloads', platform=None, progress
     except _CancelException:
         # Cleanup temp files created by yt-dlp
         _cleanup_partial_files(output_path)
+        _cleanup_cookies()
         from backend.errors import download_cancelled
         raise download_cancelled()
     except AppError:
+        _cleanup_cookies()
         raise
     except Exception as e:
         logger.error("Error downloading video: %s", e)
+        _cleanup_cookies()
         raise parse_ytdl_error(str(e))
+    finally:
+        # Always attempt cookie cleanup after download completes or fails
+        _cleanup_cookies()
 
 
 class _CancelException(Exception):
@@ -455,4 +476,13 @@ def _cleanup_partial_files(directory: str) -> None:
                 logger.info("Cleaned up partial file: %s", f)
             except OSError:
                 pass
+
+
+def _cleanup_cookies() -> None:
+    """Remove temporary cookie files downloaded from Supabase Storage."""
+    try:
+        from backend.services.cookie_manager import cleanup_tmp_cookies
+        cleanup_tmp_cookies()
+    except Exception:
+        pass
 

@@ -3,7 +3,6 @@
 Only active when DEBUG is enabled. Provides platform status, cookie checks,
 and metadata extraction diagnostics used by the development console.
 """
-import os
 import logging
 
 from fastapi import APIRouter, Request
@@ -60,13 +59,27 @@ async def platform_status():
 
 @router.get("/debug/check_cookies")
 async def check_cookies(request: Request):
-    fallback_exists = os.path.exists("cookies/fallback_cookies.txt")
-    insta_exists = os.path.exists("cookies/insta.txt")
-    youtube_exists = os.path.exists("cookies/youtube.txt")
+    """Check cookie availability. Tries Supabase Storage first, then local fs."""
+    from backend.services.cookie_manager import get_cookie_path, _storage_available
+
+    cookie_platforms = {
+        "youtube": "youtube",
+        "instagram": "instagram",
+        "tiktok": "tiktok",
+        "twitter": "twitter",
+        "facebook": "facebook",
+        "twitch": "twitch",
+        "rumble": "rumble",
+        "vimeo": "vimeo",
+    }
+    cookie_status = {}
+    for platform_name, storage_name in cookie_platforms.items():
+        path = get_cookie_path(storage_name)
+        cookie_status[f"{platform_name}_cookies_exists"] = path is not None
+
     return {
-        "fallback_cookies_exists": fallback_exists,
-        "instagram_cookies_exists": insta_exists,
-        "youtube_cookies_exists": youtube_exists,
+        **cookie_status,
+        "storage_backend": "supabase" if _storage_available() else "none",
         "user_session_active": "access_token" in request.session,
     }
 

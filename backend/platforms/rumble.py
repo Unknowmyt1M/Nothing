@@ -16,5 +16,4 @@ def get_config():
         'http_chunk_size': 10485760,
         'hls_use_mpegts': False,
         'extract_flat': False,
-        'cookiefile': 'cookies/rumble.txt',
     }

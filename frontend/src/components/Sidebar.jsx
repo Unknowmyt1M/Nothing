@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase, isConfigured } from '@/lib/supabaseClient';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -13,39 +13,49 @@ export default function Sidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     const checkAuth = async () => {
       try {
-        // Check Supabase session first
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.access_token) {
-          // Sync with backend to get full user data
-          const syncRes = await fetch('/api/auth/supabase_sync', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ supabase_access_token: session.access_token }),
-          });
-          const syncData = await syncRes.json();
-          if (syncData.success) {
-            setAuthStatus({
-              authenticated: true,
-              user: syncData.user,
-              youtube_channel: syncData.youtube_channel,
+        if (isConfigured && supabase) {
+          const sessionPromise = supabase.auth.getSession();
+          const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Supabase timeout')), 5000)
+          );
+          const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise]);
+          if (cancelled) return;
+          if (session?.access_token) {
+            const syncRes = await fetch('/api/auth/supabase_sync', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ supabase_access_token: session.access_token }),
             });
-            setLoading(false);
-            return;
+            const syncData = await syncRes.json();
+            if (syncData.success && !cancelled) {
+              setAuthStatus({
+                authenticated: true,
+                user: syncData.user,
+                youtube_channel: syncData.youtube_channel,
+              });
+              setLoading(false);
+              return;
+            }
           }
         }
-        // Fallback to backend session
-        const res = await fetch('/api/auth/status');
-        const data = await res.json();
-        setAuthStatus(data);
+        if (!cancelled) {
+          const res = await fetch('/api/auth/status');
+          const data = await res.json();
+          setAuthStatus(data);
+        }
       } catch {
-        setAuthStatus({ authenticated: false, user: null });
+        if (!cancelled) {
+          setAuthStatus({ authenticated: false, user: null });
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     checkAuth();
+    return () => { cancelled = true; };
   }, [pathname]);
 
   // Auto-close drawer on navigation
