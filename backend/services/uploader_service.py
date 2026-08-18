@@ -13,6 +13,7 @@ from backend.platforms import download_from_platform, get_platform_from_url, is_
 from backend.services.auth_service import refresh_access_token
 
 # Global progress storage dictionaries
+_upload_lock = threading.Lock()
 upload_progress_data = {}
 
 def upload_to_youtube(video_file, access_token, title, description, tags, privacy, upload_id, progress_data):
@@ -103,13 +104,14 @@ def start_video_upload(url, title, description, tags, privacy, current_access_to
     """Start video download + YouTube upload background worker thread and return upload ID"""
     upload_id = f"up_{user_email_dir}_{int(time.time())}"
     
-    upload_progress_data[upload_id] = {
-        'status': 'starting',
-        'progress': 0,
-        'speed': '0 B/s',
-        'downloaded': '0 B',
-        'total': '0 B'
-    }
+    with _upload_lock:
+        upload_progress_data[upload_id] = {
+            'status': 'starting',
+            'progress': 0,
+            'speed': '0 B/s',
+            'downloaded': '0 B',
+            'total': '0 B'
+        }
     
     def worker():
         try:
@@ -138,13 +140,14 @@ def start_video_upload(url, title, description, tags, privacy, current_access_to
                         progress = (downloaded / total * 50) if total > 0 else 0
                         speed_str = format_bytes(speed) + '/s' if speed else '0 B/s'
                         
-                        upload_progress_data[upload_id].update({
-                            'status': 'downloading',
-                            'progress': progress,
-                            'speed': speed_str,
-                            'downloaded': format_bytes(downloaded),
-                            'total': format_bytes(total)
-                        })
+                        with _upload_lock:
+                            upload_progress_data[upload_id].update({
+                                'status': 'downloading',
+                                'progress': progress,
+                                'speed': speed_str,
+                                'downloaded': format_bytes(downloaded),
+                                'total': format_bytes(total)
+                            })
                     except Exception as e:
                         logging.error(f"Download progress parsing error: {e}")
                         
@@ -153,12 +156,13 @@ def start_video_upload(url, title, description, tags, privacy, current_access_to
             if not downloaded_file or not os.path.exists(downloaded_file):
                 raise Exception("Local download failed")
                 
-            upload_progress_data[upload_id].update({
-                'status': 'uploading',
-                'progress': 50,
-                'downloaded': '100%',
-                'speed': '0 B/s'
-            })
+            with _upload_lock:
+                upload_progress_data[upload_id].update({
+                    'status': 'uploading',
+                    'progress': 50,
+                    'downloaded': '100%',
+                    'speed': '0 B/s'
+                })
             
             # Setup YouTube API Uploader
             result = upload_to_youtube(
@@ -185,17 +189,19 @@ def start_video_upload(url, title, description, tags, privacy, current_access_to
             }
             add_to_history(user_email_dir, history_data)
             
-            upload_progress_data[upload_id].update({
-                'status': 'completed',
-                'progress': 100,
-                'youtube_url': result
-            })
+            with _upload_lock:
+                upload_progress_data[upload_id].update({
+                    'status': 'completed',
+                    'progress': 100,
+                    'youtube_url': result
+                })
         except Exception as e:
             logging.error(f"Upload task thread error: {e}")
-            upload_progress_data[upload_id].update({
-                'status': 'error',
-                'error': str(e)
-            })
+            with _upload_lock:
+                upload_progress_data[upload_id].update({
+                    'status': 'error',
+                    'error': str(e)
+                })
 
     thread = threading.Thread(target=worker)
     thread.daemon = True
@@ -205,22 +211,33 @@ def start_video_upload(url, title, description, tags, privacy, current_access_to
 
 def get_upload_progress(upload_id):
     """Retrieve current upload progress data"""
-    return upload_progress_data.get(upload_id)
+    with _upload_lock:
+        return upload_progress_data.get(upload_id)
 
 async def generate_upload_sse_stream(upload_id):
     """Generate Server-Sent Events (SSE) stream for upload progress (non-blocking)."""
+    heartbeat_interval = 15  # seconds
+    last_update_time = time.time()
     while True:
         data = get_upload_progress(upload_id)
         if not data:
             yield f"data: {json.dumps({'status': 'error', 'error': 'Upload progress not found'})}\n\n"
             break
-            
+
         yield f"data: {json.dumps(data)}\n\n"
-        
+        last_update_time = time.time()
+
         if data.get('status') in ['completed', 'error', 'cancelled']:
             break
-            
-        await asyncio.sleep(0.5)
+
+        # Sleep in small increments to check for heartbeat eligibility
+        elapsed = 0.0
+        while elapsed < 0.5:
+            await asyncio.sleep(0.5)
+            elapsed += 0.5
+            if time.time() - last_update_time >= heartbeat_interval:
+                yield ": heartbeat\n\n"
+                last_update_time = time.time()
 
 def cleanup_video_file(video_file):
     """Clean up downloaded video file"""

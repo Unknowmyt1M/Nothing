@@ -76,16 +76,11 @@ export default function TopVideosTable({ videos = [] }) {
             {videos.map((video, i) => (
               <tr
                 key={video.id || i}
+                className="table-row-hover"
                 style={{
                   transition: 'background 0.2s ease',
                   cursor: 'pointer',
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.background = 'rgba(0, 242, 254, 0.04)')
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.background = 'transparent')
-                }
                 onClick={() => {
                   if (video.url) window.open(video.url, '_blank');
                 }}

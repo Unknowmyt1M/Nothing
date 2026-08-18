@@ -16,6 +16,8 @@ from backend.config import (
     SESSION_SECRET,
     CORS_ORIGINS,
     FRONTEND_URL,
+    IS_PRODUCTION,
+    DEBUG,
 )
 from backend.errors import AppError
 from backend.database.json_db import database_init
@@ -50,11 +52,16 @@ def create_app() -> FastAPI:
     )
 
     # Signed-cookie sessions so /api/auth/* can persist login like Flask did
+    # Production: cross-origin (Vercel → Render) needs same_site="none" + https_only
+    session_kwargs = (
+        {"same_site": "none", "https_only": True}
+        if IS_PRODUCTION
+        else {"same_site": "lax", "https_only": False}
+    )
     app.add_middleware(
         SessionMiddleware,
         secret_key=SESSION_SECRET,
-        same_site="lax",
-        https_only=False,
+        **session_kwargs,
     )
 
     # CORS: allow the Next.js dashboard + local API origin
@@ -76,7 +83,8 @@ def create_app() -> FastAPI:
     app.include_router(auth_router, prefix="/api")
     app.include_router(downloader_router, prefix="/api")
     app.include_router(automation_router, prefix="/api")
-    app.include_router(debug_router, prefix="/api")
+    if DEBUG or not IS_PRODUCTION:
+        app.include_router(debug_router, prefix="/api")
     app.include_router(analytics_router, prefix="/api")
 
     # Global handler for structured errors

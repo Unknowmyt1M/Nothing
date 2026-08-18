@@ -4,6 +4,43 @@ import json
 import logging
 import glob
 import subprocess
+import ipaddress
+import socket
+from urllib.parse import urlparse
+
+
+def _is_safe_url(url: str) -> bool:
+    """Check whether a URL resolves to a non-private/non-reserved IP.
+
+    Prevents SSRF by refusing to make requests to loopback, link-local,
+    and RFC 1918 / RFC 4193 private addresses.
+    """
+    try:
+        parsed = urlparse(url)
+        hostname = parsed.hostname
+        if not hostname:
+            return False
+
+        # Block obvious localhost references
+        if hostname in ('localhost', '0.0.0.0', '::1'):
+            return False
+
+        resolved = socket.getaddrinfo(hostname, None)
+        for family, _, _, _, sockaddr in resolved:
+            ip = ipaddress.ip_address(sockaddr[0])
+            if (
+                ip.is_loopback
+                or ip.is_link_local
+                or ip.is_private
+                or ip.is_reserved
+                or ip.is_multicast
+                or ip == ipaddress.ip_address('0.0.0.0')
+            ):
+                return False
+        return True
+    except (socket.gaierror, ValueError):
+        # If we can't resolve, block the request to be safe
+        return False
 
 
 def _find_binary(name):
@@ -69,7 +106,8 @@ else:
 
 BASE_CONFIG = {
     'format': 'bestvideo+bestaudio/best',
-    'outtmpl': 'downloads/%(title)s.%(ext)s',
+    'outtmpl': 'downloads/%(title).200s.%(ext)s',
+    'restrictfilenames': True,
     'writeinfojson': True,
     'writedescription': True,
     'writesubtitles': False,
@@ -203,9 +241,12 @@ def extract_tags_from_text(text):
 def get_advanced_video_metadata(file_path_or_url):
     """Extract detailed video metadata using ffprobe"""
     try:
+        # Reject arguments that look like flags to prevent command injection
+        if file_path_or_url.startswith('-'):
+            raise Exception("Invalid file path or URL: must not start with '-'")
         cmd = [
             "ffprobe", "-v", "quiet", "-print_format", "json",
-            "-show_format", "-show_streams", file_path_or_url
+            "-show_format", "-show_streams", "--", file_path_or_url
         ]
         result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=30)
         if result.returncode != 0:
@@ -278,7 +319,11 @@ def is_direct_download_url(url):
     if any(path.endswith(ext) for ext in direct_extensions):
         return True
         
-    # 2. Network HEAD request to check content-type
+    # 2. SSRF protection: refuse to probe private / internal IPs
+    if not _is_safe_url(url):
+        return False
+
+    # 3. Network HEAD request to check content-type
     try:
         import requests
         response = requests.head(url, timeout=5, allow_redirects=True)

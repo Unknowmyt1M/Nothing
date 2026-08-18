@@ -45,6 +45,9 @@ export default function ExportMenu({ channelId, startDate, endDate }) {
     <div ref={menuRef} style={{ position: 'relative', display: 'inline-block' }}>
       <button
         onClick={() => setOpen(!open)}
+        className="export-menu-btn"
+        aria-expanded={open}
+        aria-haspopup="menu"
         style={{
           padding: '8px 16px',
           borderRadius: '8px',
@@ -61,14 +64,6 @@ export default function ExportMenu({ channelId, startDate, endDate }) {
           WebkitBackdropFilter: 'var(--glass-blur)',
           transition: 'all 0.2s ease',
         }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = 'rgba(0, 242, 254, 0.3)';
-          e.currentTarget.style.color = 'var(--color-cyan)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = 'var(--color-border)';
-          e.currentTarget.style.color = 'var(--color-text-secondary)';
-        }}
       >
         <i className="fa-solid fa-download" style={{ fontSize: '12px' }} />
         {exporting ? 'Exporting...' : 'Export'}
@@ -77,6 +72,7 @@ export default function ExportMenu({ channelId, startDate, endDate }) {
       {open && (
         <div
           className="glass-panel"
+          role="menu"
           style={{
             position: 'absolute',
             top: '100%',
@@ -91,6 +87,8 @@ export default function ExportMenu({ channelId, startDate, endDate }) {
             <button
               key={fmt}
               onClick={() => handleExport(fmt)}
+              role="menuitem"
+              className="export-menu-item"
               style={{
                 width: '100%',
                 padding: '10px 16px',
@@ -106,14 +104,6 @@ export default function ExportMenu({ channelId, startDate, endDate }) {
                 alignItems: 'center',
                 gap: '10px',
                 transition: 'all 0.15s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(0, 242, 254, 0.08)';
-                e.currentTarget.style.color = 'var(--color-cyan)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.color = 'var(--color-text-secondary)';
               }}
             >
               <i

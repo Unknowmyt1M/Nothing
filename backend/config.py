@@ -25,10 +25,21 @@ FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5000")
 # Defaults to localhost:3000 which is how main.py proxies the API today.
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:3000")
 
+# Runtime flag used by platform modules / services
+IS_PRODUCTION = _env_bool("IS_PRODUCTION", False)
+
 # Session signing secret for SessionMiddleware
-SESSION_SECRET = os.environ.get(
-    "SESSION_SECRET", "dev-secret-key-change-in-production"
-)
+SESSION_SECRET_DEFAULT = "dev-secret-key-change-in-production"
+SESSION_SECRET = os.environ.get("SESSION_SECRET", SESSION_SECRET_DEFAULT)
+
+if IS_PRODUCTION and SESSION_SECRET == SESSION_SECRET_DEFAULT:
+    raise RuntimeError(
+        "SESSION_SECRET must be set to a secure value in production. "
+        "Set the SESSION_SECRET environment variable to a long, random string."
+    )
+
+# Supabase JWT secret for verifying Supabase auth tokens
+SUPABASE_JWT_SECRET = os.environ.get("SUPABASE_JWT_SECRET", "")
 
 # Allowed CORS origins (comma separated). Session/auth requires the exact host.
 CORS_ORIGINS = [o.strip() for o in os.environ.get(
@@ -59,15 +70,13 @@ MAX_UPLOAD_SIZE = int(os.environ.get("MAX_UPLOAD_SIZE", "20971520"))  # 20MB for
 SSE_HEARTBEAT_INTERVAL = int(os.environ.get("SSE_HEARTBEAT_INTERVAL", "15"))  # seconds
 SSE_POLL_INTERVAL = float(os.environ.get("SSE_POLL_INTERVAL", "0.5"))         # seconds
 
-# Runtime flag used by platform modules / services
-IS_PRODUCTION = _env_bool("IS_PRODUCTION", False)
-
 __all__ = [
     "HOST", "PORT", "DEBUG", "FRONTEND_URL", "BACKEND_URL",
     "SESSION_SECRET", "CORS_ORIGINS",
     "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "GOOGLE_REDIRECT_URI",
     "YOUTUBE_API_KEY",
     "SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_JWT_SECRET",
     "MAX_UPLOAD_SIZE",
     "SSE_HEARTBEAT_INTERVAL", "SSE_POLL_INTERVAL", "IS_PRODUCTION",
 ]

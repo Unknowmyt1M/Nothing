@@ -1,5 +1,21 @@
+import { Outfit, JetBrains_Mono } from 'next/font/google';
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
+import ErrorBoundary from "@/components/ErrorBoundary";
+
+const outfit = Outfit({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800'],
+  variable: '--font-outfit',
+  display: 'swap',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-jetbrains',
+  display: 'swap',
+});
 
 export const metadata = {
   title: "UpDownVid - Futuristic Video Downloader & YouTube Uploader",
@@ -16,12 +32,14 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${outfit.variable} ${jetbrainsMono.variable}`}>
       <body>
-        <Sidebar />
-        <main className="main-content">
-          {children}
-        </main>
+        <ErrorBoundary>
+          <Sidebar />
+          <main className="main-content">
+            {children}
+          </main>
+        </ErrorBoundary>
       </body>
     </html>
   );

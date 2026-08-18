@@ -208,6 +208,8 @@ def get_download_progress(download_id: str) -> Optional[Dict[str, Any]]:
 
 async def generate_download_sse_stream(download_id: str) -> AsyncGenerator[str, None]:
     """Generate Server-Sent Events (SSE) stream for download progress (non-blocking)."""
+    heartbeat_interval = 15  # seconds
+    last_update_time = time.time()
     while True:
         data = get_download_progress(download_id)
         if not data:
@@ -216,9 +218,17 @@ async def generate_download_sse_stream(download_id: str) -> AsyncGenerator[str, 
         # Don't send internal fields to the client
         clean = {k: v for k, v in data.items() if not k.startswith('_')}
         yield f"data: {json.dumps(clean)}\n\n"
+        last_update_time = time.time()
         if data.get("status") in ("completed", "error", "cancelled"):
             break
-        await asyncio.sleep(0.5)
+        # Sleep in small increments to check for heartbeat eligibility
+        elapsed = 0.0
+        while elapsed < 0.5:
+            await asyncio.sleep(0.5)
+            elapsed += 0.5
+            if time.time() - last_update_time >= heartbeat_interval:
+                yield ": heartbeat\n\n"
+                last_update_time = time.time()
 
 
 def cleanup_stale_progress(max_age_seconds: int = None) -> int:

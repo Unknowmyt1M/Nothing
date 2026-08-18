@@ -40,6 +40,7 @@ export default function ExtractionPortal() {
 
   const downloadEsRef = useRef(null);
   const uploadEsRef = useRef(null);
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || '';
 
   // Auto-detect platform on URL changes
   useEffect(() => {
@@ -188,8 +189,7 @@ export default function ExtractionPortal() {
       setDownloadId(dlId);
 
       if (downloadEsRef.current) downloadEsRef.current.close();
-      const backendBaseUrl = typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:3000` : 'http://localhost:3000';
-      const es = new EventSource(`${backendBaseUrl}/api/downloader/progress/${dlId}`);
+      const es = new EventSource(`${backendUrl}/api/downloader/progress/${dlId}`);
       downloadEsRef.current = es;
 
       es.onmessage = (event) => {
@@ -240,12 +240,11 @@ export default function ExtractionPortal() {
         retryable: true,
       });
     });
-  }, [url, selectedQuality]);
+  }, [url, selectedQuality, backendUrl]);
 
   const handleCancelDownload = useCallback(() => {
     if (!downloadId) return;
-    const backendBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
-    fetch(`${backendBaseUrl}/api/downloader/cancel_download/${downloadId}`, { method: 'POST' })
+    fetch(`/api/downloader/cancel_download/${downloadId}`, { method: 'POST' })
       .then(() => triggerToast('Cancel request sent', 'info'))
       .catch(() => triggerToast('Could not cancel download', 'error'));
   }, [downloadId]);
@@ -280,8 +279,7 @@ export default function ExtractionPortal() {
       setUploadId(upId);
 
       if (uploadEsRef.current) uploadEsRef.current.close();
-      const backendBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
-      const es = new EventSource(`${backendBaseUrl}/api/downloader/upload_progress/${upId}`);
+      const es = new EventSource(`${backendUrl}/api/downloader/upload_progress/${upId}`);
       uploadEsRef.current = es;
 
       es.onmessage = (event) => {

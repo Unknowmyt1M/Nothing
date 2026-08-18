@@ -38,10 +38,7 @@ export default function Toast({ message, type, onClose }) {
           cursor: 'pointer',
           marginLeft: '15px',
           fontSize: '14px',
-          transition: 'color 0.2s ease'
         }}
-        onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'}
-        onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-text-muted)'}
       >
         <i className="fa-solid fa-xmark"></i>
       </button>

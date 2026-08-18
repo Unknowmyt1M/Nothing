@@ -6,12 +6,14 @@ Every error returned to the frontend follows a structured format:
   - message: human-readable explanation
   - suggestion: recommended action (optional)
   - retryable: whether the client should offer retry
-  - details: technical info for debugging (hidden by default)
+  - details: technical info for debugging (stripped in production)
 """
 from __future__ import annotations
 
 import traceback
 from typing import Any, Dict, Optional
+
+from backend.config import DEBUG
 
 
 class AppError(Exception):
@@ -46,7 +48,7 @@ class AppError(Exception):
         }
         if self.suggestion:
             result["suggestion"] = self.suggestion
-        if self.details:
+        if self.details and DEBUG:
             result["details"] = self.details
         return result
 

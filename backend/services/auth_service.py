@@ -130,18 +130,37 @@ def get_youtube_api_service(access_token: str):
 # ---------------------------------------------------------------------------
 def verify_supabase_jwt(token: str) -> Optional[Dict[str, Any]]:
     """Verify a Supabase JWT and return the payload.
-    
-    Uses the JWT secret from Supabase to validate the token.
-    The JWT secret can be found in Supabase dashboard > Settings > API.
+
+    Uses the JWT secret from Supabase to validate the token signature,
+    expiration, and audience claims. Falls back to unsigned decode in
+    development when the secret is not configured (with a warning).
     """
     if not token:
         return None
+
+    from backend.config import SUPABASE_JWT_SECRET
+
     try:
-        # Supabase JWTs use the JWT secret from the project settings
-        # We decode without verification for now since we don't have the JWT secret
-        # In production, verify with the JWT secret
-        payload = jwt.decode(token, options={"verify_signature": False})
+        if SUPABASE_JWT_SECRET:
+            payload = jwt.decode(
+                token,
+                SUPABASE_JWT_SECRET,
+                algorithms=["HS256"],
+                audience="authenticated",
+            )
+        else:
+            logger.warning(
+                "SUPABASE_JWT_SECRET not set – decoding JWT WITHOUT signature "
+                "verification. This is insecure and must not happen in production."
+            )
+            payload = jwt.decode(token, options={"verify_signature": False})
         return payload
+    except jwt.ExpiredSignatureError:
+        logger.warning("Supabase JWT has expired")
+        return None
+    except jwt.InvalidAudienceError:
+        logger.warning("Supabase JWT has invalid audience")
+        return None
     except Exception as e:
         logger.warning("Failed to decode Supabase JWT: %s", e)
         return None

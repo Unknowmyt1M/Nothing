@@ -66,6 +66,7 @@ export default function MonitoredFeedsList({
 
                   <button
                     onClick={() => handleRemoveChannel(channel.channel_id, channel.name)}
+                    className="feed-remove-btn"
                     style={{
                       background: 'transparent',
                       border: 'none',
@@ -75,8 +76,6 @@ export default function MonitoredFeedsList({
                       fontSize: '16px',
                       transition: 'color 0.2s ease'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-pink)'}
-                    onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-text-muted)'}
                   >
                     <i className="fa-solid fa-trash-can"></i>
                   </button>

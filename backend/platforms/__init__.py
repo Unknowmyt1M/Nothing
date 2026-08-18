@@ -11,6 +11,7 @@ from backend.errors import (
 )
 from backend.platforms.base import (
     BASE_CONFIG,
+    _is_safe_url,
     is_direct_download_url,
     format_bytes,
     format_time,
@@ -222,6 +223,10 @@ def get_best_available_format(url):
 
 def extract_platform_metadata(url, platform=None):
     """Extract and post-process metadata from URL"""
+    # SSRF protection: refuse to fetch metadata from private/internal IPs
+    if not _is_safe_url(url):
+        raise extraction_error("URL resolves to a private or internal address — SSRF blocked")
+
     if not platform:
         platform = get_platform_from_url(url)
         
@@ -436,7 +441,8 @@ def download_from_platform(url, output_path='downloads', platform=None, progress
         config['format'] = BASE_CONFIG['format']
     
     # Configure output template
-    config['outtmpl'] = os.path.join(output_path, '%(title)s.%(ext)s')
+    config['outtmpl'] = os.path.join(output_path, '%(title).200s.%(ext)s')
+    config['restrictfilenames'] = True
     
     def progress_hook(d):
         if cancel_event and cancel_event.is_set():

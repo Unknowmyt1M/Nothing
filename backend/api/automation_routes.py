@@ -88,7 +88,11 @@ async def get_settings(request: Request):
         raise
     except Exception as e:
         logger.error("Error getting settings: %s", e)
-        return JSONResponse({"error": str(e)}, status_code=500)
+        return JSONResponse(
+            {"error": True, "code": "INTERNAL_ERROR",
+             "message": "An error occurred while loading settings."},
+            status_code=500,
+        )
 
 
 @router.post("/automation/save_settings")
@@ -109,7 +113,11 @@ async def save_settings(request: Request, settings: SettingsModel):
         raise
     except Exception as e:
         logger.error("Error saving settings: %s", e)
-        return JSONResponse({"error": str(e)}, status_code=500)
+        return JSONResponse(
+            {"error": True, "code": "INTERNAL_ERROR",
+             "message": "An error occurred while saving settings."},
+            status_code=500,
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -145,7 +153,11 @@ async def get_channels(request: Request):
         raise
     except Exception as e:
         logger.error("Error getting channels: %s", e)
-        return JSONResponse({"error": str(e)}, status_code=500)
+        return JSONResponse(
+            {"error": True, "code": "INTERNAL_ERROR",
+             "message": "An error occurred while loading channels."},
+            status_code=500,
+        )
 
 
 @router.post("/automation/fetch_channel_info")
@@ -174,7 +186,11 @@ async def fetch_channel_info(request: Request, data: ChannelUrlRequest):
         }
     except Exception as e:
         logger.error("Error fetching channel details: %s", e)
-        return JSONResponse({"error": str(e)}, status_code=500)
+        return JSONResponse(
+            {"error": True, "code": "INTERNAL_ERROR",
+             "message": "Failed to fetch channel information."},
+            status_code=500,
+        )
 
 
 @router.get("/automation/fetch_latest_videos")
@@ -191,7 +207,11 @@ async def fetch_latest_videos(request: Request, channel_id: str):
         return {"success": True, "videos": videos}
     except Exception as e:
         logger.error("Error fetching latest videos: %s", e)
-        return JSONResponse({"error": str(e)}, status_code=500)
+        return JSONResponse(
+            {"error": True, "code": "INTERNAL_ERROR",
+             "message": "Failed to fetch latest videos."},
+            status_code=500,
+        )
 
 
 @router.post("/automation/add_channel")
@@ -245,7 +265,11 @@ async def add_channel(request: Request, data: ChannelInfoRequest):
         raise
     except Exception as e:
         logger.error("Error adding channel: %s", e)
-        return JSONResponse({"error": str(e)}, status_code=500)
+        return JSONResponse(
+            {"error": True, "code": "INTERNAL_ERROR",
+             "message": "Failed to add channel."},
+            status_code=500,
+        )
 
 
 @router.post("/automation/remove_channel")
@@ -273,7 +297,11 @@ async def remove_channel(request: Request, data: ChannelRemoveRequest):
         raise
     except Exception as e:
         logger.error("Error removing channel: %s", e)
-        return JSONResponse({"error": str(e)}, status_code=500)
+        return JSONResponse(
+            {"error": True, "code": "INTERNAL_ERROR",
+             "message": "Failed to remove channel."},
+            status_code=500,
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -337,7 +365,9 @@ async def get_logs(request: Request):
     except Exception as e:
         logger.error("Error getting logs: %s", e)
         return JSONResponse(
-            {"logs": [], "service_status": False, "error": str(e)}, status_code=500
+            {"logs": [], "service_status": False,
+             "error": "Failed to load automation logs."},
+            status_code=500,
         )
 
 
@@ -358,7 +388,11 @@ async def clear_logs(request: Request):
         raise
     except Exception as e:
         logger.error("Error clearing logs: %s", e)
-        return JSONResponse({"error": str(e)}, status_code=500)
+        return JSONResponse(
+            {"error": True, "code": "INTERNAL_ERROR",
+             "message": "Failed to clear logs."},
+            status_code=500,
+        )
 
 
 @router.post("/automation/start_monitoring")
@@ -395,7 +429,11 @@ async def start_monitoring(request: Request):
         raise
     except Exception as e:
         logger.error("Error starting monitoring: %s", e)
-        return JSONResponse({"error": str(e)}, status_code=500)
+        return JSONResponse(
+            {"error": True, "code": "INTERNAL_ERROR",
+             "message": "Failed to start monitoring service."},
+            status_code=500,
+        )
 
 
 @router.post("/automation/stop_monitoring")
@@ -414,4 +452,8 @@ async def stop_monitoring(request: Request):
         raise
     except Exception as e:
         logger.error("Error stopping monitoring: %s", e)
-        return JSONResponse({"error": str(e)}, status_code=500)
+        return JSONResponse(
+            {"error": True, "code": "INTERNAL_ERROR",
+             "message": "Failed to stop monitoring service."},
+            status_code=500,
+        )

@@ -8,6 +8,7 @@ On a traditional server the files would persist, but /tmp cleanup is
 still harmless.
 """
 import os
+import re
 import tempfile
 import logging
 
@@ -50,7 +51,10 @@ def get_cookie_path(platform: str) -> str | None:
     if not _storage_available():
         return None
 
-    cookie_name = _COOKIE_FILENAMES.get(platform, f"{platform}.txt")
+    # Sanitize platform name to prevent path traversal (e.g. "../etc/passwd")
+    safe_platform = re.sub(r'[^a-zA-Z0-9_-]', '', platform)
+
+    cookie_name = _COOKIE_FILENAMES.get(safe_platform, f"{safe_platform}.txt")
 
     if cookie_name in _cookie_cache:
         cached = _cookie_cache[cookie_name]

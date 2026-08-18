@@ -84,7 +84,7 @@ async def analytics_overview(request: Request):
     except Exception as e:
         logger.error("Error in analytics overview: %s", e)
         return JSONResponse(
-            {"success": False, "error": str(e)},
+            {"success": False, "error": "Failed to load channel overview."},
             status_code=500,
         )
 
@@ -113,7 +113,7 @@ async def analytics_channel(
     except Exception as e:
         logger.error("Error in analytics channel: %s", e)
         return JSONResponse(
-            {"success": False, "error": str(e)},
+            {"success": False, "error": "Failed to load channel analytics."},
             status_code=500,
         )
 
@@ -143,7 +143,7 @@ async def analytics_videos(
     except Exception as e:
         logger.error("Error in analytics videos: %s", e)
         return JSONResponse(
-            {"success": False, "error": str(e)},
+            {"success": False, "error": "Failed to load top videos."},
             status_code=500,
         )
 
@@ -172,7 +172,7 @@ async def analytics_traffic(
     except Exception as e:
         logger.error("Error in analytics traffic: %s", e)
         return JSONResponse(
-            {"success": False, "error": str(e)},
+            {"success": False, "error": "Failed to load traffic sources."},
             status_code=500,
         )
 
@@ -201,7 +201,7 @@ async def analytics_audience(
     except Exception as e:
         logger.error("Error in analytics audience: %s", e)
         return JSONResponse(
-            {"success": False, "error": str(e)},
+            {"success": False, "error": "Failed to load audience demographics."},
             status_code=500,
         )
 
@@ -230,7 +230,7 @@ async def analytics_revenue(
     except Exception as e:
         logger.error("Error in analytics revenue: %s", e)
         return JSONResponse(
-            {"success": False, "error": str(e)},
+            {"success": False, "error": "Failed to load revenue data."},
             status_code=500,
         )
 
@@ -255,7 +255,7 @@ async def analytics_export(
     except Exception as e:
         logger.error("Error in analytics export: %s", e)
         return JSONResponse(
-            {"success": False, "error": str(e)},
+            {"success": False, "error": "Failed to export analytics data."},
             status_code=500,
         )
 

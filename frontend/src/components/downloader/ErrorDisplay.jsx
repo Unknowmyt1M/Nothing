@@ -158,27 +158,11 @@ export default function ErrorDisplay({ error, onRetry, onDismiss, className = ''
               {error.retryable && onRetry && (
                 <button
                   onClick={onRetry}
+                  className="error-btn-retry"
                   style={{
                     background: `${colors.border}20`,
                     border: `1px solid ${colors.border}40`,
                     color: colors.border,
-                    padding: '7px 16px',
-                    borderRadius: '8px',
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    transition: 'all 0.2s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = `${colors.border}30`;
-                    e.currentTarget.style.borderColor = `${colors.border}70`;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = `${colors.border}20`;
-                    e.currentTarget.style.borderColor = `${colors.border}40`;
                   }}
                 >
                   <i className="fa-solid fa-rotate-right" style={{ fontSize: '11px' }}></i>
@@ -189,28 +173,7 @@ export default function ErrorDisplay({ error, onRetry, onDismiss, className = ''
               {error.details && (
                 <button
                   onClick={() => setShowDetails(!showDetails)}
-                  style={{
-                    background: 'transparent',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    color: 'var(--color-text-muted, #6b7280)',
-                    padding: '7px 12px',
-                    borderRadius: '8px',
-                    fontSize: '11px',
-                    fontWeight: '500',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '5px',
-                    transition: 'all 0.2s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-                    e.currentTarget.style.color = 'var(--color-text-secondary, #9ca3af)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
-                    e.currentTarget.style.color = 'var(--color-text-muted, #6b7280)';
-                  }}
+                  className="error-btn-details"
                 >
                   <i className={`fa-solid fa-chevron-${showDetails ? 'up' : 'down'}`} style={{ fontSize: '9px' }}></i>
                   Technical Details
@@ -220,19 +183,7 @@ export default function ErrorDisplay({ error, onRetry, onDismiss, className = ''
               {onDismiss && (
                 <button
                   onClick={onDismiss}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: 'var(--color-text-muted, #6b7280)',
-                    padding: '7px 8px',
-                    borderRadius: '8px',
-                    fontSize: '12px',
-                    cursor: 'pointer',
-                    marginLeft: 'auto',
-                    transition: 'color 0.2s ease',
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'}
-                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-text-muted, #6b7280)'}
+                  className="error-btn-dismiss"
                 >
                   <i className="fa-solid fa-xmark"></i>
                 </button>

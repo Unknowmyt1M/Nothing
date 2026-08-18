@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 @import "tailwindcss";
 
@@ -10,8 +9,8 @@
 
 /* CSS Variables for Futuristic Theme */
 :root {
-  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-sans: var(--font-outfit), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: var(--font-jetbrains), 'Fira Code', monospace;
   
   --bg-primary: #060512;
   --bg-sidebar: rgba(10, 8, 28, 0.65);
@@ -283,6 +282,113 @@ body::after {
 .platform-badge.direct_url { background: rgba(46, 204, 113, 0.2); border: 1px solid #2ecc71; color: #58d68d; }
 .platform-badge.vimeo { background: rgba(26, 188, 156, 0.2); border: 1px solid #1abc9c; color: #4ae0c0; }
 .platform-badge.rumble { background: rgba(142, 68, 173, 0.2); border: 1px solid #8e44ad; color: #c39bd3; }
+
+/* Focus-visible for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Table row hover */
+.table-row-hover:hover {
+  background: rgba(0, 242, 254, 0.04) !important;
+}
+
+/* Export menu button hover */
+.export-menu-btn:hover {
+  border-color: rgba(0, 242, 254, 0.3) !important;
+  color: var(--color-cyan) !important;
+}
+
+/* Export menu item hover */
+.export-menu-item:hover {
+  background: rgba(0, 242, 254, 0.08) !important;
+  color: var(--color-cyan) !important;
+}
+
+/* Feed remove button hover */
+.feed-remove-btn:hover {
+  color: var(--color-pink) !important;
+}
+
+/* Error display buttons */
+.error-btn-retry {
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+.error-btn-retry:hover {
+  filter: brightness(1.2);
+}
+
+.error-btn-details {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--color-text-muted);
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+.error-btn-details:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--color-text-secondary);
+}
+
+.error-btn-dismiss {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  padding: 7px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  margin-left: auto;
+  transition: color 0.2s ease;
+}
+.error-btn-dismiss:hover {
+  color: #ffffff;
+}
+
+/* Cancel download button */
+.btn-cancel-download {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+.btn-cancel-download:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+/* Toast dismiss button */
+.cyber-toast button {
+  transition: color 0.2s ease;
+}
+.cyber-toast button:hover {
+  color: #ffffff !important;
+}
 
 /* ============================================================
    RESPONSIVE / MOBILE

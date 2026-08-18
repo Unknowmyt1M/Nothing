@@ -52,6 +52,8 @@ _URL_RE = re.compile(
     r'[a-zA-Z0-9]'                  # starts with alnum
     r'[a-zA-Z0-9\-._~:/?#\[\]@!$&\'()*+,;=%]*$',  # valid URL chars
 )
+_QUALITY_RE = re.compile(r'^\d{3,4}p?$')
+_VALID_QUALITY_LITERALS = {"best", "worst", "audio"}
 
 
 def _validate_url(url: str) -> AppError | None:
@@ -202,6 +204,9 @@ async def download_video(req: DownloadRequest):
     quality = (req.quality or "").strip()
     if not quality:
         return _error_response(invalid_url("Missing quality parameter"))
+
+    if quality.lower() not in _VALID_QUALITY_LITERALS and not _QUALITY_RE.match(quality):
+        return _error_response(invalid_url(f"Invalid quality '{quality}': must be like 720p, 1080, best, worst, or audio"))
 
     if not is_platform_supported(url):
         platform = get_platform_from_url(url)
